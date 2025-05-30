@@ -1,1 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ferramentas de Cálculo</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      color: #333;
+    }
+
+    nav {
+      width: 250px;
+      background-color: #2c3e50;
+      color: white;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    nav h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 15px 20px;
+      display: block;
+      transition: background-color 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #34495e;
+    }
+
+    iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+      }
+      nav a {
+        flex: 1;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <h2>Menu</h2>
+      <a href="https://fbnmurad.github.io/ferramentas/ValorProRata.html" target="conteudo">Calcular Pró-Rata</a>
+      <a href="https://fbnmurad.github.io/ferramentas/CalculadoraDatas.html" target="conteudo">Calcular Datas</a>
+    </nav>
+
+    <iframe name="conteudo" src="https://fbnmurad.github.io/ferramentas/ValorProRata.html"></iframe>
+  </div>
+</body>
+</html>
 
