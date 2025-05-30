@@ -17,8 +17,7 @@
       background: #fff;
       padding: 30px 40px;
       border-radius: 12px;
-      /* Remova ou comente a linha abaixo para retirar a sombra do container inteiro: */
-      /* box-shadow: 0 0 24px rgba(0,0,0,0.08); */
+      /* box-shadow: 0 0 24px rgba(0,0,0,0.08); */ /* Removida a sombra do container */
       min-width: 340px;
       max-width: 420px;
     }
@@ -52,7 +51,6 @@
     button:hover {
       background: #34495e;
     }
-    /* Estilize apenas o botão de copiar para não ter sombra, borda ou fundo */
     .copy-btn {
       background: transparent;
       color: #2c3e50;
@@ -66,6 +64,20 @@
     }
     .copy-btn:hover {
       background: #f1f1f1;
+    }
+    .clear-btn {
+      background: #b2bec3;
+      color: #2d3436;
+      padding: 7px 12px;
+      font-size: 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      margin-top: 2px;
+      margin-left: 2px;
+    }
+    .clear-btn:hover {
+      background: #636e72;
+      color: #fff;
     }
     .result {
       font-size: 21px;
@@ -134,6 +146,7 @@
     </div>
 
     <div class="history-section">
+      <button class="clear-btn" onclick="limparHistorico()">Limpar Histórico</button>
       <h4>Últimos CPFs gerados</h4>
       <div class="history-list" id="historyCPF"></div>
       <h4>Últimos CNPJs gerados</h4>
@@ -233,6 +246,19 @@
         document.getElementById('historyCNPJ').innerHTML = ultimosCNPJs.join('<br>');
       }
     }
+
+    function limparHistorico() {
+      ultimosCPFs = [];
+      ultimosCNPJs = [];
+      document.getElementById('historyCPF').innerHTML = '';
+      document.getElementById('historyCNPJ').innerHTML = '';
+    }
+
+    // Geração automática ao abrir a página
+    window.onload = function() {
+      gerarCPF();
+      gerarCNPJ();
+    };
   </script>
 </body>
 </html>
