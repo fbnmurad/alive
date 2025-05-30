@@ -49,6 +49,11 @@
       outline: none;
     }
     input:focus, select:focus { border-color: #2846b6; }
+    input:disabled {
+      background: #eaeaea;
+      color: #888;
+      cursor: not-allowed;
+    }
     .botoes {
       display: flex;
       gap: 10px;
@@ -125,22 +130,56 @@
       white-space: pre;
       border-left: 4px solid #2846b6;
     }
+    /* Alinhamento central dos botões radio + labels */
+    .opcao-modo {
+      font-size: 15px;
+      margin-top: 10px;
+      margin-bottom: 0px;
+      color: #244ad5;
+      display: flex;
+      gap: 24px;
+      font-weight: 500;
+      justify-content: center;
+      align-items: center;
+    }
+    .opcao-modo label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+    .opcao-modo input[type="radio"] {
+      accent-color: #2846b6;
+      margin: 0;
+    }
     @media (max-width: 480px) {
       .container { padding: 14px 7px 14px 7px; max-width: 98vw; }
       .botoes { flex-direction: column; gap: 8px; }
       #resultado { font-size: 15px; padding: 12px 6px 8px 6px; }
       .explicacao-box { font-size: 13px; padding: 8px 2px 5px 8px; }
       .res-label { min-width: 100px; font-size: 1em; }
+      .opcao-modo { font-size: 13px; gap: 10px;}
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Cálculo de Valor Pró-Rata</h2>
-    <label for="dataInicio">Data de Início:</label>
-    <input type="date" id="dataInicio">
-    <label for="dataFim">Data de Fim:</label>
-    <input type="date" id="dataFim">
+    <div class="opcao-modo">
+      <label><input type="radio" name="modo" value="datas" checked onchange="alternarModo()">Datas</label>
+      <label><input type="radio" name="modo" value="dias" onchange="alternarModo()">Dias</label>
+    </div>
+    <div id="blocoDatas">
+      <label for="dataInicio">Data de Início:</label>
+      <input type="date" id="dataInicio">
+      <label for="dataFim">Data de Fim:</label>
+      <input type="date" id="dataFim">
+    </div>
+    <div id="blocoDias" style="display:none">
+      <label for="diasUso">Dias de uso:</label>
+      <input type="number" id="diasUso" min="1">
+    </div>
     <label for="quantidade">Quantidade de Licenças:</label>
     <input type="number" id="quantidade" min="1">
     <label for="preco">Preço Unitário (R$):</label>
@@ -152,27 +191,58 @@
     <div id="resultado"></div>
   </div>
   <script>
+    function alternarModo() {
+      const modo = document.querySelector('input[name="modo"]:checked').value;
+      document.getElementById('blocoDatas').style.display = modo === 'datas' ? '' : 'none';
+      document.getElementById('blocoDias').style.display = modo === 'dias' ? '' : 'none';
+      // Limpa campos dos blocos desabilitados para evitar conflitos
+      if (modo === 'datas') document.getElementById('diasUso').value = '';
+      if (modo === 'dias') {
+        document.getElementById('dataInicio').value = '';
+        document.getElementById('dataFim').value = '';
+      }
+      document.getElementById('resultado').innerHTML = '';
+    }
+
     function calcularProRata() {
-      const dataInicioStr = document.getElementById("dataInicio").value;
-      const dataFimStr = document.getElementById("dataFim").value;
+      const modo = document.querySelector('input[name="modo"]:checked').value;
       const quantidade = parseInt(document.getElementById("quantidade").value);
       const preco = parseFloat(document.getElementById("preco").value);
+      let diasUso, dataInicio, dataFim;
+      let dataInicioStr = '', dataFimStr = '';
 
-      if (!dataInicioStr || !dataFimStr || isNaN(quantidade) || isNaN(preco) || quantidade < 1 || preco <= 0) {
-        document.getElementById("resultado").innerHTML = "<span style='color:#c00'>Preencha todos os campos corretamente.</span>";
-        return;
+      if (modo === 'datas') {
+        dataInicioStr = document.getElementById("dataInicio").value;
+        dataFimStr = document.getElementById("dataFim").value;
+        if (!dataInicioStr || !dataFimStr || isNaN(quantidade) || isNaN(preco) || quantidade < 1 || preco <= 0) {
+          document.getElementById("resultado").innerHTML = "<span style='color:#c00'>Preencha todos os campos corretamente.</span>";
+          return;
+        }
+        dataInicio = new Date(dataInicioStr + "T00:00:00");
+        dataFim = new Date(dataFimStr + "T00:00:00");
+        if (dataFim < dataInicio) {
+          document.getElementById("resultado").innerHTML = "<span style='color:#c00'>A data final não pode ser anterior à inicial.</span>";
+          return;
+        }
+        diasUso = Math.floor((dataFim - dataInicio) / (24 * 3600 * 1000)) + 1;
+      } else {
+        diasUso = parseInt(document.getElementById("diasUso").value);
+        if (isNaN(diasUso) || isNaN(quantidade) || isNaN(preco) || diasUso < 1 || quantidade < 1 || preco <= 0) {
+          document.getElementById("resultado").innerHTML = "<span style='color:#c00'>Preencha todos os campos corretamente.</span>";
+          return;
+        }
+        // Para efeito de visualização dos campos "De" e "Até", deixa vazio
+        dataInicioStr = dataFimStr = '';
       }
 
-      const dataInicio = new Date(dataInicioStr + "T00:00:00");
-      const dataFim = new Date(dataFimStr + "T00:00:00");
-
-      if (dataFim < dataInicio) {
-        document.getElementById("resultado").innerHTML = "<span style='color:#c00'>A data final não pode ser anterior à inicial.</span>";
-        return;
+      // Pega mês/dias do mês de início se houver datas, senão usa mês atual
+      let diasNoMesInicio = 30; // valor padrão
+      if (modo === 'datas') {
+        diasNoMesInicio = new Date(dataInicio.getFullYear(), dataInicio.getMonth() + 1, 0).getDate();
+      } else {
+        const now = new Date();
+        diasNoMesInicio = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
       }
-
-      const diasNoMesInicio = new Date(dataInicio.getFullYear(), dataInicio.getMonth() + 1, 0).getDate();
-      const diasUso = Math.floor((dataFim - dataInicio) / (24 * 3600 * 1000)) + 1;
       const valorPorDia = preco / diasNoMesInicio;
       const valorProrataUnitRaw = valorPorDia * diasUso;
       const valorProrataTotalRaw = valorProrataUnitRaw * quantidade;
@@ -183,10 +253,13 @@
       const valorProrataUnitRawFormat = valorProrataUnitRaw.toLocaleString('pt-BR', {minimumFractionDigits:8, maximumFractionDigits:8});
       const valorProrataTotalRawFormat = valorProrataTotalRaw.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:8});
 
+      // Bloco principal
       document.getElementById("resultado").innerHTML = `
         <div class="resultado-principal">
-          <div class="res-item"><span class="res-label">De:</span><span class="res-valor">${dataInicio.toLocaleDateString()}</span></div>
-          <div class="res-item"><span class="res-label">Até:</span><span class="res-valor">${dataFim.toLocaleDateString()}</span></div>
+          ${modo === 'datas' ? `
+            <div class="res-item"><span class="res-label">De:</span><span class="res-valor">${dataInicio.toLocaleDateString()}</span></div>
+            <div class="res-item"><span class="res-label">Até:</span><span class="res-valor">${dataFim.toLocaleDateString()}</span></div>
+          ` : ''}
           <div class="res-item"><span class="res-label">Dias de uso:</span><span class="res-valor">${diasUso}</span></div>
           <div class="res-item"><span class="res-label">Valor Pró-Rata Unitário (truncado):</span><span class="res-valor">R$ ${valorUnitarioTrunc.toFixed(2).replace('.', ',')}</span></div>
           <div class="res-item"><span class="res-label">Valor Pró-Rata Total (truncado):</span><span class="res-valor">R$ ${valorTotalTrunc.toFixed(2).replace('.', ',')}</span></div>
@@ -195,7 +268,7 @@
 Como foi feito o cálculo:
 1. Fórmula: TRUNC(((preço ÷ dias no mês de início) × dias de uso) × quantidade)
 2. Valor por dia: ${preco} ÷ ${diasNoMesInicio} = R$ ${valorPorDiaFormat}
-3. Dias de uso: ${diasUso} (de ${dataInicio.toLocaleDateString()} até ${dataFim.toLocaleDateString()})
+3. Dias de uso: ${diasUso} ${modo === 'datas' ? `(de ${dataInicio.toLocaleDateString()} até ${dataFim.toLocaleDateString()})` : ''}
 4. Multiplicado pelos dias usados: R$ ${valorPorDiaFormat} × ${diasUso} = R$ ${valorProrataUnitRawFormat}
 5. Multiplicado pelas licenças: R$ ${valorProrataUnitRawFormat} × ${quantidade} = R$ ${valorProrataTotalRawFormat}
 6. Truncado para baixo: Valor Unitário = R$ ${valorUnitarioTrunc.toFixed(2).replace('.', ',')}, Valor Total = R$ ${valorTotalTrunc.toFixed(2).replace('.', ',')}
@@ -206,9 +279,12 @@ Como foi feito o cálculo:
     function limparCampos() {
       document.getElementById("dataInicio").value = '';
       document.getElementById("dataFim").value = '';
+      document.getElementById("diasUso").value = '';
       document.getElementById("quantidade").value = '';
       document.getElementById("preco").value = '';
       document.getElementById("resultado").innerHTML = '';
+      document.querySelector('input[name="modo"][value="datas"]').checked = true;
+      alternarModo();
     }
   </script>
 </body>
