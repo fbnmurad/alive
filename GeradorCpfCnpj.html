@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerador de CPF e CNPJ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      /* Remova ou comente a linha abaixo para retirar a sombra do container inteiro: */
+      /* box-shadow: 0 0 24px rgba(0,0,0,0.08); */
+      min-width: 340px;
+      max-width: 420px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 22px;
+      color: #2c3e50;
+    }
+    .gerador-section {
+      margin-bottom: 28px;
+    }
+    .buttons-area {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    button {
+      background: #2c3e50;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button:hover {
+      background: #34495e;
+    }
+    /* Estilize apenas o botão de copiar para não ter sombra, borda ou fundo */
+    .copy-btn {
+      background: transparent;
+      color: #2c3e50;
+      border: none;
+      padding: 0 5px;
+      border-radius: 4px;
+      font-size: 21px;
+      box-shadow: none !important;
+      transition: background 0.2s;
+      margin-left: -4px;
+    }
+    .copy-btn:hover {
+      background: #f1f1f1;
+    }
+    .result {
+      font-size: 21px;
+      text-align: left;
+      background: #f2f6fa;
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #16a085;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+      word-break: break-all;
+      display: inline-block;
+    }
+    .copy-message {
+      color: #2980b9;
+      font-size: 13px;
+      margin-left: 10px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .history-section {
+      margin-top: 18px;
+    }
+    .history-section h4 {
+      margin-bottom: 6px;
+      color: #2c3e50;
+      font-size: 16px;
+    }
+    .history-list {
+      background: #f9fafc;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 15px;
+      color: #34495e;
+      min-height: 22px;
+      margin-bottom: 10px;
+    }
+    small {
+      color:#888;
+      display:block;
+      text-align:center;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Gerador de CPF e CNPJ</h2>
+
+    <div class="gerador-section">
+      <div class="buttons-area">
+        <button onclick="gerarCPF()">CPF</button>
+        <span class="result" id="cpf"></span>
+        <button class="copy-btn" onclick="copiarCPF()" title="Copiar CPF">📋</button>
+        <span class="copy-message" id="cpfCopyMsg"></span>
+      </div>
+    </div>
+
+    <div class="gerador-section">
+      <div class="buttons-area">
+        <button onclick="gerarCNPJ()">CNPJ</button>
+        <span class="result" id="cnpj"></span>
+        <button class="copy-btn" onclick="copiarCNPJ()" title="Copiar CNPJ">📋</button>
+        <span class="copy-message" id="cnpjCopyMsg"></span>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <h4>Últimos CPFs gerados</h4>
+      <div class="history-list" id="historyCPF"></div>
+      <h4>Últimos CNPJs gerados</h4>
+      <div class="history-list" id="historyCNPJ"></div>
+    </div>
+    <small>Para uso exclusivo em ambientes de teste</small>
+  </div>
+
+  <script>
+    let ultimosCPFs = [];
+    let ultimosCNPJs = [];
+
+    function gerarCPF() {
+      let n = [];
+      for (let i = 0; i < 9; i++) n.push(Math.floor(Math.random() * 10));
+      n[9] = calcDigitoCPF(n, 10);
+      n[10] = calcDigitoCPF(n, 11);
+      const cpfFormatado = n.join('').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+      document.getElementById("cpf").textContent = cpfFormatado;
+      adicionarHistorico('CPF', cpfFormatado);
+      limparMsg('cpfCopyMsg');
+    }
+
+    function calcDigitoCPF(n, peso) {
+      let soma = 0;
+      for (let i = 0; i < peso - 1; i++) soma += n[i] * (peso - i);
+      let resto = soma % 11;
+      return resto < 2 ? 0 : 11 - resto;
+    }
+
+    function gerarCNPJ() {
+      let n = [];
+      for (let i = 0; i < 8; i++) n.push(Math.floor(Math.random() * 10));
+      n = n.concat([0,0,0,1]);
+      n[12] = calcDigitoCNPJ(n, [5,4,3,2,9,8,7,6,5,4,3,2]);
+      n[13] = calcDigitoCNPJ(n, [6,5,4,3,2,9,8,7,6,5,4,3,2]);
+      const cnpjFormatado = n.join('').replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+      document.getElementById("cnpj").textContent = cnpjFormatado;
+      adicionarHistorico('CNPJ', cnpjFormatado);
+      limparMsg('cnpjCopyMsg');
+    }
+
+    function calcDigitoCNPJ(n, pesos) {
+      let soma = 0;
+      for (let i = 0; i < pesos.length; i++) soma += n[i] * pesos[i];
+      let resto = soma % 11;
+      return resto < 2 ? 0 : 11 - resto;
+    }
+
+    function copiarCPF() {
+      const cpf = document.getElementById("cpf").textContent;
+      if (cpf) {
+        copiarParaArea(cpf);
+        mostrarMsg('cpfCopyMsg', 'Copiado!');
+      }
+    }
+
+    function copiarCNPJ() {
+      const cnpj = document.getElementById("cnpj").textContent;
+      if (cnpj) {
+        copiarParaArea(cnpj);
+        mostrarMsg('cnpjCopyMsg', 'Copiado!');
+      }
+    }
+
+    function copiarParaArea(texto) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(texto);
+      } else {
+        // Fallback para navegadores antigos
+        const temp = document.createElement('textarea');
+        temp.value = texto;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+      }
+    }
+
+    function mostrarMsg(elementId, mensagem) {
+      document.getElementById(elementId).textContent = mensagem;
+      setTimeout(() => { document.getElementById(elementId).textContent = ''; }, 1600);
+    }
+
+    function limparMsg(elementId) {
+      document.getElementById(elementId).textContent = '';
+    }
+
+    function adicionarHistorico(tipo, valor) {
+      if (tipo === 'CPF') {
+        ultimosCPFs.unshift(valor);
+        if (ultimosCPFs.length > 5) ultimosCPFs = ultimosCPFs.slice(0,5);
+        document.getElementById('historyCPF').innerHTML = ultimosCPFs.join('<br>');
+      } else {
+        ultimosCNPJs.unshift(valor);
+        if (ultimosCNPJs.length > 5) ultimosCNPJs = ultimosCNPJs.slice(0,5);
+        document.getElementById('historyCNPJ').innerHTML = ultimosCNPJs.join('<br>');
+      }
+    }
+  </script>
+</body>
+</html>
