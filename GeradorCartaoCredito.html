@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerador de Cartão de Crédito para Testes</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(120deg,#e0e7ef 0%,#f9fafc 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 40px 48px 28px 48px;
+      border-radius: 16px;
+      min-width: 390px;
+      max-width: 540px;
+      box-shadow: 0 10px 36px rgba(0,0,0,0.11), 0 2px 4px rgba(44,62,80,.07);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 18px;
+      color: #2c3e50;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #34495e;
+      letter-spacing: 0.5px;
+      font-size: 16px;
+    }
+    select, button {
+      font-size: 16px;
+      padding: 9px 10px;
+      margin-bottom: 16px;
+      border-radius: 7px;
+      border: 1px solid #dbe2ef;
+      width: 100%;
+      background: #f5f6fa;
+      outline: none;
+    }
+    button {
+      background: #27408b;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s;
+      margin-top: 3px;
+    }
+    button:hover {
+      background: #1c2f5e;
+    }
+    .cc-block {
+      background: #e9eff9;
+      border-radius: 10px;
+      padding: 28px 20px 18px 20px;
+      margin-bottom: 16px;
+      font-size: 19px;
+      color: #222;
+      letter-spacing: 2px;
+      word-break: break-all;
+      text-align: left;
+      position: relative;
+      box-shadow: 0 3px 15px 0 rgba(44,62,80,0.08);
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .label-inline {
+      font-size: 13px;
+      color: #7b8794;
+      margin-bottom: 0;
+      letter-spacing: 0.6px;
+      min-width: 82px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .dados-cc {
+      margin: 7px 0 15px 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .dado-cc-valor {
+      font-weight: 600;
+      font-size: 22px;
+      color: #1b495d;
+      letter-spacing: 1.4px;
+      font-family: 'Roboto Mono', 'Consolas', monospace;
+      background: #f8fafc;
+      padding: 4px 10px;
+      border-radius: 5px;
+      min-width: 110px;
+      text-align: left;
+      box-sizing: border-box;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .copy-btn {
+      background: transparent;
+      color: #27408b;
+      border: none;
+      padding: 0 3px 0 2px;
+      border-radius: 4px;
+      font-size: 21px;
+      box-shadow: none !important;
+      transition: background 0.2s;
+      margin-left: 3px;
+      vertical-align: middle;
+      cursor: pointer;
+      display: inline-block;
+      height: 32px;
+      width: 34px;
+    }
+    .copy-btn:hover {
+      background: #dbeafe;
+      color: #19305d;
+    }
+    .copy-message {
+      color: #16a085;
+      font-size: 13px;
+      margin-left: 7px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .cc-valid {
+      display: flex;
+      align-items: center;
+      justify-content: center;   /* centralizado */
+      margin-bottom: 7px;
+      margin-top: 7px;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: center;        /* centraliza texto em várias linhas */
+    }
+    .cc-valid .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+      display: inline-block;
+    }
+    .valid {
+      color: #1ab620;
+    }
+    .valid .dot {
+      background: #1ab620;
+    }
+    .invalid {
+      color: #dc143c;
+    }
+    .invalid .dot {
+      background: #dc143c;
+    }
+    .history-section {
+      margin-top: 22px;
+    }
+    .history-section h4 {
+      color: #2c3e50;
+      font-size: 15px;
+      margin-bottom: 4px;
+      text-align: left;
+      letter-spacing: 0.2px;
+    }
+    .history-list {
+      min-height: 22px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .history-item {
+      background: #f8fafc;
+      border-radius: 7px;
+      padding: 12px 10px;
+      font-size: 15px;
+      color: #34495e;
+      word-break: break-all;
+      font-family: 'Roboto Mono', 'Consolas', monospace;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+    .history-item strong {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #27408b;
+      min-width: 92px;
+      display: inline-block;
+    }
+    .history-item .card-data-group {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+    .history-valid {
+      color: #1ab620;
+      font-size: 17px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .history-invalid {
+      color: #dc143c;
+      font-size: 17px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .clear-btn {
+      background: #b2bec3;
+      color: #2d3436;
+      padding: 7px 12px;
+      font-size: 14px;
+      border-radius: 7px;
+      margin-bottom: 8px;
+      margin-top: 2px;
+      margin-left: 2px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .clear-btn:hover {
+      background: #636e72;
+      color: #fff;
+    }
+    small {
+      color: #888;
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 13px;
+      letter-spacing: 0.2px;
+    }
+    @media (max-width:650px) {
+      .container {padding: 8px 2vw; min-width: 98vw; max-width: 100vw;}
+      .cc-block {max-width:100vw;}
+      .dado-cc-valor {min-width: 60px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Gerador de Cartão de Crédito</h2>
+    <label for="bandeira">Bandeira:</label>
+    <select id="bandeira">
+      <option value="visa">Visa</option>
+      <option value="mastercard">Mastercard</option>
+      <option value="amex">American Express</option>
+      <option value="elo">Elo</option>
+      <option value="discover">Discover</option>
+      <option value="diners">Diners Club</option>
+      <option value="hipercard">Hipercard</option>
+    </select>
+    <button onclick="gerarCartao()">Gerar Cartão</button>
+
+    <div class="cc-block" id="ccResultado" style="display:none;">
+      <div class="cc-valid" id="validMsg"></div>
+      <div class="dados-cc">
+        <span class="label-inline">Número:</span>
+        <span class="dado-cc-valor" id="ccNum"></span>
+        <button class="copy-btn" onclick="copiarCampo('ccNum', 'copyNumMsg')" title="Copiar número">📋</button>
+        <span class="copy-message" id="copyNumMsg"></span>
+      </div>
+      <div class="dados-cc">
+        <span class="label-inline">Validade:</span>
+        <span class="dado-cc-valor" id="ccVal"></span>
+        <button class="copy-btn" onclick="copiarCampo('ccVal', 'copyValMsg')" title="Copiar validade">📋</button>
+        <span class="copy-message" id="copyValMsg"></span>
+      </div>
+      <div class="dados-cc">
+        <span class="label-inline">CVV:</span>
+        <span class="dado-cc-valor" id="ccCvv"></span>
+        <button class="copy-btn" onclick="copiarCampo('ccCvv', 'copyCvvMsg')" title="Copiar CVV">📋</button>
+        <span class="copy-message" id="copyCvvMsg"></span>
+      </div>
+      <div class="dados-cc" style="margin-top:0;">
+        <span class="label-inline">Bandeira:</span>
+        <span class="dado-cc-valor" id="ccFlag"></span>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <button class="clear-btn" onclick="limparHistorico()">Limpar Histórico</button>
+      <h4>Últimos cartões gerados</h4>
+      <div class="history-list" id="historyList"></div>
+    </div>
+    <small>Para uso exclusivo em ambientes de teste</small>
+  </div>
+  <script>
+    // Prefixos e propriedades para cada bandeira
+    const bandeiras = {
+      visa:      { nome: 'Visa',       prefixos: ['4'],                    tam: 16, cvv: 3 },
+      mastercard:{ nome: 'Mastercard', prefixos: ['51','52','53','54','55','2221','2720'], tam: 16, cvv: 3 },
+      amex:      { nome: 'American Express', prefixos: ['34','37'],        tam: 15, cvv: 4 },
+      elo:       { nome: 'Elo',        prefixos: ['636368','438935','504175','451416','5067','509','650'], tam: 16, cvv: 3 },
+      discover:  { nome: 'Discover',   prefixos: ['6011','622126','644','65'], tam: 16, cvv: 3 },
+      diners:    { nome: 'Diners Club',prefixos: ['300','301','302','303','304','305','36','38'], tam: 14, cvv: 3 },
+      hipercard: { nome: 'Hipercard',  prefixos: ['606282','3841'],        tam: 16, cvv: 3 }
+    };
+
+    let historico = [];
+
+    function gerarCartao() {
+      const bandeira = document.getElementById('bandeira').value;
+      const conf = bandeiras[bandeira];
+      // Prefixo aleatório da bandeira
+      const prefixo = conf.prefixos[Math.floor(Math.random() * conf.prefixos.length)];
+      const restante = conf.tam - prefixo.length - 1; // último dígito é o Luhn
+      let numero = prefixo;
+      for(let i=0; i<restante; i++) numero += Math.floor(Math.random()*10);
+      numero += calcLuhn(numero);
+
+      // Formatando número
+      let numFormatado = (conf.tam === 15) 
+        ? numero.replace(/(\d{4})(\d{6})(\d{5})/, "$1 $2 $3")
+        : (conf.tam === 14)
+          ? numero.replace(/(\d{4})(\d{6})(\d{4})/, "$1 $2 $3")
+          : numero.replace(/(.{4})/g, "$1 ").trim();
+
+      // Data de validade aleatória: mês de 1 a 12, ano de agora +1 a +6
+      const mes = ('0'+(Math.floor(Math.random()*12)+1)).slice(-2);
+      const ano = (new Date().getFullYear() + Math.floor(Math.random()*6)+1).toString().slice(-2);
+      const validade = `${mes}/${ano}`;
+
+      // CVV de acordo com a bandeira
+      const cvv = String(Math.floor(Math.random()*Math.pow(10,conf.cvv))).padStart(conf.cvv,'0');
+
+      document.getElementById("ccNum").textContent = numFormatado;
+      document.getElementById("ccVal").textContent = validade;
+      document.getElementById("ccCvv").textContent = cvv;
+      document.getElementById("ccFlag").textContent = conf.nome;
+      document.getElementById("ccResultado").style.display = 'block';
+
+      // Validação
+      mostrarValidacao(numero);
+
+      // Atualiza histórico
+      adicionarHistorico({
+        bandeira: conf.nome,
+        num: numFormatado,
+        validade: validade,
+        cvv: cvv,
+        valido: validarLuhn(numero)
+      });
+
+      // Limpa mensagens de cópia
+      ["copyNumMsg","copyValMsg","copyCvvMsg"].forEach(id => document.getElementById(id).textContent = "");
+    }
+
+    // Calcula dígito Luhn
+    function calcLuhn(number) {
+      let arr = (number+"").split('').reverse().map(x=>parseInt(x));
+      let sum = 0;
+      for (let i = 0; i < arr.length; i++) {
+        let n = arr[i];
+        if(i%2===0) n*=2;
+        if(n>9) n-=9;
+        sum+=n;
+      }
+      return (10 - (sum % 10)) % 10;
+    }
+
+    function validarLuhn(number) {
+      let arr = (number+"").split('').reverse().map(x=>parseInt(x));
+      let sum = 0;
+      for (let i = 0; i < arr.length; i++) {
+        let n = arr[i];
+        if(i%2===1) n*=2;
+        if(n>9) n-=9;
+        sum+=n;
+      }
+      return (sum % 10) === 0;
+    }
+
+    function mostrarValidacao(numero) {
+      const valido = validarLuhn(numero);
+      const msg = document.getElementById("validMsg");
+      if(valido) {
+        msg.innerHTML = '<span class="dot"></span> Cartão <span class="valid">Válido</span>';
+        msg.className = "cc-valid valid";
+      } else {
+        msg.innerHTML = '<span class="dot"></span> Cartão <span class="invalid">Inválido</span>';
+        msg.className = "cc-valid invalid";
+      }
+    }
+
+    function copiarCampo(spanId, msgId) {
+      const text = document.getElementById(spanId).textContent;
+      if(text){
+        if(navigator.clipboard) navigator.clipboard.writeText(text);
+        else {
+          const temp = document.createElement('textarea');
+          temp.value = text;
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          document.body.removeChild(temp);
+        }
+        document.getElementById(msgId).textContent = "Copiado!";
+        setTimeout(()=>{document.getElementById(msgId).textContent = "";}, 1300);
+      }
+    }
+
+    function adicionarHistorico(dados) {
+      historico.unshift(dados);
+      if(historico.length > 5) historico = historico.slice(0,5);
+      renderHistorico();
+    }
+
+    function renderHistorico() {
+      let html = "";
+      historico.forEach(d => {
+        html += `<div class="history-item">
+          <strong>${d.bandeira}</strong> 
+          <div class="card-data-group">
+            <span>Número: <span style="font-weight:600;">${d.num}</span></span>
+            <span>Val: <span style="font-weight:600;">${d.validade}</span></span>
+            <span>CVV: <span style="font-weight:600;">${d.cvv}</span></span>
+            <span class="${d.valido ? 'history-valid':'history-invalid'}">${d.valido ? '✔ Válido' : '✖ Inválido'}</span>
+          </div>
+        </div>`;
+      });
+      document.getElementById("historyList").innerHTML = html || '<span style="color:#aaa;">Nenhum cartão gerado ainda.</span>';
+    }
+
+    function limparHistorico() {
+      historico = [];
+      renderHistorico();
+    }
+
+    // Geração automática ao abrir a página
+    window.onload = function() {
+      gerarCartao();
+    };
+  </script>
+</body>
+</html>
