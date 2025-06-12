@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Comparador & Merge Profissional</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" id="prism-theme">
+  <style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; min-height: 100vh; background: #f4f8fb; color: #1a2330; }
+    body.dark { background: #222b38; color: #e3e8ee; }
+    .container { max-width: 1200px; margin: 32px auto; background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.09); padding: 28px 18px 22px 18px; transition: background .3s, color .3s; }
+    body.dark .container { background: #293548; color: #e3e8ee;}
+    h2 { text-align: center; font-size: 2rem; margin-bottom: 15px; }
+    .top-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+    .compare-modes { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+    .theme-switch { display: flex; align-items: center; gap: 7px; font-size: 15px; }
+    .flex-main { display: flex; gap: 22px; margin-bottom: 15px; flex-wrap: wrap; }
+    .block { flex: 1 1 45%; min-width: 300px; display: flex; flex-direction: column; }
+    textarea { min-height: 180px; resize: vertical; border: 1px solid #cdd7e5; border-radius: 9px; font-size: 15.2px; padding: 12px; background: #f8fbfd; color: #1a2330; font-family: 'Fira Mono', 'Consolas', monospace; margin-bottom: 8px; }
+    body.dark textarea { background: #2d3b4e; color: #e3e8ee; border: 1px solid #45516b; }
+    label { font-weight: 600; margin-bottom: 7px; color: #215296; font-size: 15px; letter-spacing: .2px; }
+    body.dark label { color: #90caf9; }
+    .actions { display: flex; gap: 11px; margin-bottom: 12px; flex-wrap: wrap; justify-content: center; }
+    .actions button { padding: 9px 22px; border-radius: 8px; background: #1976d2; color: #fff; border: none; font-size: 15.5px; cursor: pointer; font-weight: 600; transition: background .2s, color .2s; letter-spacing: .2px; }
+    .actions button:hover { background: #1565c0; }
+    .diff-panel { background: #f4f8fb; border-radius: 12px; padding: 14px 14px 10px 14px; margin-bottom: 16px; min-height: 64px; font-size: 15.8px; box-shadow: 0 2px 10px rgba(21, 101, 192, 0.04); overflow-x: auto; }
+    body.dark .diff-panel { background: #232c3c; }
+    .diff-panel-title { font-weight: 600; font-size: 16px; margin-bottom: 6px; color: #1976d2; }
+    body.dark .diff-panel-title { color: #90caf9; }
+    table.diff-table { border-collapse: collapse; width: 100%; font-size: 15px; background: #fff; }
+    table.diff-table th, table.diff-table td { padding: 6px 10px; border-bottom: 1px solid #e0e8f0; font-family: 'Fira Mono', 'Consolas', monospace; white-space: pre-wrap; }
+    table.diff-table th { color: #215296; background: #e8f0fc; font-weight: 700; text-align: left; }
+    .diff-equal    { background: #f8fbfd; color: #222; }
+    .diff-diff-a   { background: #ffeaea; color: #b13a3a; font-weight: 600; }
+    .diff-diff-b   { background: #eaffec; color: #1a7a3a; font-weight: 600; }
+    .diff-only-a, .diff-only-b { background: #f2f2f2; color: #999; font-style: italic; }
+    .line-no { color: #7b92b5; font-size: 13px; font-style: normal; padding-right: 7px; }
+    .legend { font-size: 13px; color: #333; margin-bottom: 10px; margin-top: 7px; background: #f0f7fa; border-radius: 6px; padding: 5px 10px; display: inline-block; }
+    .merge-panel { background: #f4f8fb; border-radius: 12px; padding: 14px 14px 10px 14px; margin-bottom: 16px; min-height: 38px; font-size: 15.8px; box-shadow: 0 2px 10px rgba(21, 101, 192, 0.04); }
+    body.dark .merge-panel { background: #232c3c; }
+    .merge-panel-title { font-weight: 600; font-size: 16px; margin-bottom: 6px; color: #1976d2; }
+    body.dark .merge-panel-title { color: #90caf9; }
+    .merge-result { border: 1px solid #cdd7e5; border-radius: 7px; background: #fff; min-height: 38px; padding: 8px 12px; font-size: 15.7px; color: #232f40; white-space: pre-wrap; word-break: break-word; font-family: 'Fira Mono', 'Consolas', monospace; overflow-x:auto; }
+    body.dark .merge-result { background: #263245; color: #e3e8ee; border: 1px solid #45516b; }
+    .copy-btn { padding: 7px 14px; border-radius: 6px; background: #e3f1ff; border: none; color: #1967b2; font-size: 15px; cursor: pointer; font-weight: 600; transition: background .17s; outline: none; margin-left: 8px; }
+    .copy-btn:hover { background: #b7e0ff; }
+    .merge-actions { display: flex; gap: 4px; margin-bottom: 2px; flex-wrap: wrap; }
+    .merge-actions button { padding: 2px 11px; border-radius: 6px; font-size: 13px; border: none; cursor: pointer; font-weight: 600; }
+    .keepA { background: #ffd7d7; color: #c62828; }
+    .keepB { background: #d1ffdb; color: #168427; }
+    .keepBoth { background: #eaf1ff; color: #215296; }
+    .merge-actions button.selected { box-shadow: 0 0 0 2px #1976d2; }
+    .merge-actions .editBtn { background: #fffbe6; color: #b68900; border: 1px solid #e9c800; padding: 2px 8px;}
+    .merge-actions .editBtn:hover { background: #ffe066;}
+    .merge-actions .copyToA, .merge-actions .copyToB { background: #e0f2ff; color: #1565c0; }
+    .merge-actions .copyToA:hover, .merge-actions .copyToB:hover { background: #b3e0ff; }
+    del.diff-removed { background: #ffd9d9; color: #c62828; text-decoration: line-through; padding: 1px 2px; border-radius: 2px; }
+    ins.diff-added { background: #c0ffd6; color: #168427; text-decoration: underline; padding: 1px 2px; border-radius: 2px; }
+    .editField { border: 1px solid #ffbb33; border-radius: 4px; padding: 2px 5px; min-width: 60px; }
+    pre.code-view {margin:0; background:none; font-size:1em; padding:0;}
+    @media (max-width:900px) { .flex-main {flex-direction: column;} .block {min-width: 98vw;} .container {max-width: 99vw;} }
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-okaidia.min.css" id="prism-theme-dark" disabled>
+</head>
+<body>
+  <div class="container">
+    <h2>Comparador & Merge</h2>
+    <div class="top-controls">
+      <div class="compare-modes">
+        Modo de comparação:&nbsp;
+        <label><input type="radio" name="cmp" value="linha" checked> Linha</label>
+        <label><input type="radio" name="cmp" value="palavra"> Palavra</label>
+        <label><input type="radio" name="cmp" value="caractere"> Caractere</label>
+      </div>
+      <div class="theme-switch">
+        Tema:&nbsp;
+        <label><input type="radio" name="theme" value="claro" checked> Claro</label>
+        <label><input type="radio" name="theme" value="escuro"> Escuro</label>
+      </div>
+    </div>
+    <div class="flex-main">
+      <div class="block">
+        <label for="txtA">Texto/Código A:</label>
+        <textarea id="txtA" placeholder="Cole ou digite o texto/código original"></textarea>
+      </div>
+      <div class="block">
+        <label for="txtB">Texto/Código B:</label>
+        <textarea id="txtB" placeholder="Cole ou digite o texto/código para comparar"></textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="btnCompare">Comparar</button>
+      <button id="btnCopy">Copiar Resultado</button>
+    </div>
+    <div class="legend">
+      <span style="background:#f8fbfd; color:#222; border-radius:2px;padding:1px 4px;">Iguais</span>
+      <span style="background:#ffeaea;color:#b13a3a; font-weight:bold;border-radius:2px;padding:1px 4px;">Diferente (A)</span>
+      <span style="background:#eaffec;color:#1a7a3a; font-weight:bold;border-radius:2px;padding:1px 4px;">Diferente (B)</span>
+      <span style="background:#ffd9d9;color:#c62828; text-decoration:line-through; border-radius:2px;padding:1px 4px;">Removido</span>
+      <span style="background:#c0ffd6;color:#168427; text-decoration:underline; border-radius:2px;padding:1px 4px;">Adicionado</span>
+      <span style="background:#fffbe6;color:#b68900; border-radius:2px;padding:1px 4px;">Editar</span>
+      <span style="background:#e0f2ff;color:#1565c0; border-radius:2px;padding:1px 4px;">Copiar</span>
+    </div>
+    <div class="diff-panel">
+      <div class="diff-panel-title">Painel de Comparação</div>
+      <div id="diffResult">
+        <span style="color:#888;">O resultado da comparação aparecerá aqui.<br>Destaque visual para diferenças internas.</span>
+      </div>
+    </div>
+    <div class="merge-panel">
+      <div>
+        <div class="merge-panel-title">Resultado Mesclado</div>
+        <div id="mergeResult" class="merge-result">
+          <span style="color:#aaa;">O texto/código mesclado aparecerá aqui.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-markup.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-xml-doc.min.js"></script>
+  <script>
+    document.querySelectorAll('input[name="theme"]').forEach(el => {
+      el.addEventListener('change', function() {
+        const dark = this.value === 'escuro';
+        document.body.classList.toggle('dark', dark);
+        document.getElementById('prism-theme').disabled = dark;
+        document.getElementById('prism-theme-dark').disabled = !dark;
+        setTimeout(() => Prism.highlightAll(), 10);
+      });
+    });
+
+    let compareMode = "linha";
+    let mergeChoices = [];
+
+    document.querySelectorAll('input[name="cmp"]').forEach(el => {
+      el.addEventListener('change', function() {
+        compareMode = this.value;
+        mergeChoices = []; // Zera estado!
+        renderDiff();
+        updateMergeResult();
+      });
+    });
+
+    // Helpers diff
+    function diffSeq(a, b, splitFn) {
+      const A = splitFn(a), B = splitFn(b);
+      let m = A.length, n = B.length;
+      let dp = Array(m+1).fill().map(()=>Array(n+1).fill(0));
+      for(let i=m-1;i>=0;--i)for(let j=n-1;j>=0;--j)
+        dp[i][j]=A[i]===B[j]?1+dp[i+1][j+1]:Math.max(dp[i+1][j],dp[i][j+1]);
+      let i=0, j=0, resA="", resB="";
+      while(i<m && j<n){
+        if(A[i] === B[j]) {
+          resA += A[i]; resB += B[j]; i++; j++;
+        } else if(dp[i+1][j] >= dp[i][j+1]) {
+          if(A[i].trim()!=="") resA += `<del class="diff-removed">${A[i]}</del>`;
+          else resA += A[i];
+          i++;
+        } else {
+          if(B[j].trim()!=="") resB += `<ins class="diff-added">${B[j]}</ins>`;
+          else resB += B[j];
+          j++;
+        }
+      }
+      while(i<m) { if(A[i].trim()!=="") resA += `<del class="diff-removed">${A[i]}</del>`; else resA += A[i]; i++; }
+      while(j<n) { if(B[j].trim()!=="") resB += `<ins class="diff-added">${B[j]}</ins>`; else resB += B[j]; j++; }
+      return [resA, resB];
+    }
+    function diffWords(a, b) { return diffSeq(a, b, s => s.split(/(\s+)/)); }
+    function diffChars(a, b) { return diffSeq(a, b, s => s.split('')); }
+
+    function diffLineByLine(a, b) {
+      const aLines = a.split('\n');
+      const bLines = b.split('\n');
+      const maxLen = Math.max(aLines.length, bLines.length);
+      let sample = (aLines.join('\n')+bLines.join('\n')).slice(0,1500);
+      let lang = detectLang(sample);
+      let html = `<table class="diff-table">
+        <tr>
+          <th style="width:5%"></th>
+          <th style="width:38%;">A - Texto/código original</th>
+          <th style="width:6%"></th>
+          <th style="width:38%;">B - Texto/código novo/alterado<th>
+          <th style="width:18%;">Ações</th>
+        </tr>`;
+      for (let i = 0; i < maxLen; i++) {
+        let choice = (mergeChoices[i]?.choice) || "both";
+        let editA = mergeChoices[i]?.editA || false;
+        let editB = mergeChoices[i]?.editB || false;
+        let aLine = editA ? mergeChoices[i]?.a : (aLines[i] ?? "");
+        let bLine = editB ? mergeChoices[i]?.b : (bLines[i] ?? "");
+        let clsA, clsB, valA=aLine, valB=bLine;
+        if (aLine === bLine && aLine !== "") {
+          clsA = clsB = "diff-equal";
+        } else if (aLine === "" && bLine !== "") {
+          clsA = "diff-only-a"; clsB = "diff-only-b";
+        } else if (bLine === "" && aLine !== "") {
+          clsA = "diff-only-a"; clsB = "diff-only-b";
+        } else if (aLine !== bLine) {
+          clsA = "diff-diff-a"; clsB = "diff-diff-b";
+          if (compareMode === "palavra") [valA, valB] = diffWords(aLine, bLine);
+          else if (compareMode === "caractere") [valA, valB] = diffChars(aLine, bLine);
+          else [valA, valB] = diffWords(aLine, bLine);
+        }
+        mergeChoices[i] = {a: aLine, b: bLine, choice, idx:i, editA, editB};
+        let actionBtns = '';
+        if (aLine !== bLine) {
+          actionBtns = `
+            <div class="merge-actions">
+              <button class="keepA${choice==='a'?' selected':''}" onclick="setMergeChoice(${i},'a');return false;">A</button>
+              <button class="keepB${choice==='b'?' selected':''}" onclick="setMergeChoice(${i},'b');return false;">B</button>
+              <button class="keepBoth${choice==='both'?' selected':''}" onclick="setMergeChoice(${i},'both');return false;">Ambos</button>
+              <button class="copyToA" title="Copiar B para A" onclick="copyBtoA(${i});return false;">←</button>
+              <button class="copyToB" title="Copiar A para B" onclick="copyAtoB(${i});return false;">→</button>
+              <button class="editBtn" title="Editar" onclick="editLine(${i});return false;">✏️ Editar</button>
+            </div>`;
+        }
+        let displayA, displayB;
+        if (editA) {
+          displayA = `<input class="editField" id="editA${i}" value="${escapeHtml(aLine)}" onblur="saveEdit(${i},'a')" />`;
+        } else if (/<del |<ins /.test(valA)) {
+          displayA = valA || "&nbsp;"; // renderiza como HTML diff
+        } else {
+          displayA = `<pre class="code-view language-${lang}">${highlightLine(valA||"", lang)||"&nbsp;"}</pre>`;
+        }
+        if (editB) {
+          displayB = `<input class="editField" id="editB${i}" value="${escapeHtml(bLine)}" onblur="saveEdit(${i},'b')" />`;
+        } else if (/<del |<ins /.test(valB)) {
+          displayB = valB || "&nbsp;";
+        } else {
+          displayB = `<pre class="code-view language-${lang}">${highlightLine(valB||"", lang)||"&nbsp;"}</pre>`;
+        }
+        html += `<tr>
+          <td class="line-no">${i+1}</td>
+          <td class="${clsA}" id="cellA${i}">${displayA}</td>
+          <td class="line-no">${i+1}</td>
+          <td class="${clsB}" id="cellB${i}">${displayB}</td>
+          <td>${actionBtns}</td>
+        </tr>`;
+      }
+      html += "</table>";
+      setTimeout(() => Prism.highlightAll(), 0);
+      return html;
+    }
+
+    function setMergeChoice(idx, type) {
+      mergeChoices[idx].choice = type;
+      renderDiff();
+      updateMergeResult();
+    }
+    function updateMergeResult() {
+      let result = [];
+      for(const line of mergeChoices) {
+        if(line.choice === "a") { if(line.a) result.push(line.a);}
+        else if(line.choice === "b") { if(line.b) result.push(line.b);}
+        else if(line.choice === "both") {
+          if(line.a && line.b && line.a!==line.b) result.push(line.a, line.b);
+          else if(line.a) result.push(line.a);
+          else if(line.b) result.push(line.b);
+        }
+      }
+      let sample = result.join('\n').slice(0,1500);
+      let lang = detectLang(sample);
+      let mergeHtml = `<pre class="code-view language-${lang}">${highlightLine(result.join('\n'), lang)}</pre>`;
+      document.getElementById('mergeResult').innerHTML = mergeHtml;
+      setTimeout(() => Prism.highlightAll(), 0);
+    }
+    function editLine(idx) {
+      mergeChoices[idx].editA = true;
+      mergeChoices[idx].editB = true;
+      renderDiff();
+      setTimeout(() => {
+        document.getElementById(`editA${idx}`)?.focus();
+      }, 60);
+    }
+    function saveEdit(idx, side) {
+      let val = document.getElementById(`edit${side.toUpperCase()}${idx}`).value;
+      mergeChoices[idx][side] = val;
+      mergeChoices[idx][`edit${side.toUpperCase()}`] = false;
+      renderDiff();
+      updateMergeResult();
+    }
+    function copyBtoA(idx) {
+      mergeChoices[idx].a = mergeChoices[idx].b;
+      setMergeChoice(idx, 'a');
+    }
+    function copyAtoB(idx) {
+      mergeChoices[idx].b = mergeChoices[idx].a;
+      setMergeChoice(idx, 'b');
+    }
+    function escapeHtml(str) {
+      return str.replace(/[&<>"]/g, function(tag) {
+        const charsToReplace = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+        return charsToReplace[tag] || tag;
+      });
+    }
+    function renderDiff() {
+      const a = document.getElementById('txtA').value;
+      const b = document.getElementById('txtB').value;
+      document.getElementById('diffResult').innerHTML = diffLineByLine(a, b);
+      setTimeout(() => Prism.highlightAll(), 0);
+    }
+    function detectLang(str) {
+      if (/^\s*[\{\[]/.test(str) && /[\}\]]\s*$/.test(str)) return "json";
+      if (/<[a-zA-Z!?]/.test(str)) {
+        if (str.trim().startsWith('<!DOCTYPE html') || /<html[\s>]/i.test(str)) return "markup";
+        return "xml-doc";
+      }
+      if (/function |const |let |var |=>/.test(str)) return "javascript";
+      return "none";
+    }
+    function highlightLine(str, lang) {
+      if (!str || lang==="none") return str.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      if (Prism.languages[lang])
+        return Prism.highlight(str, Prism.languages[lang], lang);
+      return str.replace(/</g,"&lt;").replace(/>/g,"&gt;");
+    }
+    document.getElementById('btnCompare').onclick = () => {
+      mergeChoices = []; // limpa para evitar bug ao trocar textos/formatos!
+      renderDiff();
+      updateMergeResult();
+    };
+    document.getElementById('btnCopy').onclick = () => {
+      let txt = "";
+      for(const line of mergeChoices) {
+        if(line.choice === "a") { if(line.a) txt += line.a+"\n";}
+        else if(line.choice === "b") { if(line.b) txt += line.b+"\n";}
+        else if(line.choice === "both") {
+          if(line.a && line.b && line.a!==line.b) txt += line.a+"\n"+line.b+"\n";
+          else if(line.a) txt += line.a+"\n";
+          else if(line.b) txt += line.b+"\n";
+        }
+      }
+      if(txt) {
+        navigator.clipboard.writeText(txt.trim());
+        alert("Resultado copiado!");
+      }
+    };
+    window.setMergeChoice = setMergeChoice;
+    window.editLine = editLine;
+    window.saveEdit = saveEdit;
+    window.copyBtoA = copyBtoA;
+    window.copyAtoB = copyAtoB;
+    document.getElementById('txtA').addEventListener('input', () => {
+      mergeChoices = [];
+      renderDiff();
+      updateMergeResult();
+    });
+    document.getElementById('txtB').addEventListener('input', () => {
+      mergeChoices = [];
+      renderDiff();
+      updateMergeResult();
+    });
+    // Inicialização
+    renderDiff();
+    updateMergeResult();
+  </script>
+</body>
+</html>
