@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Diferimento de Receita - BRM (Pré-pago)</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      padding: 40px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.08);
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      margin-top: 16px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 24px;
+      padding: 12px;
+      background: #2846b6;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 32px;
+      background: #f0f3f7;
+      padding: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Simulador de Diferimento de Receita (Oracle BRM - CPC-47)</h1><label>Data de Ativação</label>
+<input type="date" id="dataAtivacao">
+
+<label>Data de Cancelamento (deixe em branco se ativo)</label>
+<input type="date" id="dataCancelamento">
+
+<label>Mês de Referência</label>
+<input type="month" id="mesReferencia">
+
+<label>Data de Simulação</label>
+<input type="date" id="dataSimulacao">
+
+<label>Preço unitário da licença (R$)</label>
+<input type="number" step="0.01" id="precoUnitario">
+
+<label>Quantidade de licenças</label>
+<input type="number" id="quantidadeLicencas">
+
+<button onclick="calcular()">Calcular Diferimento</button>
+
+<div class="result" id="resultado"></div>
+
+  </div>  <script>
+    function diasNoMes(ano, mes) {
+      return new Date(ano, mes, 0).getDate();
+    }
+
+    function trunc2(num) {
+      return Math.floor(num * 100) / 100;
+    }
+
+    function calcular() {
+      const dataAtivacao = new Date(document.getElementById('dataAtivacao').value);
+      const dataCancelamento = document.getElementById('dataCancelamento').value ? new Date(document.getElementById('dataCancelamento').value) : null;
+      const mesReferencia = new Date(document.getElementById('mesReferencia').value + "-01");
+      const dataSimulacao = new Date(document.getElementById('dataSimulacao').value);
+      const precoUnitario = parseFloat(document.getElementById('precoUnitario').value);
+      const qtdLicencas = parseInt(document.getElementById('quantidadeLicencas').value);
+
+      const ano = mesReferencia.getFullYear();
+      const mes = mesReferencia.getMonth() + 1;
+      const diasMes = diasNoMes(ano, mes);
+
+      const inicioPeriodo = new Date(ano, mes - 1, 1);
+      const fimPeriodo = new Date(ano, mes - 1, diasMes);
+
+      const fimUso = dataCancelamento && dataCancelamento < fimPeriodo ? dataCancelamento : (dataSimulacao < fimPeriodo ? dataSimulacao : fimPeriodo);
+      const diasUso = Math.max(0, Math.min((fimUso - dataAtivacao) / (1000 * 60 * 60 * 24) + 1, diasMes));
+
+      const valorProrata = trunc2((diasUso / diasMes) * precoUnitario);
+      const valorReconhecido = trunc2(valorProrata * qtdLicencas);
+      const valorTotal = precoUnitario * qtdLicencas;
+      const valorDiferido = trunc2(valorTotal - valorReconhecido);
+
+      let writeOff = 0;
+      if (dataCancelamento) {
+        const diasCancelamento = Math.max(0, (fimPeriodo - dataCancelamento) / (1000 * 60 * 60 * 24));
+        writeOff = trunc2(valorDiferido);
+      }
+
+      document.getElementById('resultado').innerHTML = `
+        <strong>Dias do mês:</strong> ${diasMes}<br>
+        <strong>Dias de uso:</strong> ${diasUso}<br>
+        <strong>Valor unitário pró-rata:</strong> R$ ${valorProrata.toFixed(2)}<br>
+        <strong>Receita reconhecida:</strong> R$ ${valorReconhecido.toFixed(2)}<br>
+        <strong>Receita diferida:</strong> R$ ${valorDiferido.toFixed(2)}<br>
+        ${dataCancelamento ? `<strong>Valor a estornar (write-off):</strong> R$ ${writeOff.toFixed(2)}<br>` : ``}
+        <hr>
+        <strong>Valor total faturado:</strong> R$ ${valorTotal.toFixed(2)}<br>
+        <strong>Data de Faturamento (real):</strong> 06/${mes.toString().padStart(2, '0')}/${ano}<br>
+        <strong>Data de Vencimento da Fatura:</strong> 15/${mes.toString().padStart(2, '0')}/${ano}
+      `;
+    }
+  </script></body>
+</html>
