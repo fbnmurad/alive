@@ -25,8 +25,8 @@
   <div class="container">
     <h1>Simulador de Diferimento de Receita</h1>
     <div class="note">
-      Cálculos baseados no Pronunciamento Técnico CPC-47 e práticas do Oracle BRM.<br>
-      Ciclo de faturamento: dia 01 ao último dia do mês; faturamento real dia 06; vencimento dia 15.
+      Cálculos baseados no Pronunciamento CPC-47 e práticas do Oracle BRM.<br>
+      Ciclo: dia 01 ao último do mês; faturamento real dia 06; vencimento dia 15.
     </div>
     <!-- Tipo de Evento -->
     <div class="row">
@@ -50,17 +50,6 @@
         </select>
       </div>
     </div>
-    <!-- Valor total e saldo -->
-    <div class="row">
-      <div class="col">
-        <label for="total">Valor total faturado (R$)</label>
-        <input type="number" id="total" step="0.01" required />
-      </div>
-      <div class="col">
-        <label for="saldo">Saldo de passivo inicial (R$)</label>
-        <input type="number" id="saldo" step="0.01" value="0" />
-      </div>
-    </div>
     <!-- Quantidade de licenças e valor unitário -->
     <div class="row">
       <div class="col">
@@ -70,6 +59,13 @@
       <div class="col">
         <label for="valorUnitario">Valor unitário (R$)</label>
         <input type="number" id="valorUnitario" step="0.01" value="5.00" required />
+      </div>
+    </div>
+    <!-- Saldo de passivo inicial -->
+    <div class="row">
+      <div class="col">
+        <label for="saldo">Saldo de passivo inicial (R$)</label>
+        <input type="number" id="saldo" step="0.01" value="0" />
       </div>
     </div>
     <!-- Datas -->
@@ -83,19 +79,19 @@
         <input type="date" id="fim" required />
       </div>
     </div>
-    <div class="small-note">Se o período atravessa meses, a apuração será feita mês a mês conforme o ciclo.</div>
+    <div class="small-note">Se atravessa meses, apuração mês a mês.</div>
     <!-- Tributos -->
     <div class="row">
       <div class="col">
-        <label for="iss">Alíquota ISS (%)</label>
+        <label for="iss">ISS (%)</label>
         <input type="number" id="iss" value="5.00" disabled />
       </div>
       <div class="col">
-        <label for="pis">Alíquota PIS (%)</label>
+        <label for="pis">PIS (%)</label>
         <input type="number" id="pis" value="1.65" disabled />
       </div>
       <div class="col">
-        <label for="cofins">Alíquota COFINS (%)</label>
+        <label for="cofins">COFINS (%)</label>
         <input type="number" id="cofins" value="7.60" disabled />
       </div>
     </div>
@@ -120,22 +116,21 @@
     document.addEventListener('DOMContentLoaded', toggleParcelas);
     function calcular() {
       const evt = document.getElementById('evento').value;
-      const total = parseFloat(document.getElementById('total').value);
-      const saldoInicial = parseFloat(document.getElementById('saldo').value) || 0;
       const qtd = parseInt(document.getElementById('qtdLicencas').value, 10);
       const valorUnitario = parseFloat(document.getElementById('valorUnitario').value);
+      const total = qtd * valorUnitario;
+      const saldoInicial = parseFloat(document.getElementById('saldo').value) || 0;
       const inicio = new Date(document.getElementById('inicio').value);
       const fim = new Date(document.getElementById('fim').value);
       if (isNaN(total) || fim <= inicio) { alert('Verifique os campos obrigatórios.'); return; }
       if (inicio.getMonth() !== fim.getMonth() || inicio.getFullYear() !== fim.getFullYear()) {
-        alert('Período atravessa mais de um ciclo; apuração será feita mês a mês.');
+        alert('Período atravessa mais de um ciclo; apuração mês a mês.');
       }
-      // Cálculo pró-rata com truncamento e split em dois blocos
+      // Cálculo pró-rata com truncamento por unidade
       const msDia = 1000 * 60 * 60 * 24;
       const diasUso = Math.floor((fim - inicio) / msDia);
       const diasMes = new Date(inicio.getFullYear(), inicio.getMonth()+1, 0).getDate();
-      const precoUnit = valorUnitario;
-      const rawUnit = (diasUso / diasMes) * precoUnit;
+      const rawUnit = (diasUso / diasMes) * valorUnitario;
       const unitTrunc = Math.floor(rawUnit * 100) / 100;
       const valorEarned = unitTrunc * qtd;
       const valorUnearned = Math.round((total - valorEarned + saldoInicial) * 100) / 100;
@@ -143,7 +138,6 @@
       const iss = Math.round(valorEarned * 0.05 * 100) / 100;
       const pis = Math.round(valorEarned * 0.0165 * 100) / 100;
       const cof = Math.round(valorEarned * 0.076 * 100) / 100;
-      // Montar tabela resumo em dois blocos
       let html = '<table><thead><tr><th>Intervalo</th><th>Earned (R$)</th><th>Saldo de Passivo (R$)</th>' +
                  '<th>ISS</th><th>PIS</th><th>COFINS</th><th>Write-off</th></tr></thead><tbody>';
       html += `<tr><td>Serviço entregue</td><td>${valorEarned.toFixed(2)}</td><td>${valorUnearned.toFixed(2)}</td>` +
