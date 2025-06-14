@@ -102,8 +102,8 @@
       const fimUso = dataCancelamento && dataCancelamento < fimPeriodo ? dataCancelamento : (dataSimulacao < fimPeriodo ? dataSimulacao : fimPeriodo);
       const diasUso = Math.max(0, Math.min((fimUso - dataAtivacao) / (1000 * 60 * 60 * 24) + 1, diasMes));
 
-      const valorProrata = trunc2((diasUso / diasMes) * precoUnitario);
-      const valorReconhecido = trunc2(valorProrata * qtdLicencas);
+      const valorUnitProRata = trunc2((diasUso / diasMes) * precoUnitario);
+      const valorReconhecido = trunc2(valorUnitProRata * qtdLicencas);
       const valorTotal = precoUnitario * qtdLicencas;
       const valorDiferido = trunc2(valorTotal - valorReconhecido);
 
@@ -116,12 +116,12 @@
       document.getElementById('resultado').innerHTML = `
         <strong>Dias do mês:</strong> ${diasMes}<br>
         <strong>Dias de uso:</strong> ${diasUso}<br>
-        <strong>Valor unitário pró-rata:</strong> R$ ${valorProrata.toFixed(2)}<br>
+        <strong>Valor unitário pró-rata:</strong> R$ ${valorUnitProRata.toFixed(2)}<br>
         <strong>Receita reconhecida:</strong> R$ ${valorReconhecido.toFixed(2)}<br>
-        <strong>Receita diferida:</strong> R$ ${valorDiferido.toFixed(2)}<br>
+        <strong>Valor total faturado:</strong> R$ ${valorTotal.toFixed(2)}<br>
+        <strong>Total diferido (com pró-rata):</strong> R$ ${valorDiferido.toFixed(2)}<br>
         ${dataCancelamento ? `<strong>Valor a estornar (write-off):</strong> R$ ${writeOff.toFixed(2)}<br>` : ``}
         <hr>
-        <strong>Valor total faturado:</strong> R$ ${valorTotal.toFixed(2)}<br>
         <strong>Data de Faturamento (real):</strong> 06/${mes.toString().padStart(2, '0')}/${ano}<br>
         <strong>Data de Vencimento da Fatura:</strong> 15/${mes.toString().padStart(2, '0')}/${ano}
       `;
