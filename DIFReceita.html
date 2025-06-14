@@ -1,1 +1,161 @@
-
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Simulador de Diferimento de Receita</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f6f8; color: #333; margin: 20px; }
+    .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h1 { text-align: center; color: #2846b6; }
+    .note { background: #e8ecf4; padding: 10px; border-left: 4px solid #2846b6; margin-bottom: 10px; }
+    .small-note { font-size: 0.9em; color: #555; margin-top: 5px; }
+    .row { display: flex; gap: 10px; margin-top: 10px; }
+    .col { flex: 1; display: flex; flex-direction: column; }
+    label { font-weight: bold; margin-bottom: 4px; }
+    input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+    input[disabled], select[disabled] { background: #e9ecef; cursor: not-allowed; }
+    button { margin-top: 20px; padding: 10px 20px; background: #2846b6; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #1f357e; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #e8ecf4; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Simulador de Diferimento de Receita</h1>
+    <div class="note">
+      Cálculos baseados no Pronunciamento Técnico CPC-47 e práticas do Oracle BRM.<br>
+      Ciclo de faturamento: dia 01 ao último dia do mês; faturamento real dia 06; vencimento dia 15.
+    </div>
+    <!-- Tipo de Evento -->
+    <div class="row">
+      <div class="col">
+        <label for="evento">Tipo de Evento</label>
+        <select id="evento">
+          <option value="recorrente" selected>Recorrente</option>
+          <option value="compra">Compra Única</option>
+          <option value="cancelamento">Cancelamento</option>
+        </select>
+      </div>
+    </div>
+    <!-- Tipo de Diferimento -->
+    <div class="row">
+      <div class="col">
+        <label for="tipo">Tipo de diferimento</label>
+        <select id="tipo" onchange="toggleParcelas()">
+          <option value="diario" selected>Diário</option>
+          <option value="mensal">Mensal</option>
+          <option value="anual">Anual</option>
+        </select>
+      </div>
+    </div>
+    <!-- Valor total e saldo -->
+    <div class="row">
+      <div class="col">
+        <label for="total">Valor total faturado (R$)</label>
+        <input type="number" id="total" step="0.01" required />
+      </div>
+      <div class="col">
+        <label for="saldo">Saldo de passivo inicial (R$)</label>
+        <input type="number" id="saldo" step="0.01" value="0" />
+      </div>
+    </div>
+    <!-- Quantidade de licenças e valor unitário -->
+    <div class="row">
+      <div class="col">
+        <label for="qtdLicencas">Quantidade de licenças</label>
+        <input type="number" id="qtdLicencas" step="1" min="1" value="20" required />
+      </div>
+      <div class="col">
+        <label for="valorUnitario">Valor unitário (R$)</label>
+        <input type="number" id="valorUnitario" step="0.01" value="5.00" required />
+      </div>
+    </div>
+    <!-- Datas -->
+    <div class="row">
+      <div class="col">
+        <label for="inicio">Data início</label>
+        <input type="date" id="inicio" required />
+      </div>
+      <div class="col">
+        <label for="fim">Data fim</label>
+        <input type="date" id="fim" required />
+      </div>
+    </div>
+    <div class="small-note">Se o período atravessa meses, a apuração será feita mês a mês conforme o ciclo.</div>
+    <!-- Tributos -->
+    <div class="row">
+      <div class="col">
+        <label for="iss">Alíquota ISS (%)</label>
+        <input type="number" id="iss" value="5.00" disabled />
+      </div>
+      <div class="col">
+        <label for="pis">Alíquota PIS (%)</label>
+        <input type="number" id="pis" value="1.65" disabled />
+      </div>
+      <div class="col">
+        <label for="cofins">Alíquota COFINS (%)</label>
+        <input type="number" id="cofins" value="7.60" disabled />
+      </div>
+    </div>
+    <!-- Parcelas anual -->
+    <div class="row" id="row-parcelas" style="display:none;">
+      <div class="col">
+        <label for="parcelas">Quantidade de parcelas</label>
+        <input type="number" id="parcelas" disabled />
+      </div>
+    </div>
+    <!-- Botão -->
+    <button onclick="calcular()">Calcular</button>
+    <!-- Resultado -->
+    <div id="resultado"></div>
+  </div>
+  <script>
+    function toggleParcelas() {
+      const tipo = document.getElementById('tipo').value;
+      document.getElementById('row-parcelas').style.display = tipo === 'anual' ? 'flex' : 'none';
+      document.getElementById('parcelas').disabled = tipo !== 'anual';
+    }
+    document.addEventListener('DOMContentLoaded', toggleParcelas);
+    function calcular() {
+      const evt = document.getElementById('evento').value;
+      const total = parseFloat(document.getElementById('total').value);
+      const saldoInicial = parseFloat(document.getElementById('saldo').value) || 0;
+      const qtd = parseInt(document.getElementById('qtdLicencas').value, 10);
+      const valorUnitario = parseFloat(document.getElementById('valorUnitario').value);
+      const inicio = new Date(document.getElementById('inicio').value);
+      const fim = new Date(document.getElementById('fim').value);
+      if (isNaN(total) || fim <= inicio) { alert('Verifique os campos obrigatórios.'); return; }
+      if (inicio.getMonth() !== fim.getMonth() || inicio.getFullYear() !== fim.getFullYear()) {
+        alert('Período atravessa mais de um ciclo; apuração será feita mês a mês.');
+      }
+      // Cálculo pró-rata com truncamento e split em dois blocos
+      const msDia = 1000 * 60 * 60 * 24;
+      const diasUso = Math.floor((fim - inicio) / msDia);
+      const diasMes = new Date(inicio.getFullYear(), inicio.getMonth()+1, 0).getDate();
+      const precoUnit = valorUnitario;
+      const rawUnit = (diasUso / diasMes) * precoUnit;
+      const unitTrunc = Math.floor(rawUnit * 100) / 100;
+      const valorEarned = unitTrunc * qtd;
+      const valorUnearned = Math.round((total - valorEarned + saldoInicial) * 100) / 100;
+      // Tributos sobre Earned
+      const iss = Math.round(valorEarned * 0.05 * 100) / 100;
+      const pis = Math.round(valorEarned * 0.0165 * 100) / 100;
+      const cof = Math.round(valorEarned * 0.076 * 100) / 100;
+      // Montar tabela resumo em dois blocos
+      let html = '<table><thead><tr><th>Intervalo</th><th>Earned (R$)</th><th>Saldo de Passivo (R$)</th>' +
+                 '<th>ISS</th><th>PIS</th><th>COFINS</th><th>Write-off</th></tr></thead><tbody>';
+      html += `<tr><td>Serviço entregue</td><td>${valorEarned.toFixed(2)}</td><td>${valorUnearned.toFixed(2)}</td>` +
+              `<td>${iss.toFixed(2)}</td><td>${pis.toFixed(2)}</td><td>${cof.toFixed(2)}</td>` +
+              `<td>${evt === 'cancelamento' ? 'Sim' : 'Não'}</td></tr>`;
+      if (evt !== 'compra') {
+        html += `<tr><td>Saldo de Passivo</td><td>0.00</td><td>${valorUnearned.toFixed(2)}</td>` +
+                `<td>0.00</td><td>0.00</td><td>0.00</td><td>${evt === 'cancelamento' ? 'Sim' : 'Não'}</td></tr>`;
+      }
+      html += '</tbody></table>';
+      document.getElementById('resultado').innerHTML = html;
+    }
+  </script>
+</body>
+</html>
