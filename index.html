@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tools and Wiki</title>
+  <title>Ferramentas</title>
   <style>
     * {
       box-sizing: border-box;
@@ -12,36 +12,45 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f8;
       display: flex;
       height: 100vh;
       color: #333;
     }
 
     nav {
-      width: 250px;
-      background-color: #2c3e50;
-      color: white;
-      padding-top: 20px;
+      width: 260px;
+      background: linear-gradient(180deg, #34495e, #2c3e50);
+      color: #fff;
+      padding: 30px 0;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
     }
 
     nav h2 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      font-size: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
     }
 
     nav a {
-      color: white;
+      color: #fff;
       text-decoration: none;
-      padding: 15px 20px;
+      padding: 12px 24px;
       display: block;
-      transition: background-color 0.3s;
+      margin: 0 16px 10px 16px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      transition: background 0.3s;
     }
 
     nav a:hover {
-      background-color: #34495e;
+      background: rgba(255, 255, 255, 0.15);
     }
 
     iframe {
@@ -57,14 +66,23 @@
     }
 
     @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
       nav {
         width: 100%;
         flex-direction: row;
         overflow-x: auto;
+        padding: 10px;
+        box-shadow: none;
       }
       nav a {
         flex: 1;
+        margin: 0 6px;
         text-align: center;
+      }
+      nav h2 {
+        display: none;
       }
     }
   </style>
@@ -79,8 +97,7 @@
 	    <a href="https://fbnmurad.github.io/alive/ContarCaracter.html" target="conteudo">Contar Caracter</a>
 	    <a href="https://fbnmurad.github.io/alive/GeradorCpfCnpj.html" target="conteudo">Gerar CPF/CNPJ</a>
 	    <a href="https://fbnmurad.github.io/alive/GeradorCartaoCredito.html" target="conteudo">Gerar Cartão de Crédito</a>
-    <a href="https://fbnmurad.github.io/alive/DIFReceita.html" target="conteudo">DIFReceita</a>
-    </nav>
+      <a href="https://fbnmurad.github.io/alive/DIFReceita.html" target="conteudo">DIFReceita</a>
     </nav>
 
     <iframe name="conteudo" src="https://fbnmurad.github.io/alive/ValorProRata.html"></iframe>
