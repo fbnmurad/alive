@@ -1,0 +1,16 @@
+{
+  "name": "alive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "luhn.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node tests/luhn.test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
