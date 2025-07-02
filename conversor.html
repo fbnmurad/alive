@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Conversor de Caixa de Texto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f8fb;
+      margin: 0;
+      min-height: 100vh;
+      color: #1a2330;
+    }
+    .container {
+      max-width: 520px;
+      margin: 44px auto 0 auto;
+      padding: 32px 20px 28px 20px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h2 {
+      text-align: center;
+      color: #1976d2;
+      margin-bottom: 14px;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    label {
+      font-weight: 600;
+      color: #215296;
+      font-size: 15px;
+      margin-bottom: 6px;
+      letter-spacing: .1px;
+    }
+    textarea {
+      min-height: 110px;
+      max-height: 220px;
+      resize: vertical;
+      border: 1px solid #cdd7e5;
+      border-radius: 10px;
+      font-size: 15px;
+      padding: 13px 12px;
+      background: #f9fbfe;
+      color: #223;
+      font-family: 'Fira Mono', 'Consolas', monospace;
+      margin-bottom: 7px;
+      outline: none;
+      transition: border .2s;
+    }
+    textarea:focus {
+      border-color: #90caf9;
+      box-shadow: 0 0 0 1.5px #90caf933;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    select {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #cdd7e5;
+      font-size: 15px;
+      outline: none;
+      background: #f9fbfe;
+      transition: border .2s;
+    }
+    select:focus { border-color: #90caf9; }
+    button {
+      padding: 9px 20px;
+      border-radius: 8px;
+      background: #1976d2;
+      color: #fff;
+      border: none;
+      font-size: 15.5px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background .2s;
+      margin-top: 1px;
+    }
+    button:hover { background: #1565c0; }
+    .note {
+      font-size: 13px;
+      color: #607dac;
+      text-align: center;
+      margin-top: -4px;
+      margin-bottom: 6px;
+      letter-spacing: .05em;
+    }
+    @media (max-width:600px) {
+      .container { max-width: 99vw; padding: 11px; }
+      h2 { font-size: 1.2em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Conversor de Caixa de Texto</h2>
+    <div class="note">Cole, escolha a operação e converta com 1 clique.</div>
+
+    <label for="input">Texto de Entrada</label>
+    <textarea id="input" placeholder="Cole ou digite aqui..."></textarea>
+    
+    <div class="controls">
+      <label for="mode" style="margin:0 3px 0 0;">Operação:</label>
+      <select id="mode">
+        <option value="upper">Tudo MAIÚSCULO</option>
+        <option value="lower">tudo minúsculo</option>
+        <option value="invert">Inverter maiúsc./minúsc.</option>
+        <option value="sentence">Primeira letra maiúscula (frase)</option>
+        <option value="words">Primeira letra maiúscula (cada palavra)</option>
+      </select>
+      <button onclick="convert()">Converter</button>
+      <button onclick="copyResult()">Copiar</button>
+    </div>
+    
+    <label for="output">Resultado</label>
+    <textarea id="output" readonly placeholder="O resultado aparecerá aqui..."></textarea>
+  </div>
+  <script>
+    function convert() {
+      const txt = document.getElementById('input').value;
+      const mode = document.getElementById('mode').value;
+      let res = '';
+      switch (mode) {
+        case 'upper':
+          res = txt.toUpperCase();
+          break;
+        case 'lower':
+          res = txt.toLowerCase();
+          break;
+        case 'invert':
+          res = Array.from(txt).map(c =>
+            c === c.toLowerCase() ? c.toUpperCase() : c.toLowerCase()
+          ).join('');
+          break;
+        case 'sentence':
+          res = txt
+            .toLowerCase()
+            .replace(/(^\s*\w|[\.\!\?]\s*\w)/g, c => c.toUpperCase());
+          break;
+        case 'words':
+          res = txt.replace(/\w\S*/g, w =>
+            w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+          );
+          break;
+      }
+      document.getElementById('output').value = res;
+    }
+    function copyResult() {
+      const out = document.getElementById('output');
+      out.select();
+      document.execCommand('copy');
+      out.setSelectionRange(0,0);
+    }
+  </script>
+</body>
+</html>
