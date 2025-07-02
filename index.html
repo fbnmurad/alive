@@ -27,14 +27,30 @@
       align-items: stretch;
       min-height: 100vh;
     }
-    nav h2 {
-      text-align: center;
-      margin-bottom: 22px;
-      font-weight: bold;
-      letter-spacing: 1px;
-      color: #eaf6fb;
-      font-size: 1.45em;
+    /* NOVO BLOCO PARA TÍTULO DESTACADO */
+    .menu-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 1.55em;
+      font-weight: 700;
+      color: #00e5ff;
+      margin-bottom: 26px;
+      padding-bottom: 13px;
+      border-bottom: 2.5px solid #18e1fc;
+      letter-spacing: 1.5px;
+      background: linear-gradient(90deg, #1565c0 0%, #1976d2 100%);
+      border-radius: 0 0 18px 18px;
+      box-shadow: 0 8px 24px -8px #1976d266;
+      text-shadow: 0 2px 8px #0e1a2c55;
     }
+    .menu-title i {
+      font-size: 1.13em;
+      color: #00e5ff;
+      filter: drop-shadow(0 2px 2px #1976d2bb);
+    }
+    nav h2 { display: none; }
     nav ul {
       list-style: none;
       padding: 0 0 0 0;
@@ -43,9 +59,7 @@
       flex-direction: column;
       gap: 2px;
     }
-    nav li {
-      width: 100%;
-    }
+    nav li { width: 100%; }
     nav a {
       display: flex; align-items: center; gap: 12px;
       padding: 12px 22px;
@@ -81,7 +95,9 @@
       nav li { flex: 1 1 0; }
       nav a { border-radius: 0; justify-content: center; padding: 13px 4px; border-left: none; border-bottom: 3px solid transparent; }
       nav a:hover, nav a.active { border-left: none; border-bottom: 3px solid #00e5ff; }
-      nav h2 { display: none; }
+      .menu-title {
+        font-size: 1.17em; padding-bottom: 7px; border-radius: 0 0 12px 12px; margin-bottom: 16px;
+      }
     }
     iframe {
       flex: 1;
@@ -95,7 +111,10 @@
 <body>
   <div class="container">
     <nav aria-label="Menu de ferramentas">
-      <h2>Ferramentas</h2>
+      <div class="menu-title">
+        <i class="fas fa-toolbox"></i>
+        <span>Ferramentas</span>
+      </div>
       <ul>
         <li>
           <a href="https://fbnmurad.github.io/alive/ValorProRata.html" target="conteudo" class="active" title="Cálculo de valor proporcional">
