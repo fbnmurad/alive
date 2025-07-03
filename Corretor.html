@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Corretor Ortográfico & Gramatical</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #e9ecfa 0%, #f7faff 100%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      margin-top: 44px;
+      padding: 32px 32px 28px 32px;
+      border-radius: 20px;
+      box-shadow: 0 4px 32px rgba(50,90,230,0.07), 0 1.5px 5px rgba(100,120,210,0.04);
+      width: 100%;
+      max-width: 640px;
+      transition: box-shadow 0.23s;
+    }
+    h2 {
+      color: #2846b6;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.4em;
+      letter-spacing: 0.2px;
+    }
+    label {
+      font-weight: 500;
+      color: #203068;
+      display: block;
+      margin-bottom: 7px;
+      font-size: 16px;
+      letter-spacing: 0.1px;
+    }
+    select, textarea, .saida {
+      width: 100%;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1.5px solid #c0cae8;
+      background: #f8fafd;
+      outline: none;
+      box-sizing: border-box;
+      margin-bottom: 13px;
+      font-family: inherit;
+    }
+    select {
+      padding: 10px 12px;
+      margin-bottom: 15px;
+    }
+    textarea, .saida {
+      min-height: 100px;
+      padding: 13px 15px;
+      resize: vertical;
+      transition: border-color 0.23s, box-shadow 0.2s;
+    }
+    textarea:focus, .saida:focus, select:focus {
+      border-color: #416fff;
+      box-shadow: 0 2px 7px rgba(40,80,200,0.06);
+      background: #f1f5fe;
+    }
+    .saida {
+      background: #f7f9fe;
+      border: 1.5px solid #dde7fa;
+      color: #21305b;
+      margin-top: 2px;
+      min-height: 120px;
+    }
+    .contagem-lista {
+      display: flex;
+      gap: 26px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .contagem-item {
+      font-size: 1.07em;
+      margin-bottom: 7px;
+      color: #2846b6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #e6ecff;
+      padding: 7px 15px 7px 10px;
+      border-radius: 7px;
+      min-width: 120px;
+      box-shadow: 0 1px 2.5px rgba(80,110,200,0.06);
+      font-weight: 500;
+      user-select: all;
+    }
+    .contagem-num {
+      color: #203068;
+      font-size: 1.15em;
+      font-weight: 700;
+      margin-left: 4px;
+      letter-spacing: 0.5px;
+      background: none;
+      user-select: all;
+    }
+    .botoes {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      width: 100%;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    button {
+      background: linear-gradient(90deg, #416fff 0%, #2846b6 100%);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 0;
+      min-width: 120px;
+      cursor: pointer;
+      transition: background 0.18s, box-shadow 0.2s;
+      box-shadow: 0 2px 6px rgba(60,80,200,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+    }
+    button.copy-btn {
+      background: #e3f1ff;
+      color: #1967b2;
+      font-size: 15px;
+      min-width: 110px;
+      box-shadow: none;
+      margin-left: 5px;
+    }
+    button.copy-btn:hover { background: #b7e0ff;}
+    button:disabled { background: #b6bcc9; color: #aaa;}
+    .msg-erro { color: #c00; font-size: 15px; margin-top: 7px;}
+    .msg-sucesso { color: #16a085; font-size: 15px; margin-top: 7px;}
+    .sugestoes-bloco {
+      background: #f7f9fe;
+      border: 1.5px solid #dde7fa;
+      border-radius: 12px;
+      padding: 12px 15px 10px 15px;
+      margin-top: 10px;
+      margin-bottom: 18px;
+      font-size: 15px;
+      color: #203068;
+    }
+    .sugestoes-titulo { color: #2846b6; font-weight: 600; font-size: 1.1em; margin-bottom: 8px;}
+    .sugestoes-scroll {
+      max-height: 360px;
+      overflow-y: auto;
+      padding-right: 7px;
+    }
+    .sugestao-item {
+      margin-bottom: 11px;
+      padding: 7px 7px 7px 12px;
+      background: #e8ecff;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .sugestao-checkbox {
+      margin-right: 8px;
+      margin-top: 4px;
+      accent-color: #416fff;
+      width: 20px;
+      height: 20px;
+    }
+    .sugestao-dados { flex: 1;}
+    .sugestoes-acoes {
+      margin-bottom: 8px;
+      display: flex;
+      gap: 10px;
+    }
+    .acoes-btn {
+      background: #27408b;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 8px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-right: 7px;
+      font-weight: 600;
+      transition: background 0.18s;
+    }
+    .acoes-btn.selecionado { box-shadow: 0 0 0 2px #2846b6;}
+    .acoes-btn.rejeitar { background: #b8bfcf; color: #203068;}
+    .acoes-btn:disabled { background: #d8dae7; color: #888;}
+    @media (max-width: 600px) {
+      .container { padding: 12px 3vw 13px 3vw; max-width: 99vw; }
+      .botoes { flex-direction: column; gap: 8px; }
+      .saida, textarea, select { font-size: 15px; padding: 8px 8px;}
+      .contagem-lista { gap: 11px; }
+      .contagem-item { min-width: 80px; padding: 7px 10px; font-size: 0.99em;}
+      .sugestoes-bloco { padding: 8px 6px 6px 6px;}
+      .sugestoes-scroll { max-height: 240px;}
+      .sugestao-item { flex-direction: column;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Corretor Ortográfico & Gramatical</h2>
+    <!-- Idioma detectado e seletor de idioma ocultos -->
+    <div id="infoIdioma" style="display:none;"></div>
+    <label for="idioma" style="display:none;">Idioma:</label>
+    <select id="idioma" style="display:none;">
+      <option value="pt-BR" selected>Português (Brasil)</option>
+      <option value="pt-PT">Português (Portugal)</option>
+      <option value="en-US">Inglês (EUA)</option>
+      <option value="es">Espanhol</option>
+      <option value="fr">Francês</option>
+    </select>
+    <label for="entrada">Digite ou cole seu texto:</label>
+    <textarea id="entrada" placeholder="Digite ou cole seu texto aqui..."></textarea>
+    <div class="contagem-lista" id="contagem">
+      <div class="contagem-item">Caracteres: <span class="contagem-num" id="numCaracteres">0</span></div>
+      <div class="contagem-item">Palavras: <span class="contagem-num" id="numPalavras">0</span></div>
+      <div class="contagem-item">Linhas: <span class="contagem-num" id="numLinhas">0</span></div>
+    </div>
+    <div class="botoes">
+      <button id="btnCorrigir">Analisar</button>
+      <button class="copy-btn" id="btnCopiar" disabled>Copiar</button>
+    </div>
+    <div id="sugestoes"></div>
+    <label for="saida" style="margin-top:12px;">Corrigido:</label>
+    <textarea id="saida" class="saida" readonly placeholder="O texto corrigido aparecerá aqui."></textarea>
+    <div class="msg-erro" id="msgErro"></div>
+    <div class="msg-sucesso" id="msgSucesso"></div>
+  </div>
+  <script>
+    // --- Detecção automática de idioma (interno, sem exibir) ---
+    function detectarIdioma(texto) {
+      const ptBR = /\b(que|de|não|para|seu|sua|está|mais|também|por|com|mas|como|ele|ela|nós|eles|elas|aqui|você|pra|será)\b/gi;
+      const ptPT = /\b(vós|vosso|convosco|vossa|contigo|consigo|havia|estais|estás|sois)\b/gi;
+      const es = /\b(que|de|no|para|su|está|más|también|por|con|pero|como|él|ella|nosotros|vosotros|ellos|ellas|aquí|usted)\b/gi;
+      const en = /\b(the|and|this|that|with|but|for|you|your|his|her|they|their|have|not|will|are|was|be|been|being)\b/gi;
+      const fr = /\b(que|de|ne|pas|pour|vous|nous|avec|mais|elle|il|être|sont|été|avez|aussi|dans)\b/gi;
+      const scores = {
+        "pt-BR": (texto.match(ptBR)||[]).length + (texto.match(/[ãõçéíáóúêâô]/gi)||[]).length,
+        "pt-PT": (texto.match(ptPT)||[]).length,
+        "es":    (texto.match(es)||[]).length + (texto.match(/[ñáéíóúü]/gi)||[]).length,
+        "en-US": (texto.match(en)||[]).length,
+        "fr":    (texto.match(fr)||[]).length + (texto.match(/[çéèêàùûœâîïëü]/gi)||[]).length
+      };
+      let maxScore = 0, detected = "pt-BR";
+      for (const k in scores) {
+        if (scores[k] > maxScore) { maxScore = scores[k]; detected = k; }
+      }
+      return detected;
+    }
+    function atualizarContagem() {
+      const texto = document.getElementById("entrada").value;
+      document.getElementById("numCaracteres").textContent = texto.length;
+      document.getElementById("numPalavras").textContent = texto.trim().split(/\s+/).filter(p => p.length > 0).length;
+      document.getElementById("numLinhas").textContent = texto.length === 0 ? 0 : texto.split(/\r\n|\r|\n/).length;
+    }
+    document.getElementById("entrada").addEventListener("input", function(){
+      atualizarContagem();
+    });
+    window.onload = function() {
+      atualizarContagem();
+    }
+
+    let sugestoesAplicadas = [];
+    let textoOriginal = "";
+
+    // Sempre usar idioma detectado, não exibir seletor
+    function getIdiomaParaCorrecao(texto) {
+      return detectarIdioma(texto);
+    }
+
+    document.getElementById('btnCorrigir').onclick = async function() {
+      const entrada = document.getElementById('entrada').value;
+      document.getElementById('saida').value = "";
+      document.getElementById('sugestoes').innerHTML = "";
+      document.getElementById('msgErro').textContent = '';
+      document.getElementById('msgSucesso').textContent = '';
+      document.getElementById('btnCopiar').disabled = true;
+
+      if (!entrada.trim()) {
+        document.getElementById('msgErro').textContent = 'Digite um texto para corrigir.';
+        return;
+      }
+      textoOriginal = entrada;
+      sugestoesAplicadas = [];
+      try {
+        const idiomaCorrecao = getIdiomaParaCorrecao(entrada);
+        const response = await fetch('https://api.languagetoolplus.com/v2/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            text: entrada,
+            language: idiomaCorrecao
+          })
+        });
+        const data = await response.json();
+
+        if (data && data.matches && data.matches.length > 0) {
+          renderSugestoesBloco(data.matches, entrada);
+        } else {
+          document.getElementById('sugestoes').innerHTML = `<div class="sugestoes-bloco"><div class="sugestoes-titulo">Nenhuma sugestão de correção encontrada!</div></div>`;
+          document.getElementById('saida').value = entrada;
+          document.getElementById('btnCopiar').disabled = false;
+          document.getElementById('msgSucesso').textContent = 'Texto já está correto!';
+        }
+      } catch (err) {
+        document.getElementById('msgErro').textContent = 'Falha ao corrigir texto. Verifique sua conexão ou tente novamente.';
+      }
+    };
+
+    function renderSugestoesBloco(matches, entrada) {
+      sugestoesAplicadas = matches.map((m, idx) => ({
+        idx: idx,
+        offset: m.offset,
+        length: m.length,
+        original: entrada.substr(m.offset, m.length),
+        replacement: m.replacements && m.replacements[0] ? m.replacements[0].value : null,
+        message: m.message,
+        regra: m.rule && m.rule.description ? m.rule.description : '',
+        checked: true
+      }));
+
+      let sugDiv = document.createElement('div');
+      sugDiv.className = "sugestoes-bloco";
+      sugDiv.innerHTML = `
+        <div class="sugestoes-titulo">Sugestões encontradas:</div>
+        <div class="sugestoes-acoes">
+          <button class="acoes-btn" id="btnSelecionarTodos">Selecionar Todos</button>
+          <button class="acoes-btn" id="btnAplicarSelecionados">Aplicar Selecionadas</button>
+        </div>
+        <div class="sugestoes-scroll" id="scrollSugestoes"></div>
+      `;
+
+      let scrollSugestoes = null;
+      setTimeout(() => {
+        scrollSugestoes = document.getElementById('scrollSugestoes');
+        scrollSugestoes.innerHTML = "";
+
+        sugestoesAplicadas.forEach((sug, idx) => {
+          let div = document.createElement('div');
+          div.className = 'sugestao-item';
+          div.innerHTML = `
+            <input type="checkbox" class="sugestao-checkbox" id="cb_${idx}" checked />
+            <div class="sugestao-dados">
+              <div><b>Erro:</b> <span style="color:#b13a3a">${escapeHTML(sug.original)}</span></div>
+              <div><b>Sugestão:</b> <span style="color:#168427">${escapeHTML(sug.replacement || "(sem sugestão)")}</span></div>
+              <div><b>Regra:</b> ${escapeHTML(sug.regra || "")}</div>
+              <div><b>Explicação:</b> <span style="color:#416fff">${escapeHTML(sug.message)}</span></div>
+            </div>
+          `;
+          scrollSugestoes.appendChild(div);
+
+          setTimeout(() => {
+            document.getElementById(`cb_${idx}`).onchange = (e) => {
+              sugestoesAplicadas[idx].checked = e.target.checked;
+            };
+          }, 10);
+        });
+
+        if (sugestoesAplicadas.length > 5) {
+          scrollSugestoes.style.maxHeight = "360px";
+          scrollSugestoes.style.overflowY = "auto";
+        } else {
+          scrollSugestoes.style.maxHeight = "";
+          scrollSugestoes.style.overflowY = "";
+        }
+
+        document.getElementById('btnSelecionarTodos').onclick = () => {
+          sugestoesAplicadas.forEach((sug, idx) => {
+            sug.checked = true;
+            document.getElementById(`cb_${idx}`).checked = true;
+          });
+        };
+        document.getElementById('btnAplicarSelecionados').onclick = aplicarSelecionadas;
+        aplicarSelecionadas();
+      }, 10);
+
+      document.getElementById('sugestoes').innerHTML = "";
+      document.getElementById('sugestoes').appendChild(sugDiv);
+    }
+
+    function aplicarSelecionadas() {
+      let arr = Array.from(textoOriginal);
+      let aplicaveis = sugestoesAplicadas
+        .map((s, idx) => ({ ...s, idx }))
+        .filter(s => s.checked && s.replacement !== null)
+        .sort((a, b) => b.offset - a.offset);
+
+      aplicaveis.forEach(s => {
+        arr.splice(s.offset, s.length, ...s.replacement.split(''));
+      });
+      let textoCorrigido = arr.join('');
+      textoCorrigido = textoCorrigido.replace(/\r\n|\r/g, "\n").replace(/\n{3,}/g, "\n\n");
+      document.getElementById('saida').value = textoCorrigido;
+      document.getElementById('btnCopiar').disabled = false;
+      document.getElementById('msgSucesso').textContent = 'Correções aplicadas conforme seleção!';
+    }
+
+    document.getElementById('btnCopiar').onclick = function() {
+      const texto = document.getElementById('saida').value;
+      if (texto) {
+        navigator.clipboard.writeText(texto);
+        document.getElementById('msgSucesso').textContent = 'Texto copiado!';
+        setTimeout(() => { document.getElementById('msgSucesso').textContent = ''; }, 1200);
+      }
+    };
+
+    function escapeHTML(str) {
+      return str ? str.replace(/[&<>"]/g, function(tag) {
+        const charsToReplace = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' };
+        return charsToReplace[tag] || tag;
+      }) : '';
+    }
+  </script>
+</body>
+</html>
