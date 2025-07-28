@@ -5,35 +5,27 @@
   <title>Cálculo de Pró-Rata</title>
   <style>
     body { background: #f4f6f8; font-family: 'Segoe UI', Arial, sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; }
-    .container { background: #fff; margin-top: 40px; padding: 32px 30px 24px 30px; border-radius: 16px; box-shadow: 0 2px 24px rgba(0,0,0,0.07); width: 100%; max-width: 440px; }
-    h2 { color: #2846b6; margin-bottom: 28px; text-align: center; font-weight: 600; letter-spacing: 0.5px; }
-    label { font-weight: 500; color: #222b45; display: block; margin-bottom: 5px; margin-top: 16px; font-size: 15px; }
-    input, select { width: 100%; padding: 9px 12px; font-size: 15px; margin-bottom: 2px; border-radius: 7px; border: 1px solid #bfc8d2; background: #f8fafc; transition: border-color 0.2s; outline: none; }
-    input:focus, select:focus { border-color: #2846b6; }
-    input:disabled { background: #eaeaea; color: #888; cursor: not-allowed; }
-    .botoes { display: flex; gap: 10px; margin-top: 22px; width: 100%; }
-    button { flex: 1; background: linear-gradient(90deg, #416fff 0%, #2846b6 100%); color: #fff; font-size: 16px; font-weight: 600; border: none; border-radius: 7px; padding: 12px 0; cursor: pointer; transition: background 0.18s; box-shadow: 0 2px 6px rgba(60,80,200,0.09); }
-    button.limpar { background: linear-gradient(90deg, #999 0%, #ccc 100%); color: #203068; }
-    button:hover:not(.limpar) { background: linear-gradient(90deg, #2846b6 0%, #416fff 100%); }
-    button.limpar:hover { background: linear-gradient(90deg, #888 0%, #bbb 100%); color: #18224d; }
-    #resultado { margin-top: 30px; border-radius: 14px; background: #f9fbff; color: #1d2543; font-size: 17px; box-shadow: 0 1px 7px rgba(40,70,182,0.08); text-align: left; padding: 22px 18px 19px 18px; min-height: 50px; border: 1px solid #dde7fa; }
-    .resultado-principal { margin-bottom: 12px; font-family: 'Segoe UI', Arial, sans-serif; }
-    .res-item { display: flex; align-items: baseline; gap: 7px; margin-bottom: 7px; }
-    .res-label { color: #4256b6; font-weight: 500; min-width: 180px; font-size: 1em; letter-spacing: 0.01em; }
-    .res-valor { color: #203068; font-size: 1.13em; font-weight: 600; }
-    .explicacao-box { background: #eef2fd; color: #254; border-radius: 8px; margin-top: 14px; padding: 12px 11px 7px 11px; font-size: 15px; font-family: 'Consolas', 'monospace', 'Courier New', monospace; overflow-x: auto; white-space: pre; border-left: 4px solid #2846b6; }
-    .opcao-modo { font-size: 15px; margin-top: 10px; margin-bottom: 0px; color: #244ad5; display: flex; gap: 24px; font-weight: 500; justify-content: center; align-items: center; }
-    .opcao-modo label { display: flex; align-items: center; gap: 6px; margin-bottom: 0; cursor: pointer; }
-    .opcao-modo input[type="radio"] { accent-color: #2846b6; margin: 0; }
-    @media (max-width: 480px) { .container { padding: 14px 7px 14px 7px; max-width: 98vw; } .botoes { flex-direction: column; gap: 8px; } #resultado { font-size: 15px; padding: 12px 6px 8px 6px; } .explicacao-box { font-size: 13px; padding: 8px 2px 5px 8px; } .res-label { min-width: 100px; font-size: 1em; } .opcao-modo { font-size: 13px; gap: 10px;} }
+    .container { background: #fff; margin-top: 40px; padding: 32px; border-radius: 16px; box-shadow: 0 2px 24px rgba(0,0,0,0.07); width: 100%; max-width: 440px; }
+    h2 { color: #2846b6; margin-bottom: 28px; text-align: center; font-weight: 600; }
+    label { font-weight: 500; color: #222b45; display: block; margin: 16px 0 5px; font-size: 15px; }
+    input[type="date"], input[type="number"] { width: 100%; padding: 9px 12px; font-size: 15px; margin-bottom: 8px; border-radius: 7px; border: 1px solid #bfc8d2; background: #f8fafc; outline: none; }
+    input:focus { border-color: #2846b6; }
+    .opcao-modo { display: flex; justify-content: center; gap: 24px; margin-bottom: 16px; }
+    .opcao-modo label { cursor: pointer; display: flex; align-items: center; gap: 6px; color: #244ad5; }
+    .botoes { display: flex; gap: 10px; margin-top: 16px; }
+    button { flex: 1; padding: 12px; border: none; border-radius: 7px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    #btnCalcular { background: linear-gradient(90deg, #416fff 0%, #2846b6 100%); color: #fff; }
+    #btnLimpar { background: linear-gradient(90deg, #999 0%, #ccc 100%); color: #203068; }
+    #resultado { margin-top: 24px; padding: 20px; background: #f9fbff; border: 1px solid #dde7fa; border-radius: 14px; min-height: 60px; font-size: 17px; color: #1d2543; box-shadow: 0 1px 7px rgba(40,70,182,0.08); }
+    .explicacao-box { margin-top: 14px; padding: 12px; background: #eef2fd; border-left: 4px solid #2846b6; font-family: monospace; white-space: pre; overflow-x: auto; border-radius: 8px; }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Cálculo de Valor Pró-Rata</h2>
     <div class="opcao-modo">
-      <label><input type="radio" name="modo" value="datas" checked onchange="alternarModo()">Datas</label>
-      <label><input type="radio" name="modo" value="dias" onchange="alternarModo()">Dias</label>
+      <label><input type="radio" name="modo" value="datas" checked>Datas</label>
+      <label><input type="radio" name="modo" value="dias">Dias</label>
     </div>
     <div id="blocoDatas">
       <label for="dataInicio">Data de Início:</label>
@@ -43,122 +35,92 @@
     </div>
     <div id="blocoDias" style="display:none">
       <label for="diasUso">Dias de uso:</label>
-      <input type="number" id="diasUso" min="1">
-      <div id="blocoDiasExtra">
-        <label for="diasNoMesReferencia">Quantidade de dias no mês de referência (28 a 31):</label>
-        <input type="number" id="diasNoMesReferencia" min="28" max="31" placeholder="Ex: 30">
-      </div>
+      <input type="number" id="diasUso" min="1" placeholder="Ex: 12">
+      <label for="diasNoMesReferencia">Dias no mês de referência (28–31):</label>
+      <input type="number" id="diasNoMesReferencia" min="28" max="31" placeholder="Ex: 31">
     </div>
     <label for="quantidade">Quantidade de Licenças:</label>
-    <input type="number" id="quantidade" min="1">
+    <input type="number" id="quantidade" min="1" placeholder="Ex: 35">
     <label for="preco">Preço Unitário (R$):</label>
-    <input type="number" id="preco" step="0.01">
+    <input type="number" id="preco" step="0.01" placeholder="Ex: 10.00">
     <div class="botoes">
-      <button onclick="calcularProRata()">Calcular</button>
-      <button type="button" class="limpar" onclick="limparCampos()">Limpar</button>
+      <button id="btnCalcular">Calcular</button>
+      <button id="btnLimpar">Limpar</button>
     </div>
     <div id="resultado"></div>
   </div>
+
   <script>
-    function alternarModo() {
+  (function(){
+    console.log('Script iniciado');
+    // SEGCOD: proteção do código-fonte
+    document.addEventListener('keydown', e => {
+      if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && e.keyCode === 85)) {
+        e.preventDefault();
+      }
+    });
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    const fmt = (x,d) => x.toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
+    const trunc2 = v => Math.trunc(v * 100) / 100;
+    const mostrarErro = msg => {
+      document.getElementById('resultado').innerHTML = `<span style="color:#c00">${msg || 'Preencha todos os campos corretamente.'}</span>`;
+    };
+
+    function alternarModo(){
       const modo = document.querySelector('input[name="modo"]:checked').value;
-      document.getElementById('blocoDatas').style.display = modo === 'datas' ? '' : 'none';
-      document.getElementById('blocoDias').style.display = modo === 'dias' ? '' : 'none';
-      // Limpa campos dos blocos desabilitados para evitar conflitos
-      if (modo === 'datas') {
-        document.getElementById('diasUso').value = '';
-        document.getElementById('diasNoMesReferencia').value = '';
-      }
-      if (modo === 'dias') {
-        document.getElementById('dataInicio').value = '';
-        document.getElementById('dataFim').value = '';
-      }
+      document.getElementById('blocoDatas').style.display = modo === 'datas' ? 'block' : 'none';
+      document.getElementById('blocoDias').style.display = modo === 'dias' ? 'block' : 'none';
       document.getElementById('resultado').innerHTML = '';
     }
 
-    function trunc2(valor) {
-      // Trunca para duas casas decimais sem arredondar
-      return Math.trunc(valor * 100) / 100;
-    }
-
-    function calcularProRata() {
+    function calcularProRata(){
       const modo = document.querySelector('input[name="modo"]:checked').value;
-      const quantidade = parseInt(document.getElementById("quantidade").value);
-      const preco = parseFloat(document.getElementById("preco").value);
-      let diasUso, dataInicio, dataFim, diasNoMesInicio;
-      let dataInicioStr = '', dataFimStr = '';
+      const qtd = parseInt(document.getElementById('quantidade').value, 10);
+      const preco = parseFloat(document.getElementById('preco').value);
+      let diasUso, diasMes;
 
       if (modo === 'datas') {
-        dataInicioStr = document.getElementById("dataInicio").value;
-        dataFimStr = document.getElementById("dataFim").value;
-        if (!dataInicioStr || !dataFimStr || isNaN(quantidade) || isNaN(preco) || quantidade < 1 || preco <= 0) {
-          document.getElementById("resultado").innerHTML = "<span style='color:#c00'>Preencha todos os campos corretamente.</span>";
-          return;
-        }
-        dataInicio = new Date(dataInicioStr + "T00:00:00");
-        dataFim = new Date(dataFimStr + "T00:00:00");
-        if (dataFim < dataInicio) {
-          document.getElementById("resultado").innerHTML = "<span style='color:#c00'>A data final não pode ser anterior à inicial.</span>";
-          return;
-        }
-        diasUso = Math.floor((dataFim - dataInicio) / (24 * 3600 * 1000)) + 1;
-        diasNoMesInicio = new Date(dataInicio.getFullYear(), dataInicio.getMonth() + 1, 0).getDate();
+        const di = document.getElementById('dataInicio').value;
+        const df = document.getElementById('dataFim').value;
+        if (!di || !df || isNaN(qtd) || isNaN(preco) || qtd < 1 || preco <= 0) return mostrarErro();
+        // Uso T00 para evitar timezone issues
+        const d1 = new Date(di + 'T00:00:00');
+        const d2 = new Date(df + 'T00:00:00');
+        if (d2 < d1) return mostrarErro('Data final menor que inicial.');
+        diasUso = Math.floor((d2 - d1) / (24 * 3600 * 1000)) + 1;
+        // Dias do mês correto: mês de d1
+        diasMes = new Date(d1.getFullYear(), d1.getMonth() + 1, 0).getDate();
       } else {
-        diasUso = parseInt(document.getElementById("diasUso").value);
-        diasNoMesInicio = parseInt(document.getElementById("diasNoMesReferencia").value);
-        if (isNaN(diasUso) || isNaN(quantidade) || isNaN(preco) || isNaN(diasNoMesInicio) || diasUso < 1 || quantidade < 1 || preco <= 0 || diasNoMesInicio < 28 || diasNoMesInicio > 31) {
-          document.getElementById("resultado").innerHTML = "<span style='color:#c00'>Preencha todos os campos corretamente.</span>";
-          return;
-        }
-        dataInicioStr = dataFimStr = '';
+        diasUso = parseInt(document.getElementById('diasUso').value, 10);
+        diasMes = parseInt(document.getElementById('diasNoMesReferencia').value, 10);
+        if (isNaN(diasUso) || isNaN(diasMes) || isNaN(qtd) || isNaN(preco) || diasUso < 1 || diasMes < 28 || diasMes > 31 || qtd < 1 || preco <= 0) return mostrarErro();
       }
 
-      // AJUSTE CRÍTICO: Truncar o valor unitário antes de multiplicar pela quantidade!
-      const valorPorDia = preco / diasNoMesInicio;
-      const valorProrataUnitRaw = valorPorDia * diasUso;
-      const valorUnitarioTrunc = trunc2(valorProrataUnitRaw);
-      const valorTotal = valorUnitarioTrunc * quantidade;
+      // Cálculo PRORATAREG: trunc((preco/diasMes) × diasUso; 2) × quantidade
+      const brutoUnit = (preco / diasMes) * diasUso;
+      const unitTrunc = trunc2(brutoUnit);
+      const total = unitTrunc * qtd;
 
-      const valorPorDiaFormat = valorPorDia.toLocaleString('pt-BR', {minimumFractionDigits:8, maximumFractionDigits:8});
-      const valorProrataUnitRawFormat = valorProrataUnitRaw.toLocaleString('pt-BR', {minimumFractionDigits:8, maximumFractionDigits:8});
-      const valorUnitarioTruncFormat = valorUnitarioTrunc.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-      const valorTotalFormat = valorTotal.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-
-      document.getElementById("resultado").innerHTML = `
-        <div class="resultado-principal">
-          ${modo === 'datas' ? `
-            <div class="res-item"><span class="res-label">De:</span><span class="res-valor">${dataInicio.toLocaleDateString()}</span></div>
-            <div class="res-item"><span class="res-label">Até:</span><span class="res-valor">${dataFim.toLocaleDateString()}</span></div>
-          ` : ''}
-          <div class="res-item"><span class="res-label">Dias de uso:</span><span class="res-valor">${diasUso}</span></div>
-          <div class="res-item"><span class="res-label">Dias no mês de referência:</span><span class="res-valor">${diasNoMesInicio}</span></div>
-          <div class="res-item"><span class="res-label">Valor Pró-Rata Unitário (truncado):</span><span class="res-valor">R$ ${valorUnitarioTruncFormat.replace('.', ',')}</span></div>
-          <div class="res-item"><span class="res-label">Valor Pró-Rata Total:</span><span class="res-valor">R$ ${valorTotalFormat.replace('.', ',')}</span></div>
-        </div>
-        <div class="explicacao-box">
-Como foi feito o cálculo:
-1. Fórmula: TRUNC((preço ÷ dias no mês de referência) × dias de uso, 2) × quantidade
-2. Valor por dia: ${preco} ÷ ${diasNoMesInicio} = R$ ${valorPorDiaFormat}
-3. Dias de uso: ${diasUso} ${modo === 'datas' ? `(de ${dataInicio.toLocaleDateString()} até ${dataFim.toLocaleDateString()})` : ''}
-4. Pró-Rata Unitário antes do truncamento: R$ ${valorProrataUnitRawFormat}
-5. Pró-Rata Unitário truncado a 2 casas: R$ ${valorUnitarioTruncFormat.replace('.', ',')}
-6. Multiplicado pelas licenças: R$ ${valorUnitarioTruncFormat.replace('.', ',')} × ${quantidade} = R$ ${valorTotalFormat.replace('.', ',')}
-        </div>
-      `;
+      document.getElementById('resultado').innerHTML =
+        `<div><strong>Dias de uso:</strong> ${diasUso}</div>` +
+        `<div><strong>Dias no mês:</strong> ${diasMes}</div>` +
+        `<div><strong>Valor unitário truncado:</strong> R$ ${fmt(unitTrunc,2)}</div>` +
+        `<div><strong>Total PRORATAREG:</strong> R$ ${fmt(total,2)}</div>` +
+        `<pre class="explicacao-box">Cálculo:
+1) (${preco} ÷ ${diasMes}) × ${diasUso} = ${fmt(brutoUnit,8)}
+2) TRUNC(...;2) = ${fmt(unitTrunc,2)}
+3) × ${qtd} = R$ ${fmt(total,2)}</pre>`;
     }
 
-    function limparCampos() {
-      document.getElementById("dataInicio").value = '';
-      document.getElementById("dataFim").value = '';
-      document.getElementById("diasUso").value = '';
-      document.getElementById("diasNoMesReferencia").value = '';
-      document.getElementById("quantidade").value = '';
-      document.getElementById("preco").value = '';
-      document.getElementById("resultado").innerHTML = '';
-      document.querySelector('input[name="modo"][value="datas"]').checked = true;
+    document.getElementById('btnCalcular').addEventListener('click', calcularProRata);
+    document.getElementById('btnLimpar').addEventListener('click', () => {
+      ['dataInicio','dataFim','diasUso','diasNoMesReferencia','quantidade','preco'].forEach(id => document.getElementById(id).value = '');
       alternarModo();
-    }
-    window.onload = alternarModo;
+    });
+    document.querySelectorAll('input[name="modo"]').forEach(r => r.addEventListener('change', alternarModo));
+    window.addEventListener('load', alternarModo);
+  })();
   </script>
 </body>
 </html>
