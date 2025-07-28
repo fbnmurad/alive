@@ -1,155 +1,139 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulador de Diferimento de Receita</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diferimento de Receita – USDIF</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f6f8; color: #333; margin: 20px; }
-    .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    h1 { text-align: center; color: #2846b6; }
-    .note { background: #e8ecf4; padding: 10px; border-left: 4px solid #2846b6; margin-bottom: 10px; }
-    .small-note { font-size: 0.9em; color: #555; margin-top: 5px; }
-    .row { display: flex; gap: 10px; margin-top: 10px; }
-    .col { flex: 1; display: flex; flex-direction: column; }
-    label { font-weight: bold; margin-bottom: 4px; }
-    input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-    input[disabled], select[disabled] { background: #e9ecef; cursor: not-allowed; }
-    button { margin-top: 20px; padding: 10px 20px; background: #2846b6; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #1f357e; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background: #e8ecf4; }
+    body { font-family:'Segoe UI',Arial; background:#f4f6f8; margin:0; color:#233568; }
+    .container { max-width:860px; margin:30px auto; background:#fff; padding:28px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.05); }
+    h2 { text-align:center; color:#2b43a5; }
+    .row { display:flex; gap:16px; flex-wrap:wrap; }
+    .col { flex:1; min-width:160px; display:flex; flex-direction:column; }
+    label { font-weight:500; margin-top:8px; color:#223063; }
+    .obrig { color:#c00; margin-left:4px; }
+    input { padding:8px; font-size:14px; border:1px solid #6e7eb7; border-radius:6px; background:#f5f9ff; }
+    .buttons { margin-top:16px; }
+    button { padding:10px 18px; border:none; border-radius:6px; font-size:15px; cursor:pointer; transition:background .2s; }
+    #btnSimular { background:linear-gradient(90deg,#406be7,#2846b6); color:#fff; }
+    #btnSimular:hover { background:#2b43a5; }
+    #btnLimpar { background:#9db9ec; color:#223063; margin-left:8px; }
+    #btnLimpar:hover { background:#406be7; color:#fff; }
+    #btnExport { background:#4caf50; color:#fff; margin-left:8px; display:none; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; font-size:14px; }
+    th,td { border:1px solid #c7d4ef; padding:8px; text-align:center; }
+    th { background:#e1eafe; color:#1d2c6c; }
+    tr.evento { background:#f4f9ff; }
+    tr.saldo-passivo { background:#d3e4fc; color:#143066; font-weight:bold; }
+    .erro { color:#b21b13; margin-top:12px; font-weight:600; }
+    .exp { background:#e8f1ff; color:#2846b6; padding:12px; border-radius:6px; margin-top:20px; font-size:14px; }
+    @media(max-width:600px){.row{flex-direction:column;}.buttons{display:flex;flex-direction:column;}button{margin-bottom:8px;}}
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Simulador de Diferimento de Receita</h1>
-    <div class="note">
-      Cálculos baseados no Pronunciamento CPC-47 e práticas do Oracle BRM.<br>
-      Ciclo: dia 01 ao último do mês; faturamento real dia 06; vencimento dia 15.
-    </div>
-    <!-- Tipo de Evento -->
-    <div class="row">
-      <div class="col">
-        <label for="evento">Tipo de Evento</label>
-        <select id="evento">
-          <option value="recorrente" selected>Recorrente</option>
-          <option value="compra">Compra Única</option>
-          <option value="cancelamento">Cancelamento</option>
-        </select>
+    <h2>Diferimento de Receita – USDIF (Razonete Detalhado)</h2>
+    <form id="form" onsubmit="event.preventDefault(); simular();">
+      <div class="row">
+        <div class="col">
+          <label for="inicio">Data de Início<span class="obrig">*</span></label>
+          <input type="date" id="inicio"/>
+        </div>
+        <div class="col">
+          <label for="fim">Data de Fim<span class="obrig">*</span></label>
+          <input type="date" id="fim"/>
+        </div>
+        <div class="col">
+          <label for="qtd">Quantidade de Licenças<span class="obrig">*</span></label>
+          <input type="number" id="qtd" min="1" step="1"/>
+        </div>
+        <div class="col">
+          <label for="preco">Preço Unitário (R$)<span class="obrig">*</span></label>
+          <input type="number" id="preco" min="0.01" step="0.01"/>
+        </div>
       </div>
-    </div>
-    <!-- Tipo de Diferimento -->
-    <div class="row">
-      <div class="col">
-        <label for="tipo">Tipo de diferimento</label>
-        <select id="tipo" onchange="toggleParcelas()">
-          <option value="diario" selected>Diário</option>
-          <option value="mensal">Mensal</option>
-          <option value="anual">Anual</option>
-        </select>
+      <div class="buttons">
+        <button id="btnSimular">Simular Diferimento</button>
+        <button id="btnLimpar" type="button" onclick="limparTudo()">Limpar Tudo</button>
+        <button id="btnExport" type="button" onclick="exportarCSV()">Exportar CSV</button>
       </div>
-    </div>
-    <!-- Quantidade de licenças e valor unitário -->
-    <div class="row">
-      <div class="col">
-        <label for="qtdLicencas">Quantidade de licenças</label>
-        <input type="number" id="qtdLicencas" step="1" min="1" value="20" required />
-      </div>
-      <div class="col">
-        <label for="valorUnitario">Valor unitário (R$)</label>
-        <input type="number" id="valorUnitario" step="0.01" value="5.00" required />
-      </div>
-    </div>
-    <!-- Saldo de passivo inicial -->
-    <div class="row">
-      <div class="col">
-        <label for="saldo">Saldo de passivo inicial (R$)</label>
-        <input type="number" id="saldo" step="0.01" value="0" />
-      </div>
-    </div>
-    <!-- Datas -->
-    <div class="row">
-      <div class="col">
-        <label for="inicio">Data início</label>
-        <input type="date" id="inicio" required />
-      </div>
-      <div class="col">
-        <label for="fim">Data fim</label>
-        <input type="date" id="fim" required />
-      </div>
-    </div>
-    <div class="small-note">Se atravessa meses, apuração mês a mês.</div>
-    <!-- Tributos -->
-    <div class="row">
-      <div class="col">
-        <label for="iss">ISS (%)</label>
-        <input type="number" id="iss" value="5.00" disabled />
-      </div>
-      <div class="col">
-        <label for="pis">PIS (%)</label>
-        <input type="number" id="pis" value="1.65" disabled />
-      </div>
-      <div class="col">
-        <label for="cofins">COFINS (%)</label>
-        <input type="number" id="cofins" value="7.60" disabled />
-      </div>
-    </div>
-    <!-- Parcelas anual -->
-    <div class="row" id="row-parcelas" style="display:none;">
-      <div class="col">
-        <label for="parcelas">Quantidade de parcelas</label>
-        <input type="number" id="parcelas" disabled />
-      </div>
-    </div>
-    <!-- Botão -->
-    <button onclick="calcular()">Calcular</button>
-    <!-- Resultado -->
+      <div id="erro" class="erro"></div>
+    </form>
     <div id="resultado"></div>
+    <div class="exp">
+      <b>Regras:</b>
+      <ul>
+        <li><span class="obrig">*</span> Campos obrigatórios.</li>
+        <li>Período deve estar dentro do mesmo mês/ano.</li>
+        <li>Faturamento: 06 do mês seguinte ao fim do período.</li>
+        <li>Valor Faturado = Quantidade × Preço Unitário (truncado 2 casas).</li>
+        <li>Receita Reconhecida = (Valor ÷ Dias do mês) × Dias prestação [PRORATAREG].</li>
+        <li>Saldo Passivo = (Valor ÷ Dias do mês) × Dias a diferir [PRORATAREG].</li>
+        <li>“Período Apuração” na linha Saldo mostra “Referência: Mês/Ano”.</li>
+      </ul>
+    </div>
   </div>
+
   <script>
-    function toggleParcelas() {
-      const tipo = document.getElementById('tipo').value;
-      document.getElementById('row-parcelas').style.display = tipo === 'anual' ? 'flex' : 'none';
-      document.getElementById('parcelas').disabled = tipo !== 'anual';
+    function trunc2(v){ return Math.trunc(v*100)/100; }
+    function formatBRL(v){ return (typeof v==='number') ? 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2}) : ''; }
+
+    function limparTudo(){ localStorage.clear(); sessionStorage.clear(); location.reload(); }
+
+    function simular(){
+      document.getElementById('erro').textContent='';
+      document.getElementById('resultado').innerHTML='';
+      document.getElementById('btnExport').style.display='none';
+
+      const inicioRaw=document.getElementById('inicio').value;
+      const fimRaw   =document.getElementById('fim').value;
+      const qtd      =parseInt(document.getElementById('qtd').value);
+      const preco    =parseFloat(document.getElementById('preco').value);
+      if(!inicioRaw||!fimRaw||!qtd||qtd<1||!preco||preco<=0){ document.getElementById('erro').textContent='Preencha todos os campos obrigatórios.'; return; }
+
+      const inicio=new Date(inicioRaw+'T00:00');
+      const fim   =new Date(fimRaw   +'T00:00');
+      if(fim<inicio){ document.getElementById('erro').textContent='Data de Fim deve ser ≥ Início.'; return; }
+      if(inicio.getFullYear()!=fim.getFullYear()||inicio.getMonth()!=fim.getMonth()){ document.getElementById('erro').textContent='Período deve estar no mesmo mês/ano.'; return; }
+
+      const diasPrest =Math.floor((fim-inicio)/(1000*60*60*24))+1;
+      const diasMes   =new Date(fim.getFullYear(),fim.getMonth()+1,0).getDate();
+      const valorFat  =trunc2(qtd*preco);
+      const dataFat   =new Date(fim.getFullYear(),fim.getMonth()+1,6);
+      const valorRec  =trunc2((valorFat/diasMes)*diasPrest);
+      const diasDif   =diasMes-diasPrest;
+      const saldo     =trunc2((valorFat/diasMes)*diasDif);
+
+      const mesNames=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      const raz=[
+        {data:dataFat,periodo:`${inicio.toLocaleDateString()} a ${fim.toLocaleDateString()}`,evento:'Faturado',conta:'CAR',    deb:valorFat,cre:''},
+        {data:dataFat,periodo:`${inicio.toLocaleDateString()} a ${fim.toLocaleDateString()}`,evento:'Faturado',conta:'Passivo',deb:'',     cre:valorFat},
+        {data:dataFat,periodo:`${inicio.toLocaleDateString()} a ${fim.toLocaleDateString()}`,evento:'Receita Reconhecida',conta:'Passivo',deb:valorRec,cre:''},
+        {data:dataFat,periodo:`${inicio.toLocaleDateString()} a ${fim.toLocaleDateString()}`,evento:'Receita Reconhecida',conta:'Receita',       deb:'',     cre:valorRec},
+        {data:dataFat,periodo:`Referência: ${mesNames[inicio.getMonth()]}/${inicio.getFullYear()}`,evento:'Saldo de Passivo',conta:'Passivo',deb:'',cre:saldo}
+      ];
+
+      let html='<table><tr><th>Faturamento</th><th>Período Apuração</th><th>Evento</th><th>Conta</th><th>Débito (R$)</th><th>Crédito (R$)</th></tr>';
+      raz.forEach(r=>{
+        const cls=(r.evento==='Saldo de Passivo'&&r.conta==='Passivo')?'saldo-passivo':'evento';
+        html+=`<tr class="${cls}"><td>${r.data.toLocaleDateString()}</td><td>${r.periodo}</td><td>${r.evento}</td><td>${r.conta}</td><td>${formatBRL(r.deb)}</td><td>${formatBRL(r.cre)}</td></tr>`;
+      });
+      html+='</table>';
+      html+=`<p><b>Valor Faturado:</b> ${formatBRL(valorFat)}<br><b>Receita Reconhecida:</b> ${formatBRL(valorRec)}<br><b>Saldo Passivo:</b> ${formatBRL(saldo)}</p>`;
+      document.getElementById('resultado').innerHTML=html;
+      document.getElementById('btnExport').style.display='inline-block';
     }
-    document.addEventListener('DOMContentLoaded', toggleParcelas);
-    function calcular() {
-      const evt = document.getElementById('evento').value;
-      const qtd = parseInt(document.getElementById('qtdLicencas').value, 10);
-      const valorUnitario = parseFloat(document.getElementById('valorUnitario').value);
-      const total = qtd * valorUnitario;
-      const saldoInicial = parseFloat(document.getElementById('saldo').value) || 0;
-      const inicio = new Date(document.getElementById('inicio').value);
-      const fim = new Date(document.getElementById('fim').value);
-      if (isNaN(total) || fim <= inicio) { alert('Verifique os campos obrigatórios.'); return; }
-      if (inicio.getMonth() !== fim.getMonth() || inicio.getFullYear() !== fim.getFullYear()) {
-        alert('Período atravessa mais de um ciclo; apuração mês a mês.');
-      }
-      // Cálculo pró-rata com truncamento por unidade
-      const msDia = 1000 * 60 * 60 * 24;
-      const diasUso = Math.floor((fim - inicio) / msDia);
-      const diasMes = new Date(inicio.getFullYear(), inicio.getMonth()+1, 0).getDate();
-      const rawUnit = (diasUso / diasMes) * valorUnitario;
-      const unitTrunc = Math.floor(rawUnit * 100) / 100;
-      const valorEarned = unitTrunc * qtd;
-      const valorUnearned = Math.round((total - valorEarned + saldoInicial) * 100) / 100;
-      // Tributos sobre Earned
-      const iss = Math.round(valorEarned * 0.05 * 100) / 100;
-      const pis = Math.round(valorEarned * 0.0165 * 100) / 100;
-      const cof = Math.round(valorEarned * 0.076 * 100) / 100;
-      let html = '<table><thead><tr><th>Intervalo</th><th>Earned (R$)</th><th>Saldo de Passivo (R$)</th>' +
-                 '<th>ISS</th><th>PIS</th><th>COFINS</th><th>Write-off</th></tr></thead><tbody>';
-      html += `<tr><td>Serviço entregue</td><td>${valorEarned.toFixed(2)}</td><td>${valorUnearned.toFixed(2)}</td>` +
-              `<td>${iss.toFixed(2)}</td><td>${pis.toFixed(2)}</td><td>${cof.toFixed(2)}</td>` +
-              `<td>${evt === 'cancelamento' ? 'Sim' : 'Não'}</td></tr>`;
-      if (evt !== 'compra') {
-        html += `<tr><td>Saldo de Passivo</td><td>0.00</td><td>${valorUnearned.toFixed(2)}</td>` +
-                `<td>0.00</td><td>0.00</td><td>0.00</td><td>${evt === 'cancelamento' ? 'Sim' : 'Não'}</td></tr>`;
-      }
-      html += '</tbody></table>';
-      document.getElementById('resultado').innerHTML = html;
+
+    function exportarCSV(){
+      const table=document.querySelector('#resultado table'); if(!table)return;
+      let csv='';
+      Array.from(table.rows).forEach(row=>{ const cols=Array.from(row.cells).map(td=>`"${td.textContent.replace(/"/g,'""')}"`); csv+=cols.join(';')+'\r\n'; });
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a'); a.href=url; a.download='razonete_diferimento.csv'; a.click(); URL.revokeObjectURL(url);
     }
+
+    window.onload=function(){ document.getElementById('inicio').value='2025-07-02'; document.getElementById('fim').value='2025-07-04'; document.getElementById('qtd').value='5'; document.getElementById('preco').value='20'; };
   </script>
 </body>
 </html>
