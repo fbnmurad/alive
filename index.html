@@ -3,173 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ferramentas & Wiki</title>
-  <!-- Font Awesome para ícones -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <title>Tools and Wiki</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      display: flex; height: 100vh;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
       color: #333;
-      background: #f4f8fb;
     }
-    .container {
-      display: flex; flex-direction: row; width: 100%;
-    }
+
     nav {
-      width: 260px;
+      width: 250px;
       background-color: #2c3e50;
-      color: #fff;
-      padding: 20px 0 15px 0;
+      color: white;
+      padding-top: 20px;
       display: flex;
       flex-direction: column;
-      align-items: stretch;
-      min-height: 100vh;
     }
-    /* NOVO BLOCO PARA TÍTULO DESTACADO */
-    .menu-title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-size: 1.55em;
-      font-weight: 700;
-      color: #00e5ff;
-      margin-bottom: 26px;
-      padding-bottom: 13px;
-      border-bottom: 2.5px solid #18e1fc;
-      letter-spacing: 1.5px;
-      background: linear-gradient(90deg, #1565c0 0%, #1976d2 100%);
-      border-radius: 0 0 18px 18px;
-      box-shadow: 0 8px 24px -8px #1976d266;
-      text-shadow: 0 2px 8px #0e1a2c55;
+
+    nav h2 {
+      text-align: center;
+      margin-bottom: 20px;
     }
-    .menu-title i {
-      font-size: 1.13em;
-      color: #00e5ff;
-      filter: drop-shadow(0 2px 2px #1976d2bb);
-    }
-    nav h2 { display: none; }
+
     nav ul {
       list-style: none;
-      padding: 0 0 0 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
     }
-    nav li { width: 100%; }
+
+    nav li + li {
+      margin-top: 4px;
+    }
+
     nav a {
-      display: flex; align-items: center; gap: 12px;
-      padding: 12px 22px;
-      border-radius: 8px;
-      color: #eaf6fb;
+      color: white;
       text-decoration: none;
-      font-size: 16px;
-      transition: background 0.17s, color 0.17s;
-      cursor: pointer;
-      font-weight: 500;
-      border-left: 4px solid transparent;
-      position: relative;
+      padding: 12px 20px;
+      display: block;
+      transition: background-color 0.3s;
     }
-    nav a i {
-      min-width: 23px; font-size: 1.11em; opacity: .93;
-    }
-    nav a:hover, nav a.active {
-      background: #1565c0;
-      color: #fff;
-      border-left: 4px solid #18e1fc;
-    }
+
+    nav a:hover,
     nav a.active {
-      background: #1976d2;
-      color: #fff;
-      font-weight: bold;
-      border-left: 4px solid #00e5ff;
-      box-shadow: 0 2px 10px #00518116;
+      background-color: #1abc9c;
     }
-    /* Responsividade */
-    @media (max-width: 900px) {
-      nav { width: 100vw; min-height: unset; flex-direction: row; align-items: flex-start; }
-      nav ul { flex-direction: row; gap: 0; width: 100vw; }
-      nav li { flex: 1 1 0; }
-      nav a { border-radius: 0; justify-content: center; padding: 13px 4px; border-left: none; border-bottom: 3px solid transparent; }
-      nav a:hover, nav a.active { border-left: none; border-bottom: 3px solid #00e5ff; }
-      .menu-title {
-        font-size: 1.17em; padding-bottom: 7px; border-radius: 0 0 12px 12px; margin-bottom: 16px;
-      }
+
+    .container {
+      display: flex;
+      width: 100%;
     }
+
     iframe {
       flex: 1;
       border: none;
       width: 100%;
-      background: #fff;
-      min-height: 100vh;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+      }
+      nav ul {
+        display: flex;
+      }
+      nav li {
+        flex: 1;
+      }
+      nav a {
+        text-align: center;
+        padding: 10px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <nav aria-label="Menu de ferramentas">
-      <div class="menu-title">
-        <i class="fas fa-toolbox"></i>
-        <span>Tools</span>
-      </div>
+      <h2>Ferramentas</h2>
       <ul>
-        <li>
-          <a href="https://fbnmurad.github.io/alive/ValorProRata.html" target="conteudo" class="active" title="Cálculo de valor proporcional">
-            <i class="fas fa-calculator"></i> Calcular Pró-Rata
-          </a>
-        </li>
-        <li>
-          <a href="https://fbnmurad.github.io/alive/CompararTexto.html" target="conteudo" title="Diff visual de textos">
-            <i class="fas fa-code-branch"></i> Comparador &amp; Merge
-          </a>
-        </li>
-        <li>
-          <a href="https://fbnmurad.github.io/alive/CalculadoraDatas.html" target="conteudo" title="Adição e diferença de datas">
-            <i class="fas fa-calendar-alt"></i> Calculadora de Datas
-          </a>
-        </li>
-        <li>
-          <a href="https://fbnmurad.github.io/alive/ContarCaracter.html" target="conteudo" title="Contar quantidade de caracteres">
-            <i class="fas fa-sort-numeric-up"></i> Contar Caracteres
-          </a>
-        </li>
-        <li>
-          <a href="https://fbnmurad.github.io/alive/conversor.html" target="conteudo" title="Caixa alta/baixa/capitalizar">
-            <i class="fas fa-text-height"></i> Conversor de Texto
-          </a>
-        </li>
-        <li>
-          <a href="https://fbnmurad.github.io/alive/GeradorCpfCnpj.html" target="conteudo" title="Gerador de CPF e CNPJ de teste">
-            <i class="fas fa-id-card"></i> Gerar CPF/CNPJ
-          </a>
-        </li>
-        <li>
-          <a href="https://fbnmurad.github.io/alive/GeradorCartaoCredito.html" target="conteudo" title="Gerador de cartões para teste">
-            <i class="fas fa-credit-card"></i> Gerar Cartão de Crédito
-          </a>
-        </li>
-        <li>
-          <a href="https://fbnmurad.github.io/alive/DIFReceita.html" target="conteudo" title="Diferimento de Receita">
-            <i class="fas fa-file-invoice-dollar"></i> DIFReceita
-          </a>
-        </li>
-        <li>
-          <a href="https://fbnmurad.github.io/alive/Corretor.html" target="conteudo" title="Corretor Ortográfico & Gramatical">
-		  <i class="fa-solid fa-spell-check"></i>Corretor
-          </a>
-        </li>
+        <li><a href="https://fbnmurad.github.io/alive/ValorProRata.html" target="conteudo" class="active">Calcular Pró-Rata</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/CompararTexto.html" target="conteudo">Comparador & Merge</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/CalculadoraDatas.html" target="conteudo">Calcular Datas</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/ContarCaracter.html" target="conteudo">Contar Caracteres</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/GeradorCpfCnpj.html" target="conteudo">Gerar CPF/CNPJ</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/GeradorCartaoCredito.html" target="conteudo">Gerar Cartão de Crédito</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/DIFReceita.html" target="conteudo">DIFReceita</a></li>
       </ul>
     </nav>
+
     <iframe name="conteudo" title="Ferramenta em exibição" src="https://fbnmurad.github.io/alive/ValorProRata.html"></iframe>
   </div>
+
   <script>
-    // Torna o item do menu ativo ao clicar
-    document.querySelectorAll('nav a').forEach(a => {
-      a.addEventListener('click', function(e) {
-        document.querySelectorAll('nav a.active').forEach(el => el.classList.remove('active'));
+    // Gerencia classe .active nos links do menu
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', function() {
+        document.querySelector('nav a.active')?.classList.remove('active');
         this.classList.add('active');
       });
     });
