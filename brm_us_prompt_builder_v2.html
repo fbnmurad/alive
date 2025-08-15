@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oracle BRM — Prompt Mestre (Instruções + Parametrizações + US)</title>
+<style>
+  :root{--bg:#0b1020;--panel:#0e1630;--ink:#e6eefc;--muted:#9bb2ff;--line:#1f2b4a;--accent:#38bdf8;--ok:#22c55e;--warn:#f59e0b}
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(160deg,#0b1020,#0c1430 60%);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Inter,Roboto,Ubuntu}
+  header{padding:18px 20px;border-bottom:1px solid var(--line);background:#0a1328aa;backdrop-filter:blur(5px);position:sticky;top:0}
+  h1{margin:0 0 6px 0;font-size:20px}
+  .sub{color:var(--muted);font-size:12px}
+  .wrap{max-width:1180px;margin:16px auto;padding:0 16px 36px;display:grid;grid-template-columns:1fr;gap:16px}
+  .card{background:linear-gradient(180deg,#0b132c,#0b1228);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 28px #0006}
+  h2{margin:0 0 8px 0;font-size:16px}
+  label{display:block;margin:8px 0 6px;font-weight:600}
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    width:100%;background:#0b1533;border:1px solid #203150;border-radius:12px;padding:10px 12px;color:var(--ink);outline:none
+  }
+  textarea{min-height:96px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .muted{color:var(--muted);font-size:12px}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  button{padding:10px 14px;border-radius:12px;border:1px solid #25416b;background:#0c2340;color:#dceafe;font-weight:700;cursor:pointer}
+  .primary{background:linear-gradient(180deg,#0ea5e9,#0284c7);border:0;color:white}
+  .good{background:linear-gradient(180deg,#22c55e,#16a34a);border:0;color:white}
+  .ghost{background:transparent;border:1px solid #2a3e64;color:#c9d9ff}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace}
+  .hidden{display:none!important}
+  .kv{display:grid;grid-template-columns:1.3fr .8fr .9fr 1.2fr 1.2fr;gap:8px}
+  .kvhead{display:grid;grid-template-columns:1.3fr .8fr .9fr 1.2fr 1.2fr;gap:8px;color:var(--muted);font-size:12px;margin:6px 0}
+  .status{font-size:12px;border-radius:999px;padding:4px 8px;background:#173159;border:1px solid #275392}
+  .tag{padding:2px 8px;border-radius:999px;background:#182852;border:1px solid #27407a;margin-right:6px;font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Oracle BRM — Prompt Mestre (IA)</h1>
+  <div class="sub">Gera um único texto contendo: INSTRUÇÕES (fundação & regras) + PARAMETRIZAÇÕES + HISTÓRIA (US). Tudo pronto para colar em outra IA.</div>
+</header>
+
+<div class="wrap">
+
+  <!-- 1) Cabeçalho -->
+  <section class="card">
+    <h2>1) Cabeçalho da História</h2>
+    <div class="row3">
+      <div>
+        <label for="tipoUS">Tipo de US</label>
+        <select id="tipoUS">
+          <option>Técnica</option>
+          <option>Funcional</option>
+        </select>
+        <div class="muted">Quando “Funcional”, campos técnicos ficam ocultos.</div>
+      </div>
+      <div>
+        <label for="acao">Ação</label>
+        <select id="acao">
+          <option>criar</option><option>alterar</option><option>corrigir</option>
+          <option>descontinuar</option><option>migrar</option><option>clonar</option>
+        </select>
+      </div>
+      <div>
+        <label for="persona">Persona (COMO)</label>
+        <input id="persona" type="text" value="analista do BRM">
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="assunto">Assunto</label>
+        <input id="assunto" type="text" placeholder="Ex.: Pré-pago Bill Now com fatura técnica">
+      </div>
+      <div>
+        <label for="objetivo">Objetivo</label>
+        <input id="objetivo" type="text" placeholder="Ex.: Parametrizar oferta no PDC e vincular a /billinfo pré-paga">
+      </div>
+    </div>
+  </section>
+
+  <!-- 2) Produto & Billing -->
+  <section class="card">
+    <h2>2) Produto & Billing</h2>
+    <div class="row">
+      <div>
+        <label for="tipoProduto">Tipo de produto (BRM/PDC)</label>
+        <select id="tipoProduto">
+          <optgroup label="Charge Offers">
+            <option>Recurring — Cycle Forward</option>
+            <option>Recurring — Cycle Arrear</option>
+            <option>One-time — Purchase Fee</option>
+            <option>One-time — Cancellation Fee</option>
+            <option>Usage — Rated Event</option>
+            <option>Non-Rated Charge</option>
+          </optgroup>
+          <optgroup label="Discount Offers">
+            <option>Discount — Recorrente</option>
+            <option>Discount — Uso</option>
+            <option>Discount — One-time</option>
+          </optgroup>
+          <optgroup label="Outros">
+            <option>Plan</option><option>Deal</option><option>Bundle</option>
+            <option>Grant / Balance Credit</option><option>Adjustment</option><option>Tax</option>
+          </optgroup>
+        </select>
+      </div>
+      <div>
+        <label for="modeloFat">Modelo de faturamento</label>
+        <select id="modeloFat">
+          <option>Pré-pago (Bill Now)</option>
+          <option selected>Pós-pago (ciclo)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div>
+        <label for="ciclo">Ciclo</label>
+        <select id="ciclo">
+          <option value="">Selecione…</option>
+          <option value="mensal" selected>Mensal</option>
+          <option value="trimestral">Trimestral</option>
+          <option value="semestral">Semestral</option>
+          <option value="anual">Anual</option>
+          <option value="event_based">Sem ciclo (one-time/event-based)</option>
+        </select>
+      </div>
+      <div>
+        <label for="dom">DOM (dia do mês)</label>
+        <input id="dom" type="number" min="1" max="31" value="1">
+        <div class="muted">Se “Mensal”, DOM é 1 automaticamente.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3) Rating & PDC -->
+  <section class="card tech">
+    <h2>3) Rating & PDC</h2>
+    <div class="row3">
+      <div>
+        <label for="rum">RUM (métrica)</label>
+        <select id="rum"></select>
+      </div>
+      <div>
+        <label for="unidade">Unidade</label>
+        <select id="unidade"></select>
+      </div>
+      <div>
+        <label for="impactCat">Impact Category</label>
+        <input id="impactCat" type="text" placeholder="usage, purchase, cycle_forward, discount">
+      </div>
+    </div>
+    <label for="preco">Preços & descontos</label>
+    <textarea id="preco" placeholder="Ex.: BRL 120/mês; desconto 10% nos 3 primeiros ciclos; arredondamento: bankers."></textarea>
+  </section>
+
+  <!-- 4) GL & Impostos -->
+  <section class="card">
+    <h2>4) Contábil (GL) & Impostos</h2>
+    <div class="row">
+      <div>
+        <label for="impostos">Impostos (multi)</label>
+        <select id="impostos" multiple size="7">
+          <option selected>PIS</option><option selected>COFINS</option><option selected>ISS</option>
+          <option>ICMS</option><option>IOF</option><option>IPI</option><option>OUTRO</option>
+        </select>
+        <input id="impExtra" type="text" placeholder="Adicionar outro imposto (opcional)" style="margin-top:8px">
+        <label for="regime">Regime</label>
+        <select id="regime"><option>net</option><option>gross</option><option>tax-only</option></select>
+      </div>
+      <div>
+        <label>GL / Contábil — CoA & GL_IDs (inclua Conta Financeira)</label>
+        <div class="kvhead"><div>Descrição</div><div>GL_ID</div><div>Tipo</div><div>Conta Contábil (CoA)</div><div>Conta Financeira</div></div>
+        <div id="glRows"></div>
+        <div class="btns" style="margin-top:6px">
+          <button id="addGL">+ Adicionar GL</button>
+          <button class="ghost" id="presetGL">Popular exemplos</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5) Pagamento & Reconhecimento -->
+  <section class="card">
+    <h2>5) Pagamento & Reconhecimento</h2>
+    <div class="row3">
+      <div>
+        <label for="payinfo">Forma de pagamento (/payinfo)</label>
+        <input id="payinfo" type="text" placeholder="Boleto, Cartão de crédito, Débito, PIX…">
+        <div class="muted">Auto: Mensal → Boleto; Anual → Cartão de crédito.</div>
+      </div>
+      <div>
+        <label for="revrec">Reconhecimento de receita</label>
+        <select id="revrec"><option>event-based</option><option>deliverable-based</option></select>
+      </div>
+      <div>
+        <label for="difcusto">Diferimento de custo</label>
+        <input id="difcusto" type="text" placeholder="Opcional (ex.: amortizar em 12 meses)">
+      </div>
+    </div>
+  </section>
+
+  <!-- 6) Objetos & Módulos do MER -->
+  <section class="card tech">
+    <h2>6) Objetos & Módulos do MER</h2>
+    <div class="row">
+      <div>
+        <label for="modulos">Módulos envolvidos</label>
+        <select id="modulos" multiple size="8">
+          <option>Account</option><option>Billing</option><option>Pricing/PDC</option><option>Payment</option>
+          <option>Collections</option><option>Rating</option><option>Event Management</option><option>Contábil/Fiscal</option>
+        </select>
+      </div>
+      <div>
+        <label for="objetos">Objetos do MER</label>
+        <select id="objetos" multiple size="10">
+          <option>/account</option><option>/billinfo</option><option>/service</option><option>/payinfo</option>
+          <option>/product</option><option>/deal</option><option>/purchased_product</option><option>/purchased_discount</option>
+          <option>/event</option><option>/item</option><option>/invoice</option><option>/journal</option><option>/ledger_report</option>
+          <option>/rate_plan</option><option>/balance_group</option>
+        </select>
+      </div>
+    </div>
+    <label for="validacoes">Validações & regras de negócio</label>
+    <textarea id="validacoes" placeholder="Ex.: Pré-pago exige DOM; idempotência; rejeitar RUM ausente."></textarea>
+  </section>
+
+  <!-- 7) Fluxo/Descrição/Critérios -->
+  <section class="card">
+    <h2>7) Fluxo, Descrição & Critérios</h2>
+    <label for="fluxo">Fluxo da Transação</label>
+    <textarea id="fluxo" placeholder="Passo a passo da parametrização PDC, associação a deal/plan, GLIDs, etc."></textarea>
+    <label for="descricao">Descrição (objetos/validações/regras)</label>
+    <textarea id="descricao" placeholder="Objetos/classes/atributos; arredondamento; flags e tratamentos."></textarea>
+    <label for="criterios">Critérios de Aceite</label>
+    <textarea id="criterios" placeholder="Checks verificáveis. O sistema adiciona bullets automáticos com base nos campos."></textarea>
+  </section>
+
+  <!-- Saída -->
+  <section class="card">
+    <h2>Prompt Mestre — Instruções + Parametrizações + US</h2>
+    <div class="btns">
+      <button class="primary" id="btnGerar">Gerar Prompt</button>
+      <button class="good" id="btnCopiar">Copiar</button>
+      <button class="ghost" id="btnSalvar">Baixar .txt</button>
+      <span class="status" id="status">pronto</span>
+    </div>
+    <textarea id="saida" class="mono" style="margin-top:10px;min-height:280px" placeholder="O texto completo aparecerá aqui…"></textarea>
+  </section>
+
+</div>
+
+<script>
+  // Helpers
+  const $ = id => document.getElementById(id);
+  const msel = sel => Array.from($(sel).selectedOptions || []).map(o=>o.value);
+  function toggleTech(){
+    const isFunc = $('tipoUS').value === 'Funcional';
+    document.querySelectorAll('.tech').forEach(s => s.classList.toggle('hidden', isFunc));
+  }
+  $('tipoUS').addEventListener('change', toggleTech);
+
+  // Ciclo → DOM=1 e /payinfo
+  function onCiclo(){
+    const c = $('ciclo').value;
+    if(c==='mensal'){ $('dom').value = 1; $('payinfo').value = 'Boleto'; }
+    else if(c==='anual'){ $('payinfo').value = 'Cartão de crédito'; }
+  }
+  $('ciclo').addEventListener('change', onCiclo);
+
+  // RUMs e unidades
+  const RUM_UNITS = {
+    EVENT:['evento','transação'],
+    DURATION:['segundos','minutos','horas'],
+    OCTETS:['bytes','KB','MB','GB'],
+    VOLUME:['KB','MB','GB','TB'],
+    DOWNLOAD_OCTETS:['bytes','KB','MB','GB'],
+    UPLOAD_OCTETS:['bytes','KB','MB','GB'],
+    BYTES:['bytes','KB','MB','GB'],
+    BANDWIDTH:['kbps','mbps'],
+    MESSAGES:['mensagens'],
+    CALLS:['chamadas'],
+    SESSIONS:['sessões'],
+    CONTENT:['itens'],
+    LICENSES:['licenças'],
+    TRANSACTIONS:['transações'],
+    USAGE_TIME:['segundos','minutos','horas'],
+    DATA_RECORDS:['registros']
+  };
+  function fillRUMs(){
+    const r = $('rum'); r.innerHTML='';
+    Object.keys(RUM_UNITS).forEach(k => { const o=document.createElement('option'); o.textContent=k; r.appendChild(o); });
+    const o=document.createElement('option'); o.value='__OUTRO'; o.textContent='OUTRO (informar na Descrição)'; r.appendChild(o);
+    fillUnits();
+  }
+  function fillUnits(){
+    const u = $('unidade'); u.innerHTML='';
+    (RUM_UNITS[$('rum').value] || ['unidade']).forEach(x => { const o=document.createElement('option'); o.textContent=x; u.appendChild(o); });
+  }
+  $('rum').addEventListener('change', fillUnits);
+
+  // GL table
+  function addGLRow(v={d:'',id:'',t:'usage',coa:'',fin:''}){
+    const row = document.createElement('div');
+    row.className = 'kv';
+    row.innerHTML = `
+      <input type="text" placeholder="Descrição" value="${v.d}">
+      <input type="text" placeholder="GL_ID (ex.: 7001)" value="${v.id}">
+      <select>
+        <option ${v.t==='usage'?'selected':''}>usage</option>
+        <option ${v.t==='cycle'?'selected':''}>cycle</option>
+        <option ${v.t==='purchase'?'selected':''}>purchase</option>
+        <option ${v.t==='discount'?'selected':''}>discount</option>
+        <option ${v.t==='tax'?'selected':''}>tax</option>
+        <option ${v.t==='ajuste'?'selected':''}>ajuste</option>
+        <option ${v.t==='payment'?'selected':''}>payment</option>
+        <option ${v.t==='refund'?'selected':''}>refund</option>
+      </select>
+      <input type="text" placeholder="Conta Contábil (CoA)" value="${v.coa}">
+      <input type="text" placeholder="Conta Financeira (Banco/Caixa)" value="${v.fin}">
+    `;
+    $('glRows').appendChild(row);
+  }
+  $('addGL').addEventListener('click', ()=>addGLRow());
+  $('presetGL').addEventListener('click', ()=>{
+    addGLRow({d:'Receita assinatura',id:'7002',t:'cycle',coa:'3.1.1.02 Receita de Assinaturas',fin:'1.1.1.01 Banco'});
+    addGLRow({d:'Uso de dados',id:'7001',t:'usage',coa:'3.1.1.01 Receita de Serviços',fin:'1.1.1.01 Banco'});
+    addGLRow({d:'Impostos',id:'2401',t:'tax',coa:'2.1.3.05 Impostos a Recolher',fin:'1.1.1.01 Banco'});
+  });
+
+  // Foundation / instructions (fixed text)
+  const FUNDACAO = `Você é um especialista funcional em Oracle Communications Billing and Revenue Management (BRM), com conhecimento nos módulos de Account, Billing, Pricing, Payment, Collections, Rating, Event Management e Contábil/Fiscal (GL, Journal, Ledger).
+
+Cenário de Integrações e Fluxos
+• O BRM recebe eventos de faturamento oriundos do SFA, que aciona a MuleSoft, que aciona o GTW, que entrega ao BRM.
+• O BRM recebe informações do HUB de Pagamentos, que envia eventos quando o cliente paga a fatura, para que seja efetuada a baixa no billing.
+• O BRM, quando necessário, envia informações de cobrança para o Cyber 3, para que, em caso de inadimplência, a cobrança seja executada.
+• O BRM gera JSON das faturas de clientes pós-pago, para que as faturas sejam impressas na Hyper (SmartBill).
+• Os clientes pré-pago não têm geração de JSON para fatura em PDF; recebem apenas uma fatura técnica, pois no Bill Now o faturamento já inicia pago.
+
+Base Conceitual
+• Estrutura de objetos do BRM (ex.: /account, /billinfo, /service, /payinfo, /purchased_product, /event, /deal, /product, /journal, /ledger_report) conforme MER 7.5.
+• Entendimento de processos de faturamento, arrecadação, tarifação, diferimento de receita/custo e contabilização.
+• Conceitos como Billing Segment, DOM, GL_ID, RUM, Bill Now, Pipeline e Opcode.
+• Uso de classes, campos (PIN_FLD_*), chaves primárias/estrangeiras e relacionamentos funcionais entre entidades.
+
+Sumário de Conteúdos para o Projeto
+1. Fundamentos & Glossário BRM
+2. Catálogo de Funcionalidades por Módulo
+3. MER por Módulo
+4. Pricing & PDC
+5. Billing (Pós e Pré-pago) & Bill Now
+6. Payments & Accounting Link
+7. Collections
+8. Rating & Pipeline
+9. Event Management
+10. Reconhecimento de Receita & Diferimento
+11. Contábil/Fiscal (GL, Journal, Ledger Report)
+12. Relatórios & Observabilidade
+13. Casos de Uso & Histórias de Usuário
+14. Diretrizes de Qualidade
+15. Artefatos de Entrega
+
+Regras para Criação de US (Técnica ou Funcional)
+1. Usar a Fundação do BRM como referência obrigatória.
+2. Validar nomenclaturas/atributos/relacionamentos na documentação oficial.
+3. Manter escopo exclusivo no BRM (sem prever ajustes em outros sistemas).
+4. Não criar US sem as informações mínimas obrigatórias.
+5. Solicitar ao usuário informações personalizadas antes de iniciar.
+
+Informações Mínimas Obrigatórias (preenchidas abaixo no bloco de Parametrizações)
+• Tipo de produto; modelo de faturamento (ciclo/DOM); RUM/unidade; preços/ descontos; impostos e regime; GL/Contábil (CoA e GL_ID por tipo); /payinfo; regras de reconhecimento e, se aplicável, diferimento de custo.
+
+Formato da Resposta Final — História Técnica ou Funcional
+Escopo
+COMO <analista do BRM>
+QUERO <objetivo da US>
+PARA <garantia que o objetivo foi atingido>
+Fluxo da Transação
+Descrever tecnicamente o que precisa ocorrer no BRM para parametrizar o produto no PDC, incluindo a criação e associação de atributos e regras no catálogo.
+Descrição
+Detalhar o que precisa ser feito: objetos, classes e atributos do BRM/PDC, validações, regras de negócio e tratamentos necessários.
+Critérios de Aceite
+COMO <analista do BRM>
+QUERO <o que foi entregue>
+PARA <validar que a entrega foi feita>
+(Sempre que possível, citar objetos/classes do MER e relacionar com faturamento, rating, cobrança ou contabilização, usando terminologia oficial Oracle BRM.)`;
+
+  // Build master prompt
+  function buildPrompt(){
+    // Auto hints
+    const taxes = msel('impostos').concat($('impExtra').value ? [$('impExtra').value] : []);
+    const glLines = Array.from(document.querySelectorAll('#glRows .kv')).map(r => {
+      const [d,id,t,coa,fin] = Array.from(r.querySelectorAll('input,select')).map(el=>el.value.trim());
+      return (id||coa||fin) ? `• ${d||'—'} | GL_ID=${id||'—'} (${t||'—'}) | CoA=${coa||'—'} | Financeira=${fin||'—'}` : null;
+    }).filter(Boolean).join('\n') || '• (GLs a definir)';
+    const mods = msel('modulos');
+    const objs = msel('objetos');
+
+    // Escopo (US)
+    const escopo = `Escopo
+COMO ${$('persona').value || 'analista do BRM'}
+QUERO ${$('acao').value} ${$('assunto').value || '(assunto)'}
+PARA ${$('objetivo').value || '(objetivo)'}`;
+
+    // Fluxo (US)
+    const fluxoUser = $('fluxo').value.trim();
+    const fluxo = fluxoUser || `Parametrizar no PDC: tipo=${$('tipoProduto').value}; modelo=${$('modeloFat').value}; RUM=${$('rum').value} (${ $('unidade').value||'unidade'}).
+Criar Charge/Discount Offers, associar a deal/plan; versionar conforme vigência.
+Vincular a /billinfo (ciclo=${$('ciclo').value||'n/a'}, DOM=${$('dom').value||'n/a'}); mapear GL_IDs; aplicar impostos (${taxes.join(', ')||'n/a'}) em regime ${$('regime').value||'n/a'}.`;
+
+    // Descrição (US)
+    const descUser = $('descricao').value.trim();
+    const desc = descUser || `Objetos do MER: ${objs.length? objs.join(', '): '/account, /billinfo, /service, /purchased_product, /event, /item, /invoice, /journal, /ledger_report'}.
+Pricing/PDC: RUM=${$('rum').value}; unidade=${$('unidade').value||'n/a'}; preços/descontos=(${ $('preco').value || 'definir' }).
+Billing: modelo=${$('modeloFat').value}; ciclo=${$('ciclo').value||'n/a'}; DOM=${$('dom').value||'n/a'}; pré-pago usa fatura técnica.
+Payment: /payinfo=${$('payinfo').value||'definir'}; validações=${$('validacoes').value||'idempotência/aceitação'}.
+GL/Contábil:
+${glLines}
+Impostos: ${taxes.join(', ')||'n/a'} (regime ${$('regime').value||'n/a'}).
+Reconhecimento de receita: ${$('revrec').value||'event-based'}; Diferimento de custo: ${$('difcusto').value||'n/a'}.
+Módulos envolvidos: ${mods.length? mods.join(', '): 'Pricing/PDC, Billing, Payment, Contábil/Fiscal, Rating'}.`;
+
+    // Critérios (US)
+    const auto = [];
+    if($('ciclo').value==='mensal' && $('dom').value==='1') auto.push('DOM=1 para ciclo mensal');
+    if($('modeloFat').value.indexOf('Pré-pago')===0) auto.push('Bill Now com fatura técnica gerada');
+    if($('rum').value) auto.push(`Rating configurado para RUM ${$('rum').value}/${$('unidade').value||'unidade'}`);
+    if(taxes.length) auto.push(`Impostos aplicados: ${taxes.join(', ')} (regime ${$('regime').value||'n/a'})`);
+    if($('payinfo').value) auto.push(`/payinfo padrão: ${$('payinfo').value}`);
+    auto.push(`Reconhecimento de receita: ${$('revrec').value||'(definir)'}`);
+    const criterios = ( $('criterios').value.trim()
+      ? $('criterios').value.trim().split('\n').map(s=>`- ${s}`).join('\n')
+      : auto.map(s=>`- ${s}`).join('\n') );
+
+    // Parametrizações (preenchidas no formulário)
+    const params = `PARAMETRIZAÇÕES (preenchidas pelo formulário)
+- Tipo de US: ${$('tipoUS').value} | Ação: ${$('acao').value}
+- Persona: ${$('persona').value}
+- Assunto: ${$('assunto').value}
+- Objetivo: ${$('objetivo').value}
+- Tipo de produto: ${$('tipoProduto').value}
+- Modelo de faturamento: ${$('modeloFat').value}
+- Ciclo: ${$('ciclo').value} | DOM: ${$('dom').value}
+- RUM: ${$('rum').value} | Unidade: ${$('unidade').value}
+- Impact Category: ${$('impactCat').value||'(n/a)'}
+- Preços/Descontos: ${$('preco').value||'(n/a)'}
+- Impostos: ${taxes.join(', ')||'(n/a)'} | Regime: ${$('regime').value}
+- GL/Contábil:\n${glLines}
+- /payinfo: ${$('payinfo').value||'(n/a)'} | RevRec: ${$('revrec').value} | Dif. Custo: ${$('difcusto').value||'(n/a)'}
+- Módulos: ${mods.join(', ')||'(n/a)'} | Objetos MER: ${objs.join(', ')||'(n/a)'}
+- Validações: ${$('validacoes').value||'(n/a)'}`;
+
+    // Master prompt: Instructions + Params + US
+    const master = `### INSTRUÇÕES PARA IA (NÃO EDITAR)
+${FUNDACAO}
+
+### PARAMETRIZAÇÕES (COPIADAS DO FORMULÁRIO)
+${params}
+
+### HISTÓRIA TÉCNICA/ FUNCIONAL — FORMATO EXATO
+${escopo}
+
+Fluxo da Transação
+${fluxo}
+
+Descrição
+${desc}
+
+Critérios de Aceite
+${criterios}
+`;
+
+    $('saida').value = master;
+    $('status').textContent = 'gerado';
+  }
+
+  // Copy & download
+  function copiar(){ navigator.clipboard.writeText($('saida').value); $('status').textContent='copiado'; }
+  function salvar(){
+    const blob = new Blob([$('saida').value], {type:'text/plain;charset=utf-8'});
+    const a = document.createElement('a'); a.download = 'prompt_brm_mestre.txt'; a.href = URL.createObjectURL(blob); a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  }
+
+  // init
+  function init(){
+    toggleTech(); fillRUMs(); onCiclo(); addGLRow();
+    $('btnGerar').addEventListener('click', buildPrompt);
+    $('btnCopiar').addEventListener('click', copiar);
+    $('btnSalvar').addEventListener('click', salvar);
+  }
+  document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
