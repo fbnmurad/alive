@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solicitação de Observabilidade</title>
+  <!-- Elastic APM RUM -->
+  <script src="https://cdn.elastic.co/observability/apm-rum.js" defer></script>
+  <script defer>
+    window.addEventListener('load', () => {
+      if (typeof elasticApm === 'undefined') {
+        console.warn('Elastic APM not loaded');
+        return;
+      }
+      const apm = elasticApm.init({
+        serviceName: 'observability-form-frontend',
+        serverUrl: 'https://your-elastic-apm-server',
+        environment: 'production',
+        pageLoadTransactionName: 'ObservFormPageLoad'
+      });
+      window.apm = apm;
+    });
+  </script>
+  <style>
+    :root {
+      --primary-color: #406be7;
+      --primary-hover: #2b43a5;
+      --background-color: #f4f6f8;
+      --container-bg: #fff;
+      --text-color: #223063;
+      --input-bg: #f8fafc;
+      --border-color: #bfc8d2;
+    }
+    body {
+      background: var(--background-color);
+      color: var(--text-color);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .container {
+      background: var(--container-bg);
+      margin: 40px 20px;
+      padding: 28px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      max-width: 900px;
+      width: 100%;
+    }
+    h2 { text-align: center; color: var(--primary-hover); margin-bottom: 24px; }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .col {
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    label {
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+    }
+    .tooltip-indicator {
+      display: inline-block;
+      margin-left: 6px;
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+      text-align: center;
+      border-radius: 50%;
+      background: var(--primary-color);
+      color: #fff;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: help;
+    }
+    input, select, textarea {
+      padding: 8px 10px;
+      font-size: 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--input-bg);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary-hover); }
+    textarea { resize: vertical; min-height: 60px; }
+    .error-message { color: red; font-size: 12px; margin-top: 4px; display: none; }
+    .buttons { text-align: right; margin-top: 24px; }
+    button {
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-left: 8px;
+    }
+    button:hover { background: var(--primary-hover); }
+    #reviewSection { display: none; }
+    #spinner {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    #spinner .loader {
+      border: 4px solid var(--border-color);
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      display: none;
+    }
+    #toast.show { display: block; }
+  </style>
+</head>
+<body>
+  <div id="spinner"><div class="loader"></div></div>
+  <div id="toast" role="alert" aria-live="assertive"></div>
+  <div class="container">
+    <div id="formSection">
+      <h2>Formulário de Observabilidade</h2>
+      <form id="observForm" novalidate>
+        <div class="row"><div class="col"><label for="idSolicitacao">ID da Solicitação<span class="tooltip-indicator" id="tip-idSolicitacao" title="Um protocolo único que identifica a demanda.">i</span></label><input type="number" id="idSolicitacao" name="idSolicitacao" aria-describedby="tip-idSolicitacao" placeholder="Ex: 1" required /><small class="error-message" id="error-idSolicitacao"></small></div></div>
+        <div class="row"><div class="col"><label for="areaNegocio">Área de Negócio<span class="tooltip-indicator" id="tip-areaNegocio" title="Selecione a área de negócio solicitante.">i</span></label><select id="areaNegocio" name="areaNegocio" aria-describedby="tip-areaNegocio" required></select><small class="error-message" id="error-areaNegocio"></small></div></div>
+        <div class="row"><div class="col"><label for="nomeFuncionalidade">Nome da Funcionalidade no BRM<span class="tooltip-indicator" id="tip-nomeFuncionalidade" title="Rótulo curto da funcionalidade.">i</span></label><input type="text" id="nomeFuncionalidade" name="nomeFuncionalidade" aria-describedby="tip-nomeFuncionalidade" placeholder="Ex: Autorização de Pagamento" required /><small class="error-message" id="error-nomeFuncionalidade"></small></div></div>
+        <div class="row"><div class="col"><label for="descricaoProcesso">Descrição do Processo<span class="tooltip-indicator" id="tip-descricaoProcesso" title="Explique em português claro o fluxo.">i</span></label><textarea id="descricaoProcesso" name="descricaoProcesso" aria-describedby="tip-descricaoProcesso" placeholder="Descreva o fluxo..." required></textarea><small class="error-message" id="error-descricaoProcesso"></small></div></div>
+        <div class="row"><div class="col"><label for="objetoBRM">Objeto/Tabela ou API BRM Relacionada<span class="tooltip-indicator" id="tip-objetoBRM" title="Tabela, opcode PCM_OP_*, API REST, etc.">i</span></label><select id="objetoBRM" name="objetoBRM" aria-describedby="tip-objetoBRM" required></select><small class="error-message" id="error-objetoBRM"></small></div></div>
+        <div class="row"><div class="col"><label for="eventoCritico">Evento Crítico a Monitorar<span class="tooltip-indicator" id="tip-eventoCritico" title="Sintoma que prova falha ou anomalia.">i</span></label><select id="eventoCritico" name="eventoCritico" aria-describedby="tip-eventoCritico" required></select><small class="error-message" id="error-eventoCritico"></small></div></div>
+        <div class="row"><div class="col"><label for="frequencia">Frequência Esperada do Evento<span class="tooltip-indicator" id="tip-frequencia" title="1/min, 1/h, diário, semanal… para calibrar painéis.">i</span></label><select id="frequencia" name="frequencia" aria-describedby="tip-frequencia" required></select><small class="error-message" id="error-frequencia"></small></div></div>
+        <div class="row"><div class="col"><label for="condicaoAlarme">Condição de Alarme<span class="tooltip-indicator" id="tip-condicaoAlarme" title="Regra do Elastic Watcher: gt, lt, gte, lte, etc.">i</span></label><select id="condicaoAlarme" name="condicaoAlarme" aria-describedby="tip-condicaoAlarme" required></select><small class="error-message" id="error-condicaoAlarme"></small></div></div>
+        <div class="row"><div class="col"><label for="acaoFalha">Ação em Caso de Falha<span class="tooltip-indicator" id="tip-acaoFalha" title="Playbook resumido: quem ligar, script, onde abrir incidente.">i</span></label><textarea id="acaoFalha" name="acaoFalha" aria-describedby="tip-acaoFalha" placeholder="Ex: Abrir incidente NOC; acionar equipe." required></textarea><small class="error-message" id="error-acaoFalha"></small></div></div>
+        <div class="row"><div class="col"><label for="prioridade">Prioridade<span class="tooltip-indicator" id="tip-prioridade" title="Alta / Média / Baixa — impacto e urgência.">i</span></label><select id="prioridade" name="prioridade" aria-describedby="tip-prioridade" required></select><small class="error-message" id="error-prioridade"></small></div><div class="col"><label for="responsavelFuncional">Responsável Funcional<span class="tooltip-indicator" id="tip-responsavelFuncional" title="Dono do processo.">i</span></label><input type="email" id="responsavelFuncional" name="responsavelFuncional" aria-describedby="tip-responsavelFuncional" placeholder="Ex: joao.silva@empresa.com" required /><small class="error-message" id="error-responsavelFuncional"></small></div><div class="col"><label for="responsavelTecnico">Responsável Técnico<span class="tooltip-indicator" id="tip-responsavelTecnico" title="Engenheiro/SRE.">i</span></label><input type="email" id="responsavelTecnico" name="responsavelTecnico" aria-describedby="tip-responsavelTecnico" placeholder="Ex: pag_sre@empresa.com" required /><small class="error-message" id="error-responsavelTecnico"></small></div></div>
+        <div class="row"><div class="col"><label for="observacoes">Observações Adicionais<span class="tooltip-indicator" id="tip-observacoes" title="Detalhes extras: roadmap, janelas.">i</span></label><textarea id="observacoes" name="observacoes" aria-describedby="tip-observacoes" placeholder="Ex: Integração crítica para receita."></textarea></div></div>
+        <div class="buttons"><button type="button" onclick="showReview()">Revisar antes de enviar</button></div>
+      </form>
+    </div>
+    <div id="reviewSection">
+      <h3>Revisar Informações</h3>
+      <div id="reviewContent"></div>
+      <div class="buttons"><button type="button" onclick="editForm()">Editar</button><button type="button" onclick="confirmSubmit()">Confirmar Envio</button></div>
+    </div>
+  </div>
+  <script>
+    // Função para capturar eventos com esquema ECS
+    function logEvent(eventName, details) {
+      const log = {
+        '@timestamp': new Date().toISOString(),
+        log: { level: 'info', logger: 'observForm' },
+        event: { dataset: 'form_events', action: eventName },
+        message: eventName,
+        ...details
+      };
+      console.log(JSON.stringify(log));
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      // Carregar opções dinâmicas
+      const lists = {
+        areaNegocio: ['Arrecadação','Contabilidade','Faturamento'],
+        objetoBRM: [/*...lista completa conforme antes...*/],
+        eventoCritico: ['Retorno de erro (result != 0)','Timeout de resposta','Falha de autenticação','Exceção de servidor (500)','Erro de validação de dados','NullPointerException'],
+        frequencia: ['Sob demanda','1/min','1/h','Diário','Semanal','Mensal'],
+        condicaoAlarme: ['erro ≥ 1 a cada 5 min','Δ valor > 2 %','status != 200','latência média > 500 ms','count > threshold','field missing','script condition'],
+        prioridade: ['Alta','Média','Baixa']
+      };
+      Object.entries(lists).forEach(([id, items]) => {
+        const select = document.getElementById(id);
+        items.forEach(v => select.append(new Option(v, v)));
+      });
+      // Rascunho
+      const draft = localStorage.getItem('observFormDraft');
+      if (draft) {
+        const data = JSON.parse(draft);
+        Object.entries(data).forEach(([k,v]) => { const el = document.getElementById(k); if(el) el.value = v; });
+      }
+      document.querySelectorAll('#observForm input, #observForm select, #observForm textarea').forEach(el => {
+        el.addEventListener('input', () => {
+          const state = {};
+          document.querySelectorAll('#observForm input, #observForm select, #observForm textarea').forEach(i => state[i.id] = i.value);
+          localStorage.setItem('observFormDraft', JSON.stringify(state));
+        });
+      });
+      logEvent('form_loaded', {});
+    });
+    function validateForm() {
+      let valid = true;
+      document.querySelectorAll('.error-message').forEach(em => em.style.display = 'none');
+      document.querySelectorAll('#observForm [required]').forEach(el => {
+        if (!el.checkValidity()) {
+          valid = false;
+          const err = document.getElementById('error-' + el.id);
+          err.textContent = el.validationMessage;
+          err.style.display = 'block';
+        }
+      });
+      return valid;
+    }
+    function showReview() {
+      logEvent('review_clicked', {});
+      if (!validateForm()) return;
+      const data = new FormData(document.getElementById('observForm'));
+      const labels = { idSolicitacao: 'ID da Solicitação', areaNegocio: 'Área de Negócio', nomeFuncionalidade: 'Nome da Funcionalidade', descricaoProcesso: 'Descrição do Processo', objetoBRM: 'Objeto/API BRM', eventoCritico: 'Evento Crítico', frequencia: 'Frequência', condicaoAlarme: 'Condição de Alarme', acaoFalha: 'Ação em Falha', prioridade: 'Prioridade', responsavelFuncional: 'Responsável Funcional', responsavelTecnico: 'Responsável Técnico', observacoes: 'Observações' };
+      const container = document.getElementById('reviewContent'); container.innerHTML = '';
+      Object.entries(labels).forEach(([k, lbl]) => {
+        const val = data.get(k) || '<span style="color:#999">— vazio —</span>';
+        const div = document.createElement('div'); div.className = 'review-item'; div.innerHTML = `<strong>${lbl}:</strong> <span>${val}</span>`;
+        container.appendChild(div);
+      });
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('reviewSection').style.display = 'block';
+    }
+    function editForm() {
+      logEvent('edit_clicked', {});
+      document.getElementById('reviewSection').style.display = 'none';
+      document.getElementById('formSection').style.display = 'block';
+    }
+    function confirmSubmit() {
+      logEvent('submit_initiated', {});
+      if (!validateForm()) return;
+      document.getElementById('spinner').style.display = 'flex';
+      const data = {};
+      new FormData(document.getElementById('observForm')).forEach((v, k) => data[k] = v);
+      const span = window.apm ? window.apm.startSpan('form_submit', 'request') : null;
+      fetch('/api/observability', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        .then(res => res.json().then(resJson => ({ status: res.status, body: resJson })))
+        .then(({ status }) => { logEvent('submit_success', { status }); showToast('Solicitação enviada com sucesso!'); })
+        .catch(err => { logEvent('submit_error', { error: err.message }); showToast('Erro ao enviar, tente novamente'); if(window.apm) window.apm.captureError(err); })
+        .finally(() => { if(span) span.end(); document.getElementById('spinner').style.display = 'none'; editForm(); localStorage.removeItem('observFormDraft'); document.getElementById('observForm').reset(); });
+    }
+    function showToast(msg) {
+      const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 4000);
+    }
+  </script>
+</body>
+</html>
