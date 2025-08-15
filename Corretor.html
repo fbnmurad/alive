@@ -420,6 +420,21 @@
         return charsToReplace[tag] || tag;
       }) : '';
     }
+    // Bloqueio de teclas perigosas
+document.addEventListener('keydown', e => {
+  if (
+    e.keyCode === 123 || // F12
+    (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || // Ctrl+Shift+I / Ctrl+Shift+J
+    (e.ctrlKey && e.keyCode === 85) // Ctrl+U
+  ) {
+    e.preventDefault();
+  }
+});
+
+// Bloqueio do menu de contexto (botão direito)
+document.addEventListener('contextmenu', e => e.preventDefault());
+
   </script>
 </body>
 </html>
+
