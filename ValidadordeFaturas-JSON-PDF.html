@@ -24,8 +24,7 @@
   table{width:100%;border-collapse:collapse;margin-top:10px}
   th,td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
   th{color:#cbd5e1;text-align:left;background:rgba(255,255,255,.02)}
-  code,kbd{background:#0f1835;border:1px solid var(--line);padding:2px 6px;border-radius:6px}
-  details summary{cursor:pointer;font-weight:700;color:#cfe1ff}
+  code{background:#0f1835;border:1px solid var(--line);padding:2px 6px;border-radius:6px}
   .muted{color:var(--muted)}
   .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
   .log{margin-top:10px;color:#fcd34d;white-space:pre-wrap}
@@ -55,8 +54,9 @@
       </div>
     </div>
     <div class="actions" style="margin-top:12px">
+      <button id="testPdf">Testar PDF.js</button>
       <button id="runBtn">Validar agora</button>
-      <span class="muted">Formato: <code class="mono">json ... | fatura resumida ... | fatura detalhada ... | resultado: ...</code></span>
+      <span class="muted">Saída: <code class="mono">json ... | fatura resumida ... | fatura detalhada ... | resultado: ...</code></span>
     </div>
     <div id="log" class="log mono"></div>
   </div>
@@ -76,60 +76,51 @@
   <div class="card">
     <details open>
       <summary>Regras-Mestras (resumo)</summary>
-      <div class="rule">
-        <b>JSON:</b> blocos <code>CABECALHO</code>, <code>DADOS_DE_COBRANCA</code>, <code>DADOS_DO_CLIENTE</code>, <code>ESTRUTURA_DOS_ITENS_FATURAVEIS</code>, <code>NOTA_FISCAL</code> · datas <code>YYYYMMDD</code> · moeda <code>"9999,99"</code> · CNPJ <code>99.999.999/9999-99</code> · soma dos itens = <code>TOTAL_A_PAGAR</code>.
-      </div>
-      <div class="rule">
-        <b>PDF:</b> “MÊS DE REFERÊNCIA”, “VENCIMENTO”, “TOTAL A PAGAR”, “SEU DEMONSTRATIVO DE DESPESAS”, “TOTAL GERAL A PAGAR”, “Mensagem Importante para Você”, “Destaque Aqui Autenticação Mecânica”, “PÁGINA: x/y” · Detalhada: NFST (“Mod 22”) e “TOTAL GERAL NOTA FISCAL”.
-      </div>
-      <div class="rule">
-        <b>Severidade:</b> <span class="pill ok">PASS</span> · <span class="pill warn">WARN</span> · <span class="pill fail">FAIL</span> (dif. monetária &gt; R$ 0,01 ⇒ FAIL).
-      </div>
+      <div><b>JSON:</b> blocos <code>CABECALHO</code>, <code>DADOS_DE_COBRANCA</code>, <code>DADOS_DO_CLIENTE</code>, <code>ESTRUTURA_DOS_ITENS_FATURAVEIS</code>, <code>NOTA_FISCAL</code> · datas <code>YYYYMMDD</code> · moeda <code>"9999,99"</code> · CNPJ <code>99.999.999/9999-99</code> · soma dos itens = <code>TOTAL_A_PAGAR</code>.</div>
+      <div><b>PDF:</b> “MÊS DE REFERÊNCIA”, “VENCIMENTO”, “TOTAL A PAGAR”, “SEU DEMONSTRATIVO DE DESPESAS”, “TOTAL GERAL A PAGAR”, “Mensagem Importante para Você”, “Destaque Aqui Autenticação Mecânica”, “PÁGINA: x/y” · Detalhada: NFST (“Mod 22”) e “TOTAL GERAL NOTA FISCAL”.</div>
+      <div><b>Severidade:</b> <span class="pill ok">PASS</span> · <span class="pill warn">WARN</span> · <span class="pill fail">FAIL</span> (dif. monetária &gt; R$ 0,01 ⇒ FAIL).</div>
     </details>
   </div>
 
   <footer class="wrap">
-    <small>Validação client-side. Nenhum dado sai do navegador.</small>
+    <small>Validação no navegador. Nenhum dado é enviado ao servidor.</small>
   </footer>
 </div>
 
-<!-- PDF.js: use a mesma versão para lib e worker -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.js" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.js" referrerpolicy="no-referrer"></script>
+<!-- PDF.js 2.16.105: esta versão expõe window.pdfjsLib no browser -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js" referrerpolicy="no-referrer"></script>
 
 <script>
 const $ = s => document.querySelector(s);
-const log = (m)=>{ $('#log').textContent = (m||''); };
+const log = (m) => { $('#log').textContent = (m||''); };
 
-let pdfjsLib = window.pdfjsLib; // <- CORREÇÃO: global correto
-if(!pdfjsLib){ log('Erro: PDF.js não carregou (window.pdfjsLib está indefinido). Verifique a rede/CDN.'); }
+let pdfjsLib = window.pdfjsLib; // versão estável com global garantido
+if (!pdfjsLib) { log('❌ PDF.js não carregou (window.pdfjsLib indefinido). Verifique a rede/CDN.'); }
 
-function BRL(s){ if(typeof s==='number') return s; if(!s) return NaN; const n = s.toString().replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'); return parseFloat(n); }
+function BRL(s){ if(typeof s==='number') return s; if(!s) return NaN; const n=s.toString().replace(/[^\d,.-]/g,'').replace(/\./g,'').replace(',','.'); return parseFloat(n); }
 function strip(s){ return (s||'').toString().replace(/\s+/g,' ').trim(); }
 function norm(s){ return strip(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(); }
 
 async function readPDF(file){
-  try{
-    const ab = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({data:ab}).promise;
-    let full = '';
-    for(let p=1;p<=pdf.numPages;p++){
-      const page = await pdf.getPage(p);
-      const txt = await page.getTextContent();
-      const line = txt.items.map(i=>i.str).join(' ');
-      full += `\n\n[[PAGE ${p}/${pdf.numPages}]]\n` + line;
-    }
-    return full;
-  }catch(e){ log('Erro lendo PDF: '+(e.message||e)); throw e; }
+  const ab = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data:ab}).promise;
+  let full = '';
+  for(let p=1;p<=pdf.numPages;p++){
+    const page = await pdf.getPage(p);
+    const txt = await page.getTextContent();
+    const line = txt.items.map(i=>i.str).join(' ');
+    full += `\n\n[[PAGE ${p}/${pdf.numPages}]]\n` + line;
+  }
+  return full;
 }
-async function readJSON(file){
-  try{ return JSON.parse(await file.text()); }
-  catch(e){ log('Erro lendo JSON: '+(e.message||e)); throw e; }
-}
+async function readJSON(file){ return JSON.parse(await file.text()); }
 
 function extractFromJSON(j){
-  const paths={}; (function walk(o,p=[]){ if(o&&typeof o==='object'){ for(const k of Object.keys(o)){ const np=p.concat(k); paths[np.join('.')]=o[k]; walk(o[k],np);} } })(j);
+  const paths={};
+  (function walk(o,p=[]){ if(o&&typeof o==='object'){ for(const k of Object.keys(o)){ const np=p.concat(k); paths[np.join('.')]=o[k]; walk(o[k],np);} } })(j);
   const get=(...c)=>{ for(const k of c){ if(paths[k]!=null) return paths[k]; } return null; };
+
   const cabRazao = get('DADOS_DO_CLIENTE.RAZAO_SOCIAL','CABECALHO.RAZAO_SOCIAL','CLIENTE.RAZAO_SOCIAL');
   const cnpj = get('DADOS_DO_CLIENTE.DOCUMENTO_DO_CLIENTE_CNPJ_CPF','CABECALHO.CNPJ','CLIENTE.CNPJ');
   const conta = get('CABECALHO.NUMERO_DA_CONTA_ACCOUNT_ID','DADOS_DE_COBRANCA.NUMERO_DA_CONTA','CONTA.ID');
@@ -142,11 +133,12 @@ function extractFromJSON(j){
   const venc = get('DADOS_DE_COBRANCA.DATA_DE_VENCIMENTO_ORIGINAL','DADOS_DE_COBRANCA.DATA_DE_VENCIMENTO');
   const forma = get('DADOS_DE_COBRANCA.FORMA_DE_PAGAMENTO_PRINCIPAL');
   const total = get('DADOS_DE_COBRANCA.TOTAL_A_PAGAR','RESUMO.TOTAL_A_PAGAR');
+
   let somaItens=0; const itens=paths['ESTRUTURA_DOS_ITENS_FATURAVEIS']||[];
   if(Array.isArray(itens)){ for(const it of itens){ const v = it?.VALOR_TOTAL_DO_ITEM ?? it?.DADOS_PRINCIPAIS?.VALOR_TOTAL_DO_ITEM; if(v!=null){ const n=BRL(v.toString()); if(!Number.isNaN(n)) somaItens+=n; } } }
+
   return {razao:cabRazao, cnpj, conta, numFatura:nf, emissao, mes, ano, periodoIni, periodoFim, vencimento:venc, formaPagamento:forma, total: total!=null?BRL(total.toString()):null, totalItens:somaItens};
 }
-
 function extractFromPDF(text){
   const got={};
   const req=['MÊS DE REFERÊNCIA','VENCIMENTO','TOTAL A PAGAR','SEU DEMONSTRATIVO DE DESPESAS','TOTAL GERAL A PAGAR','Mensagem Importante para Você','Destaque Aqui Autenticação Mecânica'];
@@ -166,18 +158,26 @@ function extractFromPDF(text){
   got.hasPagina=/P[ÁA]GINA:\s*\d+\/\d+/i.test(text);
   return got;
 }
-
 function addFinding(list, id, severity, status, details){ list.push({id,severity,status,details}); }
-function verdict(findings){
-  let failed=0, warned=0, passed=0;
-  for(const f of findings){ if(f.status==='FAIL') failed++; else if(f.status==='WARN') warned++; else passed++; }
-  return {status: failed>0?'FAIL':(warned>0?'PASS_WITH_WARNINGS':'PASS'), passed, failed, warnings: warned};
-}
+function verdict(findings){ let failed=0,warned=0,passed=0; findings.forEach(f=>{ if(f.status==='FAIL') failed++; else if(f.status==='WARN') warned++; else passed++; }); return {status: failed? 'FAIL' : (warned? 'PASS_WITH_WARNINGS' : 'PASS'), passed, failed, warnings: warned}; }
 function fmtBRL(n){ if(n==null||Number.isNaN(n)) return null; return n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+
+$('#testPdf').addEventListener('click', async ()=>{
+  const fr=$('#pdfResumo').files[0] || $('#pdfDetalhe').files[0];
+  if(!fr){ alert('Selecione pelo menos um PDF (resumida ou detalhada) para o teste.'); return; }
+  try{
+    const txt = await readPDF(fr);
+    const firstChars = strip(txt).slice(0,200);
+    log('✅ PDF.js OK. Primeiros caracteres do PDF:\n' + firstChars + (txt.length>200?'…':''));
+  }catch(e){
+    log('❌ Falha ao ler PDF: ' + (e.message||e));
+  }
+});
 
 $('#runBtn').addEventListener('click', async ()=>{
   const fj=$('#jsonFile').files[0], fr=$('#pdfResumo').files[0], fd=$('#pdfDetalhe').files[0];
   if(!fj || !fr || !fd){ alert('Envie os 3 arquivos: JSON + PDF resumida + PDF detalhada.'); return; }
+
   $('#headline').textContent='Processando…'; $('#badges').innerHTML=''; $('#summary').textContent=''; $('#tables').innerHTML=''; $('#jsonOut').textContent=''; log('');
 
   try{
@@ -185,17 +185,14 @@ $('#runBtn').addEventListener('click', async ()=>{
     const J = extractFromJSON(j), PR = extractFromPDF(tResumo), PD = extractFromPDF(tDetalhe);
     const findings=[];
 
-    // Presenças PDF
     for(const [label, ok] of Object.entries(PR.labels)) addFinding(findings, `VAL-PDF-LABEL-${label}`, ok?'info':'critical', ok?'PASS':'FAIL', `Resumo: "${label}" ${ok?'presente':'ausente'}`);
     for(const [label, ok] of Object.entries(PD.labels)) addFinding(findings, `VAL-PDFDET-LABEL-${label}`, ok?'info':'critical', ok?'PASS':'FAIL', `Detalhada: "${label}" ${ok?'presente':'ausente'}`);
     addFinding(findings,'VAL-PDF-NFST','high', PD.hasNFST?'PASS':'WARN', PD.hasNFST?'Detalhada contém NFST.':'Detalhada sem NFST (pode ser aceitável).');
     addFinding(findings,'VAL-PDF-PAGINAS','medium', PD.hasPagina?'PASS':'FAIL', PD.hasPagina?'Numeração ok.':'Sem "PÁGINA: x/y".');
 
-    // JSON presença mínima
     const must=[['J-RAZAO',J.razao],['J-CNPJ',J.cnpj],['J-CONTA',J.conta],['J-FATURA',J.numFatura],['J-EMISSAO',J.emissao],['J-MES',J.mes],['J-ANO',J.ano],['J-PERIODO_INI',J.periodoIni],['J-PERIODO_FIM',J.periodoFim],['J-VENC',J.vencimento],['J-TOTAL',J.total]];
     for(const [id,val] of must) addFinding(findings, `VAL-JSON-${id}`, val?'info':'critical', val?'PASS':'FAIL', val?`JSON possui ${id}`:`JSON sem ${id}`);
 
-    // Cross-checks principais
     const nameCmpR = (J.razao && PR.razao) ? (norm(J.razao)===norm(PR.razao)) : null;
     const nameCmpD = (J.razao && PD.razao) ? (norm(J.razao)===norm(PD.razao)) : null;
     if(nameCmpR===false || nameCmpD===false) addFinding(findings,'DIF-NOME','medium','WARN',`Nome diverge JSON (${J.razao||'–'}) vs PDF (${PR.razao||PD.razao||'–'})`);
@@ -206,7 +203,6 @@ $('#runBtn').addEventListener('click', async ()=>{
     const anyConta = PR.conta || PD.conta; if(J.conta && anyConta) addFinding(findings,'CC-CONTA','info', eq(J.conta,anyConta)?'PASS':'FAIL', `Conta JSON=${J.conta||'–'} PDF=${anyConta||'–'}`);
     const anyNF = PR.numFatura || PD.numFatura; if(J.numFatura && anyNF) addFinding(findings,'CC-FATURA','critical', eq(J.numFatura,anyNF)?'PASS':'FAIL', `Nº Fatura JSON=${J.numFatura||'–'} PDF=${anyNF||'–'}`);
 
-    // Totais
     const tJSON=J.total, tResumo=PR.totalPagar ?? PR.totalGeral, tDet=PD.totalPagar ?? PD.totalGeral, tNFST=PD.totalNFST;
     const close=(a,b)=> (a==null||b==null)?null:Math.abs(a-b)<=0.01;
     const checks=[['CC-TOTAL-JSON-RESUMO','critical',tJSON,tResumo,'Total JSON vs PDF Resumo'],['CC-TOTAL-JSON-DETALHE','critical',tJSON,tDet,'Total JSON vs PDF Detalhe'],['CC-TOTAL-RESUMO-DETALHE','critical',tResumo,tDet,'Total PDF Resumo vs PDF Detalhe'],['CC-TOTAL-NFST','critical',tDet,tNFST,'Total PDF Detalhe vs NFST (se existir)'],['CC-TOTAL-ITENS','high',J.totalItens,tJSON,'Soma dos itens JSON vs Total JSON']];
@@ -220,7 +216,6 @@ $('#runBtn').addEventListener('click', async ()=>{
     const mref=mmYYYY(J.mes,J.ano), anyMes=PD.mesRef || PR.mesRef;
     if(mref && anyMes) addFinding(findings,'CC-MESREF','high', mref===anyMes?'PASS':'FAIL', `Mês Ref JSON=${mref} PDF=${anyMes||'–'}`);
 
-    // Resultado
     const v = verdict(findings);
     const headline = `json ${fj.name} | fatura resumida ${fr.name} | fatura detalhada ${fd.name} | resultado: ${v.status}`;
     $('#headline').textContent = headline;
@@ -241,7 +236,7 @@ $('#runBtn').addEventListener('click', async ()=>{
     console.error(e);
     $('#headline').textContent = 'Erro ao processar.';
     $('#summary').textContent = e.message || e.toString();
-    log('Falha: '+(e.message||e));
+    log('❌ ' + (e.message||e));
   }
 });
 </script>
