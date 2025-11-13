@@ -53,6 +53,11 @@
       background-color: #1abc9c;
     }
 
+    nav a:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
     .container {
       display: flex;
       width: 100%;
@@ -88,16 +93,15 @@
     <nav aria-label="Menu de ferramentas">
       <h2>Ferramentas</h2>
       <ul>
-        <li><a href="https://fbnmurad.github.io/alive/JSONCompare.html" target="conteudo" class="active">JSONCompare</a></li>
-        <li><a href="https://fbnmurad.github.io/alive/ValorProRata.html" target="conteudo" class="active">Calcular Pró-Rata</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/JSONCompare.html" target="conteudo">JSONCompare</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/ValorProRata.html" target="conteudo" class="active" aria-current="page">Calcular Pró-Rata</a></li>
         <li><a href="https://fbnmurad.github.io/alive/DIFReceita.html" target="conteudo">Diferimento de Receita</a></li>
         <li><a href="https://fbnmurad.github.io/alive/CalculadoraDatas.html" target="conteudo">Calcular Datas</a></li>
         <li><a href="https://fbnmurad.github.io/alive/GeradorCpfCnpj.html" target="conteudo">Gerar CPF/CNPJ</a></li>
         <li><a href="https://fbnmurad.github.io/alive/GeradorCartaoCredito.html" target="conteudo">Gerar Cartão de Crédito</a></li>
-        <li><a href="https://fbnmurad.github.io/alive/CompararTexto.html" target="conteudo">Comparador & Merge</a></li>
-        <li><a href="https://fbnmurad.github.io/alive/ContarCaracter.html" target="conteudo">Contar Caracteres</a></li>      
-        <li><a href="https://fbnmurad.github.io/alive/Corretor.html" target="conteudo">Corretor Ortográfico & Gramatical</a></li>
-        
+        <li><a href="https://fbnmurad.github.io/alive/CompararTexto.html" target="conteudo">Comparador &amp; Merge</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/ContarCaracter.html" target="conteudo">Contar Caracteres</a></li>
+        <li><a href="https://fbnmurad.github.io/alive/Corretor.html" target="conteudo">Corretor Ortográfico &amp; Gramatical</a></li>
       </ul>
     </nav>
 
@@ -105,25 +109,14 @@
   </div>
 
   <script>
-    // Bloqueio de teclas perigosas
-document.addEventListener('keydown', e => {
-  if (
-    e.keyCode === 123 || // F12
-    (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || // Ctrl+Shift+I / Ctrl+Shift+J
-    (e.ctrlKey && e.keyCode === 85) // Ctrl+U
-  ) {
-    e.preventDefault();
-  }
-});
-
-// Bloqueio do menu de contexto (botão direito)
-document.addEventListener('contextmenu', e => e.preventDefault());
-
-    // Gerencia classe .active nos links do menu
     document.querySelectorAll('nav a').forEach(link => {
-      link.addEventListener('click', function() {
-        document.querySelector('nav a.active')?.classList.remove('active');
+      link.addEventListener('click', function () {
+        document.querySelectorAll('nav a.active').forEach(a => {
+          a.classList.remove('active');
+          a.removeAttribute('aria-current');
+        });
         this.classList.add('active');
+        this.setAttribute('aria-current', 'page');
       });
     });
   </script>
