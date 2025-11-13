@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Comparador de JSON - Campo a Campo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2933;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px 18px 24px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.10);
+    }
+    h1 {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 22px;
+      color: #1a4f8b;
+    }
+
+    .flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .col {
+      flex: 1 1 48%;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #1a4f8b;
+      font-size: 14px;
+    }
+    .file-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #52606d;
+    }
+    input[type="file"] {
+      font-size: 12px;
+    }
+
+    textarea {
+      min-height: 200px;
+      resize: vertical;
+      font-family: "Consolas", "Fira Mono", monospace;
+      font-size: 13.5px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #cbd2e1;
+      background: #f8fafc;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: #1a73e8;
+      box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.25);
+      background: #ffffff;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #1a73e8;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(26,115,232,0.35);
+      transition: background 0.15s, transform 0.05s;
+    }
+    button:hover {
+      background: #1558b0;
+    }
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 3px rgba(15,23,42,0.30);
+    }
+
+    .summary {
+      font-size: 13px;
+      color: #52606d;
+      margin-bottom: 6px;
+    }
+
+    .error {
+      color: #c81e1e;
+      font-size: 13px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      max-height: 500px;
+      border-radius: 8px;
+      border: 1px solid #d8e2f0;
+      background: #ffffff;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 13px;
+      min-width: 800px;
+    }
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e1e7f0;
+      text-align: left;
+      vertical-align: top;
+      font-family: "Consolas", "Fira Mono", monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    th {
+      background: #e6efff;
+      color: #1a4f8b;
+      font-weight: 700;
+    }
+
+    .row-equal td {
+      background: #f8fbff;
+      color: #1f2933;
+    }
+    .row-diff td {
+      background: #ffecec;
+      color: #9b1c1c;
+    }
+    .row-only-a td,
+    .row-only-b td {
+      background: #f5f5f5;
+      color: #616e7c;
+      font-style: italic;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .pill-igual { background:#e1f8e9; color:#196127; }
+    .pill-dif   { background:#ffe1e1; color:#b21b1b; }
+    .pill-only  { background:#f3f4f6; color:#374151; }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 13px;
+      color: #52606d;
+    }
+    .filter-group select {
+      padding: 4px 6px;
+      border-radius: 6px;
+      border: 1px solid #cbd2e1;
+      font-size: 13px;
+      background: #f8fafc;
+    }
+
+    #exportBox {
+      margin-top: 18px;
+      padding: 14px 12px;
+      border-radius: 8px;
+      border: 1px solid #cbd2e1;
+      background: #ffffff;
+    }
+    #exportBox h3 {
+      margin: 0 0 8px 0;
+      font-size: 15px;
+      color: #1a4f8b;
+    }
+    #exportText {
+      width: 100%;
+      height: 220px;
+      font-family: Consolas, "Fira Mono", monospace;
+      font-size: 13px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd2e1;
+      background: #f8fafc;
+      white-space: pre;
+    }
+
+    @media(max-width: 800px) {
+      h1 { font-size: 19px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Comparador de JSON (campo a campo)</h1>
+
+    <div class="flex">
+      <div class="col">
+        <label for="jsonA">JSON A</label>
+        <div class="file-row">
+          <input type="file" id="fileA" accept=".json,application/json">
+          <span id="fileAInfo"></span>
+        </div>
+        <textarea id="jsonA" placeholder="Cole aqui o JSON A da fatura ou selecione um arquivo JSON acima"></textarea>
+      </div>
+
+      <div class="col">
+        <label for="jsonB">JSON B</label>
+        <div class="file-row">
+          <input type="file" id="fileB" accept=".json,application/json">
+          <span id="fileBInfo"></span>
+        </div>
+        <textarea id="jsonB" placeholder="Cole aqui o JSON B da fatura ou selecione um arquivo JSON acima"></textarea>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="btnCompare">Comparar JSON</button>
+      <button id="btnClear" type="button">Limpar</button>
+      <button id="btnExport" type="button">Exportar divergências (texto)</button>
+      <button id="btnExportCsv" type="button">Exportar diferenças (.csv)</button>
+
+      <div class="filter-group">
+        <span>Filtrar por resultado:</span>
+        <select id="filterResult">
+          <option value="">Todos</option>
+          <option value="Igual">Igual</option>
+          <option value="Diferente">Diferente</option>
+          <option value="Só em A">Só em A</option>
+          <option value="Só em B">Só em B</option>
+        </select>
+      </div>
+
+      <span class="summary" id="summaryText"></span>
+    </div>
+
+    <div id="errorBox" class="error" style="display:none;"></div>
+
+    <div class="table-wrapper" id="tableWrapper">
+      <!-- tabela entra aqui -->
+    </div>
+
+    <div id="exportBox" style="display:none;">
+      <h3>Texto para envio por e-mail (copiar e colar)</h3>
+      <textarea id="exportText"></textarea>
+      <div style="margin-top:8px;">
+        <button id="btnCopyExport" type="button">Copiar para área de transferência</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const txtA = document.getElementById('jsonA');
+    const txtB = document.getElementById('jsonB');
+    const fileA = document.getElementById('fileA');
+    const fileB = document.getElementById('fileB');
+    const fileAInfo = document.getElementById('fileAInfo');
+    const fileBInfo = document.getElementById('fileBInfo');
+    const btnCompare = document.getElementById('btnCompare');
+    const btnClear = document.getElementById('btnClear');
+    const btnExport = document.getElementById('btnExport');
+    const btnExportCsv = document.getElementById('btnExportCsv');
+    const btnCopyExport = document.getElementById('btnCopyExport');
+    const tableWrapper = document.getElementById('tableWrapper');
+    const errorBox = document.getElementById('errorBox');
+    const summaryText = document.getElementById('summaryText');
+    const filterResult = document.getElementById('filterResult');
+    const exportBox = document.getElementById('exportBox');
+    const exportText = document.getElementById('exportText');
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function(ch) {
+        const map = {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        };
+        return map[ch] || ch;
+      });
+    }
+
+    function handleFileUpload(input, textarea, infoSpan) {
+      const file = input.files && input.files[0];
+      if (!file) {
+        infoSpan.textContent = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        textarea.value = e.target.result || '';
+        infoSpan.textContent = 'Arquivo carregado: ' + file.name;
+      };
+      reader.onerror = function() {
+        infoSpan.textContent = 'Erro ao ler arquivo.';
+      };
+      reader.readAsText(file, 'utf-8');
+    }
+
+    fileA.addEventListener('change', () => handleFileUpload(fileA, txtA, fileAInfo));
+    fileB.addEventListener('change', () => handleFileUpload(fileB, txtB, fileBInfo));
+
+    function flattenJson(obj, prefix = '') {
+      const result = {};
+      function helper(value, path) {
+        if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+          Object.keys(value).forEach(key => {
+            const newPath = path ? path + '.' + key : key;
+            helper(value[key], newPath);
+          });
+        } else if (Array.isArray(value)) {
+          value.forEach((item, index) => {
+            const newPath = path + '[' + index + ']';
+            helper(item, newPath);
+          });
+        } else {
+          result[path] = value;
+        }
+      }
+      helper(obj, prefix);
+      return result;
+    }
+
+    function aplicarFiltroResultado() {
+      const filtro = filterResult.value;
+      const rows = tableWrapper.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        const status = row.getAttribute('data-status');
+        if (!filtro || status === filtro) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    function compararJson() {
+      errorBox.style.display = 'none';
+      errorBox.textContent = '';
+      summaryText.textContent = '';
+      tableWrapper.innerHTML = '';
+      exportBox.style.display = 'none';
+      exportText.value = '';
+
+      const aText = txtA.value.trim();
+      const bText = txtB.value.trim();
+
+      if (!aText || !bText) {
+        errorBox.textContent = 'Informe JSON A e JSON B (via upload ou colando o conteúdo) para comparar.';
+        errorBox.style.display = 'block';
+        return;
+      }
+
+      let jsonA, jsonB;
+      try {
+        jsonA = JSON.parse(aText);
+      } catch (e) {
+        errorBox.textContent = 'JSON A inválido: ' + e.message;
+        errorBox.style.display = 'block';
+        return;
+      }
+      try {
+        jsonB = JSON.parse(bText);
+      } catch (e) {
+        errorBox.textContent = 'JSON B inválido: ' + e.message;
+        errorBox.style.display = 'block';
+        return;
+      }
+
+      const flatA = flattenJson(jsonA);
+      const flatB = flattenJson(jsonB);
+      const keys = Array.from(new Set([
+        ...Object.keys(flatA),
+        ...Object.keys(flatB)
+      ])).sort();
+
+      let diffCount = 0;
+      let onlyACount = 0;
+      let onlyBCount = 0;
+
+      let html = '<table><thead><tr>' +
+        '<th>Campo</th>' +
+        '<th>JSON A</th>' +
+        '<th>JSON B</th>' +
+        '<th>Resultado</th>' +
+        '<th>Descrição da diferença</th>' +
+        '</tr></thead><tbody>';
+
+      keys.forEach(key => {
+        const valA = flatA[key];
+        const valB = flatB[key];
+
+        let status, desc, rowClass, pillClass;
+
+        if (valA === undefined && valB !== undefined) {
+          status = 'Só em B';
+          desc = 'Campo existe apenas no JSON B.';
+          rowClass = 'row-only-b';
+          pillClass = 'pill-only';
+          onlyBCount++;
+        } else if (valA !== undefined && valB === undefined) {
+          status = 'Só em A';
+          desc = 'Campo existe apenas no JSON A.';
+          rowClass = 'row-only-a';
+          pillClass = 'pill-only';
+          onlyACount++;
+        } else if (String(valA) !== String(valB)) {
+          status = 'Diferente';
+          desc = '"' + key + '": "' + valA + '" \u2260 "' + valB + '"';
+          rowClass = 'row-diff';
+          pillClass = 'pill-dif';
+          diffCount++;
+        } else {
+          status = 'Igual';
+          desc = '';
+          rowClass = 'row-equal';
+          pillClass = 'pill-igual';
+        }
+
+        html += '<tr class="' + rowClass + '" data-status="' + status + '">';
+        html += '<td>' + escapeHtml(key) + '</td>';
+        html += '<td>' + (valA === undefined ? '' : escapeHtml(valA)) + '</td>';
+        html += '<td>' + (valB === undefined ? '' : escapeHtml(valB)) + '</td>';
+        html += '<td><span class="pill ' + pillClass + '">' + status + '</span></td>';
+        html += '<td>' + (desc ? escapeHtml(desc) : '') + '</td>';
+        html += '</tr>';
+      });
+
+      html += '</tbody></table>';
+      tableWrapper.innerHTML = html;
+
+      const totalDiff = diffCount + onlyACount + onlyBCount;
+      if (totalDiff === 0) {
+        summaryText.textContent = 'JSON A e JSON B são idênticos nos valores dos campos.';
+      } else {
+        summaryText.textContent =
+          'Diferenças: ' + diffCount +
+          ' | Só em A: ' + onlyACount +
+          ' | Só em B: ' + onlyBCount;
+      }
+
+      aplicarFiltroResultado();
+    }
+
+    function limparTudo() {
+      txtA.value = '';
+      txtB.value = '';
+      fileA.value = '';
+      fileB.value = '';
+      fileAInfo.textContent = '';
+      fileBInfo.textContent = '';
+      errorBox.style.display = 'none';
+      errorBox.textContent = '';
+      summaryText.textContent = '';
+      tableWrapper.innerHTML = '';
+      filterResult.value = '';
+      exportBox.style.display = 'none';
+      exportText.value = '';
+    }
+
+    // Exporta divergências (Resultado = "Diferente") como TEXTO
+    function exportarDivergenciasTexto() {
+      const rows = tableWrapper.querySelectorAll('tbody tr[data-status="Diferente"]');
+      if (!rows.length) {
+        alert('Não há divergências (Resultado = "Diferente") para exportar.');
+        return;
+      }
+
+      let text = '';
+      text += 'Olá, fulano.\n\n';
+      text += 'Fiz uma comparação entre os JSONs e identifiquei as seguintes divergências.\n';
+      text += 'Peço que faça a correção e envie novamente para prosseguirmos com a homologação.\n\n';
+      text += 'Campo\tJSON A\tJSON B\tResultado\tDescrição da diferença\n';
+
+      rows.forEach(row => {
+        const cols = row.querySelectorAll('td');
+        const campo = cols[0].innerText.trim();
+        const jsonA = cols[1].innerText.trim();
+        const jsonB = cols[2].innerText.trim();
+        const resultado = cols[3].innerText.trim();
+        const descricao = cols[4].innerText.trim();
+
+        text += campo + '\t' +
+                jsonA + '\t' +
+                jsonB + '\t' +
+                resultado + '\t' +
+                descricao + '\n';
+      });
+
+      exportText.value = text;
+      exportBox.style.display = 'block';
+    }
+
+    function copiarExport() {
+      if (!exportText.value.trim()) {
+        alert('Nenhum conteúdo para copiar.');
+        return;
+      }
+      exportText.select();
+      document.execCommand('copy');
+      alert('Texto copiado! Cole no corpo do e-mail.');
+    }
+
+    // Exporta TODAS as diferenças (Diferente, Só em A, Só em B) para CSV
+    function exportarCsv() {
+      const rows = tableWrapper.querySelectorAll('tbody tr');
+      if (!rows.length) {
+        alert('Nenhum resultado para exportar.');
+        return;
+      }
+
+      const diffRows = Array.from(rows).filter(row => {
+        const status = row.getAttribute('data-status');
+        return status !== 'Igual';
+      });
+
+      if (!diffRows.length) {
+        alert('Não há diferenças (apenas registros "Igual").');
+        return;
+      }
+
+      // Cabeçalho
+      const header = ['Campo', 'JSON A', 'JSON B', 'Resultado', 'Descrição da diferença'];
+      const sep = ';'; // separador (pode trocar para "," se preferir)
+
+      function csvEscape(value) {
+        const v = String(value ?? '');
+        // duplica aspas e envolve em aspas
+        return '"' + v.replace(/"/g, '""') + '"';
+      }
+
+      let csv = header.map(csvEscape).join(sep) + '\n';
+
+      diffRows.forEach(row => {
+        const cols = row.querySelectorAll('td');
+        const campo = cols[0].innerText.trim();
+        const jsonA = cols[1].innerText.trim();
+        const jsonB = cols[2].innerText.trim();
+        const resultado = cols[3].innerText.trim();
+        const descricao = cols[4].innerText.trim();
+
+        const line = [
+          campo,
+          jsonA,
+          jsonB,
+          resultado,
+          descricao
+        ].map(csvEscape).join(sep);
+
+        csv += line + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'diferencas_json.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    btnCompare.addEventListener('click', compararJson);
+    btnClear.addEventListener('click', limparTudo);
+    filterResult.addEventListener('change', aplicarFiltroResultado);
+    btnExport.addEventListener('click', exportarDivergenciasTexto);
+    btnCopyExport.addEventListener('click', copiarExport);
+    btnExportCsv.addEventListener('click', exportarCsv);
+  </script>
+</body>
+</html>
