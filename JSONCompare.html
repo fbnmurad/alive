@@ -598,5 +598,42 @@
     btnCopyExport.addEventListener('click', copiarExport);
     btnExportCsv.addEventListener('click', exportarCsv);
   </script>
+
+  <!-- Reg-Seg -->
+  <script>
+  // Bloqueio de teclas perigosas (F12, DevTools, Ver código-fonte)
+  document.addEventListener('keydown', function (e) {
+    const key = e.key.toUpperCase();
+
+    // Bloquear F12
+    if (key === "F12") {
+      e.preventDefault();
+      return;
+    }
+
+    // Bloquear Ctrl+Shift+I (DevTools)
+    if (e.ctrlKey && e.shiftKey && key === "I") {
+      e.preventDefault();
+      return;
+    }
+
+    // Bloquear Ctrl+Shift+J (Console)
+    if (e.ctrlKey && e.shiftKey && key === "J") {
+      e.preventDefault();
+      return;
+    }
+
+    // Bloquear Ctrl+U (View Source)
+    if (e.ctrlKey && key === "U") {
+      e.preventDefault();
+      return;
+    }
+  });
+
+  // Bloqueio do menu de contexto (botão direito)
+  document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  });
+  </script>
 </body>
 </html>
