@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Conversor Texto → Jira Panel + Preview</title>
+
+<style>
+:root {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  /* Background */
+  --bg-gradient-start: #eef1f7;   /* cinza frio claro */
+  --bg-gradient-end:   #f7f9fc;   /* quase branco */
+
+  /* Roxo azulado (identidade) */
+  --primary: #5b6ee1;             /* purple-blue tech */
+  --primary-hover: #4b5fd1;
+  --primary-active: #3f52b8;
+
+  /* Textos */
+  --text-title: #1f2a44;          /* azul grafite */
+  --text-default: #3a4563;        /* cinza azulado */
+  --text-dark: #111827;           /* quase preto */
+  --text-muted: #6b7280;          /* cinza neutro */
+
+  /* Superfícies */
+  --surface: #ffffff;
+  --surface-soft: #f9fafb;
+  --surface-muted: #f1f4f9;
+  --surface-highlight: #e9edff;   /* destaque roxo azulado */
+
+  /* Bordas */
+  --border-light: #d6dbea;
+
+  /* Feedback semântico */
+  --success: #16a34a;
+  --error: #dc2626;
+  --info: #5b6ee1;
+
+  /* Neutros */
+  --neutral: #9ca3af;
+  --neutral-hover: #6b7280;
+}
+
+/* ===== Base ===== */
+body {
+  margin: 0;
+  background: linear-gradient(
+    120deg,
+    var(--bg-gradient-start),
+    var(--bg-gradient-end)
+  );
+  color: var(--text-default);
+}
+
+/* ===== Header ===== */
+header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--surface);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 750;
+  color: var(--text-title);
+}
+
+/* ===== Layout ===== */
+.wrap {
+  padding: 16px 20px;
+  display: grid;
+  gap: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 1180px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Cards / Containers ===== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(31,42,68,0.08);
+}
+
+.card h2 {
+  margin: 0;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-title);
+  background: var(--surface-soft);
+}
+
+.card .body {
+  padding: 12px 14px;
+}
+
+/* ===== Inputs / Textareas ===== */
+input,
+textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  background: var(--surface-muted);
+  color: var(--text-dark);
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+textarea {
+  min-height: 320px;
+  resize: vertical;
+}
+
+/* ===== Toolbar ===== */
+.toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.toolbar button {
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--surface-highlight);
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.toolbar button:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* ===== Botões ===== */
+button.action {
+  border: none;
+  background: var(--primary);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.action:hover {
+  background: var(--primary-hover);
+}
+
+button.action:active {
+  background: var(--primary-active);
+}
+
+/* ===== Preview ===== */
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pnl {
+  border: 2px solid var(--primary);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-soft);
+}
+
+.pnl-title {
+  padding: 10px 12px;
+  font-weight: 800;
+  background: var(--surface-highlight);
+  color: var(--text-title);
+}
+
+.pnl-body {
+  padding: 10px 12px;
+  white-space: pre-wrap;
+  color: var(--text-default);
+}
+
+/* ===== Footer / textos auxiliares ===== */
+.footer {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+</style>
+
+
+
+</head>
+
+<body>
+<header>
+<h1>Conversor Texto → Jira Wiki Markup</h1>
+</header>
+
+<div class="wrap">
+<div class="grid">
+
+<section class="card">
+<h2>Entrada (título + conteúdo)</h2>
+<div class="body">
+
+<input id="inTitle" placeholder="Título do painel" />
+
+<div class="toolbar">
+  <button onclick="wrapSelection('*')"><b>B</b></button>
+  <button onclick="wrapSelection('_')"><i>I</i></button>
+  <button onclick="makeList()">• Lista</button>
+</div>
+
+<textarea id="inBody" placeholder="Digite o conteúdo..."></textarea>
+
+<div class="footer">
+  <button class="action" onclick="convert()">Converter</button>
+  <button class="action" onclick="clearAll()">Limpar</button>
+</div>
+
+</div>
+</section>
+
+<section class="card">
+<h2>Saída (Jira Wiki Markup)</h2>
+<div class="body">
+<textarea id="output"></textarea>
+</div>
+</section>
+
+<section class="card">
+<h2>Pré-visualização</h2>
+<div class="body">
+<div id="preview" class="preview"></div>
+</div>
+</section>
+
+</div>
+</div>
+
+<script>
+function wrapSelection(marker){
+  const ta = document.getElementById("inBody");
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const sel = ta.value.substring(start,end);
+  ta.setRangeText(marker + sel + marker);
+  ta.focus();
+}
+
+function makeList(){
+  const ta = document.getElementById("inBody");
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const lines = ta.value
+    .substring(start,end)
+    .split("\n")
+    .map(l => "* " + l)
+    .join("\n");
+  ta.setRangeText(lines);
+  ta.focus();
+}
+
+/* 🔹 Converte Jira Wiki básico → HTML (APENAS PARA PREVIEW) */
+function jiraToHtml(text){
+  if (!text) return "";
+
+  let html = text;
+
+  // Negrito *texto*
+  html = html.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
+
+  // Itálico _texto_
+  html = html.replace(/_(.*?)_/g, "<em>$1</em>");
+
+  // Listas Jira
+  if (html.match(/^\* /m)) {
+    const lines = html.split("\n");
+    let inList = false;
+    let out = "";
+
+    lines.forEach(line => {
+      if (line.startsWith("* ")) {
+        if (!inList) {
+          inList = true;
+          out += "<ul>";
+        }
+        out += `<li>${line.substring(2)}</li>`;
+      } else {
+        if (inList) {
+          out += "</ul>";
+          inList = false;
+        }
+        out += line ? line + "<br>" : "<br>";
+      }
+    });
+
+    if (inList) out += "</ul>";
+    html = out;
+  } else {
+    html = html.replace(/\n/g, "<br>");
+  }
+
+  return html;
+}
+
+function convert(){
+  const title = document.getElementById("inTitle").value || "Sem Título";
+  const body = document.getElementById("inBody").value.trim();
+
+  const jira =
+`{panel:title=${title}|borderStyle=solid|borderColor=#0052cc|titleBGColor=#deebff}
+${body}
+{panel}`;
+
+  document.getElementById("output").value = jira;
+
+  // ✅ Preview agora renderiza formatação
+  document.getElementById("preview").innerHTML =
+    `<div class="pnl">
+      <div class="pnl-title">${title}</div>
+      <div class="pnl-body">${jiraToHtml(body) || "<i>(vazio)</i>"}</div>
+     </div>`;
+}
+
+function clearAll(){
+  inTitle.value="";
+  inBody.value="";
+  output.value="";
+  preview.innerHTML="";
+}
+</script>
+
+</body>
+</html>
