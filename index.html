@@ -1,1116 +1,935 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Formatador Documento → Jira Wiki Markup</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ferramentas BRM</title>
+  <style>
+    :root {
+      /* === Paleta Vivo === */
+      --vivo-roxo: #660099;
+      --vivo-roxo-escuro: #3d005c;
+      --vivo-roxo-medio: #8a00e6;
+      --vivo-roxo-claro: #f3e5f9;
+      --vivo-azul: #006cff;
+      --vivo-azul-claro: #e6f0ff;
+      --vivo-magenta: #e6007e;
+      --branco: #ffffff;
+      --fundo: #f3f4f7;
+      --card: #ffffff;
+      --borda: #dfe3e8;
+      --borda-campo: #d8dde3;
+      --texto: #56606b;
+      --texto-escuro: #3f4650;
+      --texto-suave: #8a93a0;
+      --erro: #a94442;
+      --sucesso: #14855f;
+      --disabled: #e9edf2;
+      --card-border: #e1e4e8;
+      --section-gradient-start: #e8edf2;
+      --section-gradient-end: #eef1f5;
+      --placeholder: #a0a7b0;
+      --texto-disabled: #8b94a1;
+      --shadow-main: 0 8px 24px rgba(61, 0, 92, 0.28);
+      --shadow-card: 0 8px 24px rgba(35, 35, 35, 0.20);
+      --hover-white: rgba(255, 255, 255, 0.16);
+      --outline-white: rgba(255, 255, 255, 0.45);
+      --focus-purple: rgba(102, 0, 153, 0.12);
+      --shadow-focus-purple: 0 0 0 4px rgba(102, 0, 153, 0.08);
+      --main-gradient: linear-gradient(90deg, #3d005c, #660099, #8a00e6, #006cff);
+      --card-gradient: linear-gradient(135deg, #660099, #8a00e6 62%, #006cff);
+      --bg-gradient-start: var(--section-gradient-start);
+      --bg-gradient-end: var(--section-gradient-end);
+      --primary: var(--vivo-roxo);
+      --primary-hover: var(--vivo-roxo-medio);
+      --primary-active: var(--vivo-roxo-escuro);
+      --text-title: var(--texto-escuro);
+      --text-default: var(--texto);
+      --text-muted: var(--texto-suave);
+      --surface: var(--card);
+      --surface-soft: #eef1f5;
+      --surface-muted: var(--disabled);
+      --surface-highlight: var(--vivo-roxo-claro);
+      --border-light: var(--borda);
+      --color-bg: var(--fundo);
+      --color-bg-elevated: var(--card);
+      --color-text: var(--texto);
+      --color-accent: var(--vivo-roxo);
+      --color-accent-hover: var(--vivo-roxo-medio);
+      --color-accent-active: var(--vivo-roxo-escuro);
+      --color-accent-soft: var(--vivo-roxo-claro);
+      --color-header: var(--main-gradient);
+      --color-border: var(--borda);
+      --shadow-soft: var(--shadow-card);
+    }
 
-<!-- Bibliotecas opcionais para upload de DOCX e PDF. TXT não depende de biblioteca externa. -->
-<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    body[data-theme="dark"] {
+      --bg-gradient-start: var(--vivo-roxo-escuro);
+      --bg-gradient-end: var(--vivo-roxo);
+      --text-title: var(--branco);
+      --text-default: var(--branco);
+      --text-muted: var(--vivo-roxo-claro);
+      --surface: var(--vivo-roxo-escuro);
+      --surface-soft: rgba(255, 255, 255, 0.16);
+      --surface-muted: rgba(255, 255, 255, 0.10);
+      --surface-highlight: rgba(255, 255, 255, 0.16);
+      --border-light: rgba(255, 255, 255, 0.26);
+      --color-bg: var(--vivo-roxo-escuro);
+      --color-bg-elevated: var(--vivo-roxo-escuro);
+      --color-text: var(--branco);
+      --color-accent: var(--vivo-roxo-medio);
+      --color-accent-hover: var(--vivo-azul);
+      --color-accent-active: var(--vivo-roxo);
+      --color-accent-soft: rgba(255, 255, 255, 0.16);
+      --color-header: var(--main-gradient);
+      --color-border: rgba(255, 255, 255, 0.26);
+      --shadow-soft: 0 8px 28px rgba(61, 0, 92, 0.28);
+    }
 
-<style>
-:root {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  --bg-gradient-start: #eef1f7;
-  --bg-gradient-end: #f7f9fc;
-  --primary: #5b6ee1;
-  --primary-hover: #4b5fd1;
-  --primary-active: #3f52b8;
-  --text-title: #1f2a44;
-  --text-default: #3a4563;
-  --text-dark: #111827;
-  --text-muted: #6b7280;
-  --surface: #ffffff;
-  --surface-soft: #f9fafb;
-  --surface-muted: #f1f4f9;
-  --surface-highlight: #e9edff;
-  --border-light: #d6dbea;
-  --success: #16a34a;
-  --error: #dc2626;
-  --neutral: #9ca3af;
-  --neutral-hover: #6b7280;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: linear-gradient(120deg, var(--bg-gradient-start), var(--bg-gradient-end));
-  color: var(--text-default);
-}
-header {
-  padding: 18px 20px;
-  border-bottom: 1px solid var(--border-light);
-  background: var(--surface);
-}
-header h1 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 750;
-  color: var(--text-title);
-}
-header p {
-  margin: 6px 0 0;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-.wrap {
-  padding: 16px 20px;
-  display: grid;
-  gap: 14px;
-}
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 14px;
-  align-items: start;
-}
-@media (max-width: 1180px) {
-  .grid { grid-template-columns: 1fr; }
-}
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border-light);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(31,42,68,0.08);
-}
-.card h2 {
-  margin: 0;
-  padding: 12px 14px;
-  font-size: 14px;
-  font-weight: 700;
-  border-bottom: 1px solid var(--border-light);
-  color: var(--text-title);
-  background: var(--surface-soft);
-}
-.card .body { padding: 12px 14px; }
-label {
-  display: block;
-  margin: 0 0 6px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-title);
-}
-input, textarea {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid var(--border-light);
-  background: var(--surface-muted);
-  color: var(--text-dark);
-  padding: 12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12.5px;
-  line-height: 1.45;
-  outline: none;
-}
-input[type="file"] {
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: #fff;
-}
-input:focus, textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(91,110,225,0.12);
-}
-input::placeholder, textarea::placeholder { color: var(--text-muted); }
-textarea { min-height: 460px; resize: vertical; }
-.toolbar {
-  display: flex;
-  gap: 6px;
-  margin: 10px 0 8px;
-  flex-wrap: wrap;
-}
-.toolbar button, button.secondary {
-  padding: 6px 10px;
-  font-size: 13px;
-  font-weight: 700;
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
-  background: var(--surface-highlight);
-  color: var(--primary);
-  cursor: pointer;
-}
-.toolbar button:hover, button.secondary:hover {
-  background: var(--primary);
-  color: #ffffff;
-}
-button.action {
-  border: none;
-  background: var(--primary);
-  color: #ffffff;
-  padding: 10px 14px;
-  border-radius: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-button.action:hover { background: var(--primary-hover); }
-button.action:active { background: var(--primary-active); }
-button.danger { background: var(--neutral); }
-button.danger:hover { background: var(--neutral-hover); }
-.preview { display: flex; flex-direction: column; gap: 10px; }
-.pnl {
-  border: 2px solid #0052cc;
-  border-radius: 14px;
-  overflow: hidden;
-  background: var(--surface-soft);
-}
-.pnl-title {
-  padding: 10px 12px;
-  font-weight: 800;
-  background: #deebff;
-  color: var(--text-title);
-}
-.pnl-body {
-  padding: 10px 12px;
-  color: var(--text-default);
-  font-size: 13px;
-}
-.pnl-body h3 {
-  margin: 10px 0 6px;
-  color: var(--text-title);
-  font-size: 14px;
-}
-.pnl-body p { margin: 0 0 8px; }
-.pnl-body ul, .pnl-body ol { margin: 4px 0 10px 20px; padding: 0; }
-.pnl-body table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 8px 0 10px;
-  font-size: 12px;
-  background: #ffffff;
-}
-.pnl-body th, .pnl-body td {
-  border: 1px solid var(--border-light);
-  padding: 7px 8px;
-  text-align: left;
-  vertical-align: top;
-}
-.pnl-body th { background: var(--surface-highlight); color: var(--text-title); }
-.footer { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-.small { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
-.status { min-height: 18px; margin-top: 8px; font-size: 12px; color: var(--success); }
-.status.error { color: var(--error); }
-.output-tools { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-.file-row { margin: 10px 0 8px; }
-</style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: var(--color-text);
+      background: linear-gradient(120deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      height: 56px;
+      background: var(--color-header);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      box-shadow: var(--shadow-main);
+      z-index: 10;
+    }
+
+    .app-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--branco);
+    }
+
+    .app-title span {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--branco);
+      opacity: 0.86;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-btn,
+    .secondary-btn,
+    .primary-btn {
+      border: 1px solid var(--outline-white);
+      background: transparent;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--branco);
+      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s, color 0.2s;
+    }
+
+    .icon-btn:hover,
+    .secondary-btn:hover,
+    .primary-btn:hover {
+      background-color: var(--hover-white);
+      box-shadow: var(--shadow-main);
+    }
+
+    .icon-btn:active,
+    .secondary-btn:active,
+    .primary-btn:active {
+      transform: scale(0.97);
+    }
+
+    button:focus-visible,
+    select:focus-visible,
+    .tool-card:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 3px;
+      box-shadow: var(--shadow-focus-purple);
+    }
+
+    .app-shell {
+      flex: 1;
+      min-height: 0;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .cards-panel,
+    .compact-toolbar,
+    .content-panel {
+      background-color: var(--color-bg-elevated);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+    }
+
+    body[data-theme="dark"] .cards-panel,
+    body[data-theme="dark"] .compact-toolbar,
+    body[data-theme="dark"] .content-panel {
+      border-color: var(--color-border);
+    }
+
+    .cards-panel {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      transition: max-height 0.32s ease, opacity 0.2s ease, transform 0.25s ease, margin 0.25s ease;
+    }
+
+    body:not(.cards-collapsed) .cards-panel {
+      max-height: none;
+    }
+
+    body.cards-collapsed .cards-panel {
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events: none;
+      margin: 0;
+      border-width: 0;
+      flex: 0 0 auto;
+    }
+
+    .cards-header {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      background: linear-gradient(90deg, var(--section-gradient-start), var(--section-gradient-end));
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    body[data-theme="dark"] .cards-header {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .cards-header h2 {
+      font-size: 16px;
+      color: var(--text-title);
+      margin-bottom: 3px;
+    }
+
+    .cards-header p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .cards-header-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .cards-header-actions .secondary-btn {
+      background: var(--color-accent-soft);
+      color: var(--color-accent);
+      border-color: var(--border-light);
+    }
+
+    .cards-header-actions .secondary-btn:hover {
+      color: var(--branco);
+      background: var(--main-gradient);
+    }
+
+    .cards-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+      padding: 18px;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
+      gap: 16px;
+      align-content: start;
+    }
+
+    .tool-card {
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      background: var(--surface);
+      min-height: 210px;
+      box-shadow: 0 7px 18px rgba(31, 42, 68, 0.12);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    }
+
+    .tool-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(61, 0, 92, 0.24);
+      border-color: rgba(102, 0, 153, 0.32);
+    }
+
+    .tool-card.active {
+      border-color: var(--vivo-roxo);
+      box-shadow: 0 12px 34px rgba(102, 0, 153, 0.26);
+    }
+
+    .tool-card-top {
+      height: 72px;
+      background: var(--card-gradient);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      position: relative;
+    }
+
+    .tool-card-top::before,
+    .tool-card-top::after {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border: 2px solid rgba(255,255,255,0.48);
+      border-radius: 50%;
+      position: absolute;
+      right: 12px;
+    }
+
+    .tool-card-top::before { top: 12px; }
+    .tool-card-top::after { top: 31px; }
+
+    .tool-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffffff, #f3e5f9);
+      border: 3px solid rgba(255, 255, 255, 0.86);
+      box-shadow: 0 8px 18px rgba(61, 0, 92, 0.24);
+      transform: translateY(22px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+
+    .tool-card-body {
+      padding: 32px 14px 14px;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .tool-card-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-title);
+      line-height: 1.25;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tool-card-description {
+      margin-top: 6px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.35;
+      min-height: 34px;
+    }
+
+    .tool-card-tag {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--vivo-roxo);
+      background: var(--vivo-roxo-claro);
+      border: 1px solid rgba(102, 0, 153, 0.12);
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-weight: 700;
+    }
+
+    .open-card-btn {
+      margin-top: auto;
+      border: none;
+      background: var(--main-gradient);
+      color: var(--branco);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 5px 13px rgba(102, 0, 153, 0.20);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    .open-card-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(102, 0, 153, 0.28);
+    }
+
+    .compact-toolbar {
+      min-height: 0;
+      padding: 10px 12px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    body.cards-collapsed .compact-toolbar {
+      display: flex;
+    }
+
+    .compact-left,
+    .compact-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .compact-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-title);
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .compact-title .mini-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--main-gradient);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--branco);
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .tool-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .tool-select {
+      appearance: none;
+      min-width: 260px;
+      max-width: min(42vw, 420px);
+      border-radius: 999px;
+      border: 1px solid var(--borda-campo);
+      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23660099' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 13px center;
+      color: var(--text-title);
+      padding: 9px 38px 9px 13px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    body[data-theme="dark"] .tool-select {
+      background-color: rgba(255, 255, 255, 0.12);
+      color: var(--branco);
+      border-color: rgba(255, 255, 255, 0.26);
+    }
+
+    .compact-right .secondary-btn {
+      border-color: var(--border-light);
+      background: var(--color-accent-soft);
+      color: var(--color-accent);
+    }
+
+    .compact-right .secondary-btn:hover {
+      color: var(--branco);
+      background: var(--main-gradient);
+    }
+
+    .content-panel {
+      flex: 1;
+      min-height: 0;
+      display: none;
+      flex-direction: column;
+    }
+
+    body.cards-collapsed .content-panel {
+      display: flex;
+    }
+
+    .content-header {
+      min-height: 42px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      font-size: 13px;
+      background: linear-gradient(90deg, var(--section-gradient-start), var(--section-gradient-end));
+    }
+
+    body[data-theme="dark"] .content-header {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .content-header-title {
+      font-weight: 800;
+      color: var(--text-title);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .content-header-title span:last-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .content-header-hint {
+      color: var(--texto-suave);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    body[data-theme="dark"] .content-header-hint {
+      color: var(--vivo-roxo-claro);
+    }
+
+    iframe {
+      flex: 1;
+      border: none;
+      width: 100%;
+      background-color: var(--color-bg);
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow: auto;
+      }
+
+      .app-shell {
+        min-height: calc(100vh - 56px);
+      }
+
+      .cards-panel {
+        max-height: none;
+      }
+
+      body.cards-collapsed .cards-panel {
+        max-height: 0;
+      }
+
+      .tool-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
+
+      .compact-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .compact-left,
+      .compact-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .tool-select-wrap {
+        flex: 1;
+      }
+
+      .tool-select {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+      }
+
+      .content-panel {
+        min-height: 62vh;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 0 10px;
+      }
+
+      .app-title {
+        font-size: 16px;
+      }
+
+      .app-title span {
+        display: none;
+      }
+
+      .app-shell {
+        padding: 8px;
+        gap: 8px;
+      }
+
+      .cards-header,
+      .content-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .cards-header-actions {
+        justify-content: flex-start;
+      }
+
+      .tool-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .compact-left,
+      .compact-right {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .compact-title {
+        white-space: normal;
+      }
+
+      .content-header-hint {
+        white-space: normal;
+      }
+    }
+  </style>
 </head>
-
-<body>
-<header>
-  <h1>Formatador Documento → Jira Wiki Markup</h1>
-  <p>Converte texto, TXT, DOCX ou PDF em painéis Jira/Confluence, com listas, subtítulos, tabelas e critérios de aceite.</p>
-</header>
-
-<div class="wrap">
-  <div class="grid">
-    <section class="card">
-      <h2>Entrada</h2>
-      <div class="body">
-        <label for="inTitle">Título padrão, usado apenas se o texto não tiver seções identificáveis</label>
-        <input id="inTitle" placeholder="Ex.: Documento formatado" />
-
-        <div class="file-row">
-          <label for="fileInput">Upload de arquivo opcional — TXT, DOCX ou PDF</label>
-          <input id="fileInput" type="file" accept=".txt,.text,.md,.html,.docx,.pdf,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleFileUpload(event)" />
-          <div class="small">Após selecionar o arquivo, o conteúdo será carregado no campo abaixo. Em seguida, clique em Converter.</div>
-        </div>
-
-        <div class="toolbar">
-          <button type="button" onclick="wrapSelection('*')" title="Negrito Jira"><b>B</b></button>
-          <button type="button" onclick="insertAtCursor('h3. Subtítulo interno\n')" title="Subtítulo interno">h3.</button>
-          <button type="button" onclick="makeList('*')">• Lista</button>
-          <button type="button" onclick="makeList('#')"># Numerada</button>
-          <button type="button" onclick="insertAcceptanceTemplate()">Critérios</button>
-          <button type="button" onclick="insertTableTemplate()">Tabela</button>
-        </div>
-
-        <textarea id="inBody" placeholder="Cole aqui o documento para formatar ou faça upload de TXT, DOCX ou PDF..."></textarea>
-
-        <div class="footer">
-          <button class="action" type="button" onclick="convert()">Converter</button>
-          <button class="action danger" type="button" onclick="clearAll()">Limpar</button>
-        </div>
-
-        <div class="small">
-          Painéis principais são criados para seções numeradas, Notas Técnicas, Dependências e Critérios de Aceite. Subitens como Premissas, Restrições, Fluxo Principal e Objetivo viram h3.
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Saída — Jira Wiki Markup</h2>
-      <div class="body">
-        <div class="output-tools">
-          <button class="secondary" type="button" onclick="copyOutput()">Copiar saída</button>
-        </div>
-        <textarea id="output" placeholder="O Wiki Markup será gerado aqui..."></textarea>
-        <div id="status" class="status"></div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Pré-visualização</h2>
-      <div class="body">
-        <div id="preview" class="preview"></div>
-      </div>
-    </section>
-  </div>
-</div>
-
-<script>
-const PANEL_OPTIONS = "borderStyle=solid|borderColor=#0052cc|titleBGColor=#deebff";
-
-const STANDALONE_PANEL_TITLES = [
-  "notas técnicas",
-  "nota técnica",
-  "dependências",
-  "dependencia",
-  "dependências técnicas",
-  "critérios de aceite",
-  "critério de aceite",
-  "criterios de aceite",
-  "criterio de aceite",
-  "critérios de aceitação",
-  "criterios de aceitacao"
-];
-
-const SUBHEADING_TITLES = [
-  "pré-condições",
-  "pre-condicoes",
-  "pré condições",
-  "pre condicoes",
-  "premissas",
-  "restrições",
-  "restricoes",
-  "fluxo principal",
-  "fluxos alternativos",
-  "fluxos de exceção",
-  "fluxos de excecao",
-  "objetivo",
-  "escopo detalhado",
-  "requisitos funcionais",
-  "regras de negócio",
-  "regras de negocio"
-];
-
-function panelOpen(title) {
-  return `{panel:title=${sanitizeTitle(title)}|${PANEL_OPTIONS}}`;
-}
-
-function sanitizeTitle(title) {
-  return normalizeSpaces(title || "Sem Título")
-    .replace(/[{}]/g, "")
-    .replace(/\|/g, "-")
-    .trim();
-}
-
-function normalizeSpaces(value) {
-  return String(value || "")
-    .replace(/\u00a0/g, " ")
-    .replace(/[ \t]+/g, " ")
-    .trim();
-}
-
-function normalizeLineText(line) {
-  return String(line || "")
-    .replace(/\u00a0/g, " ")
-    .replace(/[ \t]+$/g, "")
-    .replace(/[ \t]{2,}/g, " ")
-    .replace(/\s+([,.;:!?])/g, "$1");
-}
-
-function stripAccents(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
-function titleKey(value) {
-  return stripAccents(value)
-    .toLowerCase()
-    .replace(/[:.\-–—]+$/g, "")
-    .replace(/^\d+[.)]\s*/, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function cleanHeading(value) {
-  return normalizeSpaces(value)
-    .replace(/^[-–—•#*\s]+/, "")
-    .replace(/[:：]\s*$/g, "")
-    .trim();
-}
-
-function isStandalonePanelTitle(title) {
-  return STANDALONE_PANEL_TITLES.map(titleKey).includes(titleKey(title));
-}
-
-function isAcceptanceTitle(title) {
-  return [
-    "criterios de aceite",
-    "criterio de aceite",
-    "criterios de aceitacao",
-    "criterio de aceitacao"
-  ].includes(titleKey(title));
-}
-
-function isSubheadingTitle(line) {
-  const clean = cleanHeading(line);
-  if (!clean) return false;
-  const key = titleKey(clean);
-  return SUBHEADING_TITLES.map(titleKey).includes(key);
-}
-
-function getPanelHeadingTitle(line, index, lines) {
-  const original = normalizeSpaces(line);
-  if (!original) return null;
-
-  const markdownHeading = original.match(/^#{1,6}\s+(.+)$/);
-  if (markdownHeading) return cleanHeading(markdownHeading[1]);
-
-  const numbered = original.match(/^(\d+)[.)]\s+(.+)$/);
-  if (numbered) {
-    const headingText = cleanHeading(numbered[2]);
-    const words = headingText.split(/\s+/).filter(Boolean).length;
-    const endsAsSentence = /[.!?]$/.test(headingText);
-    if (words <= 12 && !endsAsSentence) {
-      return `${numbered[1]}. ${headingText}`;
-    }
-  }
-
-  const cleaned = cleanHeading(original);
-  if (isStandalonePanelTitle(cleaned)) return cleaned;
-
-  const isFirstNonBlank = lines.slice(0, index).every(l => !normalizeSpaces(l));
-  if (isFirstNonBlank && cleaned.length <= 90) return cleaned;
-
-  return null;
-}
-
-function splitIntoSections(rawText, fallbackTitle) {
-  const normalized = String(rawText || "")
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .replace(/[“”]/g, '"')
-    .replace(/[‘’]/g, "'")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-
-  if (!normalized) return [];
-
-  const lines = normalized.split("\n");
-  const sections = [];
-  let current = null;
-
-  lines.forEach((line, index) => {
-    const heading = getPanelHeadingTitle(line, index, lines);
-
-    if (heading) {
-      if (current && (current.bodyLines.some(l => normalizeSpaces(l)) || current.title)) {
-        sections.push(current);
-      }
-      current = { title: heading, bodyLines: [] };
-      return;
-    }
-
-    if (!current) {
-      current = {
-        title: normalizeSpaces(fallbackTitle) || "Documento formatado",
-        bodyLines: []
-      };
-    }
-
-    current.bodyLines.push(line);
-  });
-
-  if (current && (current.bodyLines.some(l => normalizeSpaces(l)) || current.title)) {
-    sections.push(current);
-  }
-
-  return sections
-    .map(section => ({ title: section.title, body: section.bodyLines.join("\n").trim() }))
-    .filter(section => section.title || section.body);
-}
-
-function formatInline(text) {
-  let value = normalizeLineText(text);
-
-  value = value
-    .replace(/<strong>(.*?)<\/strong>/gi, "*$1*")
-    .replace(/<b>(.*?)<\/b>/gi, "*$1*")
-    .replace(/\*\*(.*?)\*\*/g, "*$1*")
-    .replace(/__(.*?)__/g, "*$1*");
-
-  value = value.replace(/^(COMO|QUERO|PARA)\b\s*(.*)$/i, (_, label, rest) => `*${label.toUpperCase()}* ${rest.trim()}`);
-  value = value.replace(/^\*\s*(.+?)\s*:\s+(.+)$/, "*$1:* $2");
-
-  return value;
-}
-
-function parsePipeRow(line) {
-  return line
-    .trim()
-    .replace(/^\|/, "")
-    .replace(/\|$/, "")
-    .split("|")
-    .map(cell => formatInline(cell.trim()));
-}
-
-function isMarkdownSeparatorRow(line) {
-  return /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);
-}
-
-function isMarkdownTableStart(lines, index) {
-  const current = lines[index] || "";
-  const next = lines[index + 1] || "";
-  return /^\s*\|.*\|\s*$/.test(current) && isMarkdownSeparatorRow(next);
-}
-
-function convertMarkdownTable(lines, startIndex) {
-  const rows = [];
-  let i = startIndex;
-  rows.push(parsePipeRow(lines[i]));
-  i += 2;
-
-  while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
-    rows.push(parsePipeRow(lines[i]));
-    i++;
-  }
-
-  const output = [];
-  if (rows.length) {
-    output.push("||" + rows[0].join("||") + "||");
-    rows.slice(1).forEach(row => output.push("|" + row.join("|") + "|"));
-  }
-
-  return { outputLines: output, nextIndex: i };
-}
-
-function isTabTableStart(lines, index) {
-  const line = lines[index] || "";
-  if (!line.includes("\t")) return false;
-  const cells = line.split(/\t+/).map(normalizeSpaces).filter(Boolean);
-  if (cells.length < 2) return false;
-
-  let dataLines = 0;
-  for (let i = index + 1; i < lines.length; i++) {
-    const candidate = lines[i] || "";
-    if (!normalizeSpaces(candidate)) break;
-    if (candidate.includes("\t") && candidate.split(/\t+/).map(normalizeSpaces).filter(Boolean).length >= 2) dataLines++;
-    else break;
-  }
-  return dataLines >= 1;
-}
-
-function convertTabTable(lines, startIndex) {
-  const rows = [];
-  let i = startIndex;
-
-  while (i < lines.length) {
-    const line = lines[i] || "";
-    if (!normalizeSpaces(line)) break;
-    if (!line.includes("\t")) break;
-    const cells = line.split(/\t+/).map(cell => formatInline(cell.trim())).filter(cell => cell !== "");
-    if (cells.length < 2) break;
-    rows.push(cells);
-    i++;
-  }
-
-  if (!rows.length) return { outputLines: [], nextIndex: startIndex + 1 };
-
-  const width = Math.max(...rows.map(r => r.length));
-  const normalizedRows = rows.map(row => {
-    const copy = row.slice();
-    while (copy.length < width) copy.push("");
-    return copy;
-  });
-
-  const output = [];
-  output.push("||" + normalizedRows[0].join("||") + "||");
-  normalizedRows.slice(1).forEach(row => output.push("|" + row.join("|") + "|"));
-
-  return { outputLines: output, nextIndex: i };
-}
-
-function isSingleColumnReportTableStart(lines, index) {
-  const title = normalizeSpaces(lines[index]);
-  if (!/^novos? relatórios? flexbill$/i.test(stripAccents(title))) return false;
-  let count = 0;
-  for (let i = index + 1; i < lines.length; i++) {
-    const line = normalizeSpaces(lines[i]);
-    if (!line) break;
-    if (/^Relat[oó]rio\b/i.test(line)) count++;
-    else break;
-  }
-  return count >= 2;
-}
-
-function convertSingleColumnReportTable(lines, startIndex) {
-  const header = formatInline(lines[startIndex]);
-  const output = [`||${header}||`];
-  let i = startIndex + 1;
-
-  while (i < lines.length) {
-    const line = normalizeSpaces(lines[i]);
-    if (!line) break;
-    if (!/^Relat[oó]rio\b/i.test(line)) break;
-    output.push(`|${formatInline(line)}|`);
-    i++;
-  }
-
-  return { outputLines: output, nextIndex: i };
-}
-
-function formatNormalBody(text) {
-  const lines = String(text || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
-  const out = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    const rawLine = lines[i] || "";
-    let line = normalizeLineText(rawLine);
-    const trimmed = normalizeSpaces(rawLine);
-
-    if (!trimmed) {
-      if (out.length && out[out.length - 1] !== "") out.push("");
-      continue;
-    }
-
-    if (isMarkdownTableStart(lines, i)) {
-      const table = convertMarkdownTable(lines, i);
-      out.push(...table.outputLines);
-      i = table.nextIndex - 1;
-      continue;
-    }
-
-    if (isTabTableStart(lines, i)) {
-      const table = convertTabTable(lines, i);
-      out.push(...table.outputLines);
-      i = table.nextIndex - 1;
-      continue;
-    }
-
-    if (isSingleColumnReportTableStart(lines, i)) {
-      const table = convertSingleColumnReportTable(lines, i);
-      out.push(...table.outputLines);
-      i = table.nextIndex - 1;
-      continue;
-    }
-
-    if (/^\|\|.*\|\|$/.test(line) || /^\|.*\|$/.test(line)) {
-      out.push(line);
-      continue;
-    }
-
-    const mdHeading = line.match(/^#{1,6}\s+(.+)$/);
-    if (mdHeading) {
-      out.push(`h3. ${formatInline(mdHeading[1])}`);
-      continue;
-    }
-
-    if (/^h3\.\s+/.test(line)) {
-      out.push(line);
-      continue;
-    }
-
-    if (isSubheadingTitle(line)) {
-      out.push(`h3. ${formatInline(cleanHeading(line))}`);
-      continue;
-    }
-
-    const rfRn = line.match(/^(RF\d+|RN\d+)\s*[-–—]\s*(.+)$/i);
-    if (rfRn) {
-      out.push(`* *${rfRn[1].toUpperCase()}* - ${formatInline(rfRn[2])}`);
-      continue;
-    }
-
-    const bullet = rawLine.match(/^(\s*)[-–—•]\s+(.+)$/);
-    if (bullet) {
-      const marker = bullet[1] && bullet[1].length > 0 ? "**" : "*";
-      out.push(`${marker} ${formatInline(bullet[2])}`);
-      continue;
-    }
-
-    if (/^\*\s+/.test(line)) {
-      out.push(`* ${formatInline(line.replace(/^\*\s+/, ""))}`);
-      continue;
-    }
-
-    const numbered = line.match(/^\d+[.)]\s+(.+)$/);
-    if (numbered) {
-      out.push(`# ${formatInline(numbered[1])}`);
-      continue;
-    }
-
-    if (/^#\s+/.test(line)) {
-      out.push(`# ${formatInline(line.replace(/^#\s+/, ""))}`);
-      continue;
-    }
-
-    out.push(formatInline(line));
-  }
-
-  return out.join("\n").replace(/^\n+|\n+$/g, "");
-}
-
-function splitDescriptionEvidence(value) {
-  const text = normalizeSpaces(value);
-  const match = text.match(/^(.+?)\s+[–—-]\s+(.+)$/);
-  if (match) {
-    return { description: normalizeSpaces(match[1]), evidence: normalizeSpaces(match[2]) };
-  }
-  return { description: text, evidence: "" };
-}
-
-function normalizeCriterionId(id, sequence) {
-  let value = normalizeSpaces(id).toUpperCase();
-  if (/^\d+$/.test(value)) return `CA${String(Number(value)).padStart(2, "0")}`;
-  if (/^CA[-\s]*\d+$/i.test(value)) return value.replace(/^CA[-\s]*(\d+)$/i, (_, n) => `CA${String(Number(n)).padStart(2, "0")}`);
-  if (!value) return `CA${String(sequence).padStart(2, "0")}`;
-  return value;
-}
-
-function safeTableCell(value) {
-  return String(value || "")
-    .replace(/\|/g, "/")
-    .replace(/\n/g, " ")
-    .replace(/\s{2,}/g, " ")
-    .trim();
-}
-
-function formatEvidenceItems(text) {
-  const value = String(text || "").trim();
-  if (!value) return "A definir";
-
-  const normalized = value
-    .replace(/\s+(\d+[.)]\s+)/g, " \\ # $1")
-    .replace(/^(\d+[.)]\s+)/, "# $1")
-    .replace(/\s{2,}/g, " ")
-    .trim();
-
-  return normalized;
-}
-
-function parseTabbedAcceptanceRows(rawLines) {
-  const rows = [];
-  let current = null;
-
-  rawLines.forEach(raw => {
-    const line = String(raw || "").replace(/\r/g, "");
-    if (!normalizeSpaces(line)) return;
-
-    if (/^ID\s*\t/i.test(line) || /^ID\s+Crit[eé]rio/i.test(line)) return;
-
-    const startsNew = line.match(/^\s*(CA\d+|CA[-\s]*\d+|\d+)\b\s*\t?(.*)$/i);
-    if (startsNew && /^\s*(CA\d+|CA[-\s]*\d+|\d+)\b/i.test(line)) {
-      if (current) rows.push(current);
-      current = { id: normalizeCriterionId(startsNew[1], rows.length + 1), desc: [], evid: [] };
-      const rest = startsNew[2] || "";
-      addAcceptanceLine(current, rest);
-      return;
-    }
-
-    if (!current) return;
-    addAcceptanceLine(current, line);
-  });
-
-  if (current) rows.push(current);
-  return rows;
-}
-
-function addAcceptanceLine(current, rawLine) {
-  const parts = String(rawLine || "").split(/\t+/);
-
-  if (parts.length >= 2) {
-    const desc = normalizeSpaces(parts[0]);
-    const evidence = normalizeSpaces(parts.slice(1).join(" "));
-    if (desc) current.desc.push(desc);
-    if (evidence) current.evid.push(evidence);
-    return;
-  }
-
-  const clean = normalizeSpaces(rawLine);
-  if (!clean) return;
-
-  if (/^\d+[.)]\s+/.test(clean)) current.evid.push(clean);
-  else current.desc.push(clean);
-}
-
-function formatAcceptanceCriteria(text) {
-  const originalLines = String(text || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
-  const nonBlank = originalLines.map(line => normalizeLineText(line)).filter(Boolean);
-
-  if (!nonBlank.length) {
-    return "||ID||Descrição do Critério de Aceite||Evidência||";
-  }
-
-  if (originalLines.some(line => line.includes("\t")) || nonBlank.some(line => /^CA\d+\b/i.test(line))) {
-    const parsedRows = parseTabbedAcceptanceRows(originalLines);
-    if (parsedRows.length) {
-      return [
-        "||ID||Descrição do Critério de Aceite||Evidência||",
-        ...parsedRows.map(row => {
-          const desc = row.desc.map(formatInline).join(" \\ ");
-          const evid = formatEvidenceItems(row.evid.join(" "));
-          return `|${safeTableCell(row.id)}|${safeTableCell(desc)}|${safeTableCell(evid)}|`;
-        })
-      ].join("\n");
-    }
-  }
-
-  if (nonBlank.some(line => /^\|\|.*\|\|$/.test(line))) {
-    return normalizeExistingAcceptanceTable(nonBlank).join("\n");
-  }
-
-  if (nonBlank.length >= 2 && isMarkdownSeparatorRow(nonBlank[1])) {
-    const table = convertMarkdownTable(nonBlank, 0).outputLines;
-    return normalizeExistingAcceptanceTable(table).join("\n");
-  }
-
-  const rows = [];
-  let autoId = 1;
-
-  nonBlank.forEach(line => {
-    const cleaned = line.replace(/^[-–—•]\s+/, "").replace(/^#\s+/, "").trim();
-    if (!cleaned) return;
-
-    let id = "";
-    let description = "";
-    let evidence = "";
-
-    if (cleaned.includes("|")) {
-      const parts = cleaned.split("|").map(part => normalizeSpaces(part));
-      id = parts[0] || "";
-      description = parts[1] || "";
-      evidence = parts.slice(2).join(" | ") || "";
-    } else {
-      const explicit = cleaned.match(/^(CA[- ]?\d+|\d+)[.)]?\s*[-–—:]\s*(.+)$/i);
-      if (explicit) {
-        id = explicit[1];
-        const parsed = splitDescriptionEvidence(explicit[2]);
-        description = parsed.description;
-        evidence = parsed.evidence;
-      } else {
-        id = `CA${String(autoId).padStart(2, "0")}`;
-        description = cleaned;
-      }
-    }
-
-    id = normalizeCriterionId(id, autoId);
-    description = formatInline(description || cleaned);
-    evidence = formatInline(evidence || "A definir");
-    rows.push(`|${safeTableCell(id)}|${safeTableCell(description)}|${safeTableCell(evidence)}|`);
-    autoId++;
-  });
-
-  return ["||ID||Descrição do Critério de Aceite||Evidência||", ...rows].join("\n");
-}
-
-function normalizeExistingAcceptanceTable(lines) {
-  const rows = ["||ID||Descrição do Critério de Aceite||Evidência||"];
-
-  lines.forEach(line => {
-    if (!line || isMarkdownSeparatorRow(line)) return;
-    const isHeader = /^\|\|.*\|\|$/.test(line);
-    const cells = parsePipeRow(line.replace(/^\|\|/, "|").replace(/\|\|$/g, "|").replace(/\|\|/g, "|"));
-    const joined = titleKey(cells.join(" "));
-    if (isHeader && joined.includes("criterio")) return;
-    if (joined.includes("descricao") && joined.includes("evidencia")) return;
-
-    const id = normalizeCriterionId(cells[0] || "", rows.length);
-    const desc = cells[1] || cells[0] || "";
-    const evidence = cells[2] || "A definir";
-    if (desc) rows.push(`|${safeTableCell(id)}|${safeTableCell(formatInline(desc))}|${safeTableCell(formatInline(evidence))}|`);
-  });
-
-  return rows;
-}
-
-function formatSectionBody(section) {
-  if (isAcceptanceTitle(section.title)) return formatAcceptanceCriteria(section.body);
-  return formatNormalBody(section.body);
-}
-
-function buildWikiMarkup(sections) {
-  return sections.map(section => {
-    const title = sanitizeTitle(section.title);
-    const body = formatSectionBody(section);
-    return `${panelOpen(title)}\n${body}\n{panel}`;
-  }).join("\n\n");
-}
-
-function convert() {
-  const title = document.getElementById("inTitle").value || "Documento formatado";
-  const body = document.getElementById("inBody").value;
-  const sections = splitIntoSections(body, title);
-  const wiki = buildWikiMarkup(sections);
-  document.getElementById("output").value = wiki;
-  document.getElementById("preview").innerHTML = renderPreview(wiki);
-  setStatus(sections.length ? `${sections.length} painel(is) gerado(s).` : "Nenhum conteúdo informado.");
-}
-
-function clearAll() {
-  document.getElementById("inTitle").value = "";
-  document.getElementById("inBody").value = "";
-  document.getElementById("output").value = "";
-  document.getElementById("preview").innerHTML = "";
-  document.getElementById("fileInput").value = "";
-  setStatus("");
-}
-
-async function copyOutput() {
-  const output = document.getElementById("output");
-  const value = output.value;
-  if (!value.trim()) {
-    setStatus("Nada para copiar.");
-    return;
-  }
-  try {
-    await navigator.clipboard.writeText(value);
-    setStatus("Saída copiada.");
-  } catch (error) {
-    output.select();
-    document.execCommand("copy");
-    setStatus("Saída copiada.");
-  }
-}
-
-function setStatus(message, type) {
-  const status = document.getElementById("status");
-  status.textContent = message || "";
-  status.classList.toggle("error", type === "error");
-}
-
-async function handleFileUpload(event) {
-  const file = event.target.files && event.target.files[0];
-  if (!file) return;
-
-  try {
-    setStatus(`Lendo arquivo: ${file.name}...`);
-    const text = await readUploadedFile(file);
-    document.getElementById("inBody").value = text;
-    if (!document.getElementById("inTitle").value) {
-      document.getElementById("inTitle").value = file.name.replace(/\.[^.]+$/, "");
-    }
-    setStatus(`Arquivo carregado: ${file.name}`);
-  } catch (error) {
-    console.error(error);
-    setStatus(`Não foi possível ler o arquivo: ${error.message || error}`, "error");
-  }
-}
-
-async function readUploadedFile(file) {
-  const name = file.name.toLowerCase();
-  const type = file.type || "";
-
-  if (name.endsWith(".txt") || name.endsWith(".text") || name.endsWith(".md") || name.endsWith(".html") || type.startsWith("text/")) {
-    return await file.text();
-  }
-
-  if (name.endsWith(".docx") || type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
-    if (typeof mammoth === "undefined") {
-      throw new Error("Biblioteca Mammoth não carregada. Verifique a conexão ou inclua mammoth.browser.min.js localmente.");
-    }
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.extractRawText({ arrayBuffer });
-    return result.value || "";
-  }
-
-  if (name.endsWith(".pdf") || type === "application/pdf") {
-    if (typeof pdfjsLib === "undefined") {
-      throw new Error("Biblioteca PDF.js não carregada. Verifique a conexão ou inclua pdf.min.js localmente.");
-    }
-    if (pdfjsLib.GlobalWorkerOptions) {
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-    }
-    const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    const pages = [];
-    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-      const page = await pdf.getPage(pageNumber);
-      const content = await page.getTextContent();
-      const pageText = content.items.map(item => item.str).join(" ");
-      pages.push(pageText);
-    }
-    return pages.join("\n\n");
-  }
-
-  throw new Error("Formato não suportado. Use TXT, DOCX ou PDF.");
-}
-
-function wrapSelection(marker) {
-  const ta = document.getElementById("inBody");
-  const start = ta.selectionStart;
-  const end = ta.selectionEnd;
-  const sel = ta.value.substring(start, end);
-  ta.setRangeText(marker + sel + marker);
-  ta.focus();
-}
-
-function insertAtCursor(text) {
-  const ta = document.getElementById("inBody");
-  ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, "end");
-  ta.focus();
-}
-
-function makeList(marker) {
-  const ta = document.getElementById("inBody");
-  const start = ta.selectionStart;
-  const end = ta.selectionEnd;
-  const selected = ta.value.substring(start, end) || "Item";
-  const lines = selected
-    .split("\n")
-    .map(line => `${marker} ${line.replace(/^[-–—•*#]\s*/, "")}`)
-    .join("\n");
-  ta.setRangeText(lines, start, end, "end");
-  ta.focus();
-}
-
-function insertAcceptanceTemplate() {
-  insertAtCursor(
-`Critérios de Aceite
-CA01 - Descreva o primeiro critério - Evidência esperada
-CA02 - Descreva o segundo critério - Evidência esperada
-`
-  );
-}
-
-function insertTableTemplate() {
-  insertAtCursor(
-`| Coluna 1 | Coluna 2 | Coluna 3 |
-| --- | --- | --- |
-| valor | valor | valor |
-`
-  );
-}
-
-function escapeHtml(value) {
-  return String(value || "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-function renderInline(text) {
-  return escapeHtml(text).replace(/\*(?!\s)([^*\n]+?)\*/g, "<strong>$1</strong>");
-}
-
-function parseWikiPanels(wiki) {
-  const panels = [];
-  const regex = /\{panel:title=([^|}]+)\|[^}]*\}\n([\s\S]*?)\n?\{panel\}/g;
-  let match;
-  while ((match = regex.exec(wiki)) !== null) {
-    panels.push({ title: match[1], body: match[2] || "" });
-  }
-  if (!panels.length && wiki.trim()) panels.push({ title: "Pré-visualização", body: wiki });
-  return panels;
-}
-
-function renderPreview(wiki) {
-  const panels = parseWikiPanels(wiki);
-  return panels.map(panel => `
-    <div class="pnl">
-      <div class="pnl-title">${escapeHtml(panel.title)}</div>
-      <div class="pnl-body">${renderWikiBody(panel.body) || "<em>(vazio)</em>"}</div>
+<body data-theme="light">
+  <header>
+    <div class="app-title">
+      ⚙️ Ferramentas
+      <span>Utilitários BRM</span>
     </div>
-  `).join("");
-}
+    <div class="header-actions">
+      <button id="themeToggle" class="icon-btn" type="button" aria-label="Alternar tema claro/escuro">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Modo escuro</span>
+      </button>
+    </div>
+  </header>
 
-function renderWikiBody(body) {
-  const lines = String(body || "").split("\n");
-  let html = "";
-  let listType = null;
+  <main class="app-shell">
+    <section class="cards-panel" aria-label="Cards de ferramentas">
+      <div class="cards-header">
+        <div>
+          <h2>Ferramentas úteis</h2>
+          <p>Menu de ferramentas carregado. Escolha uma ferramenta para recolher os cards e abrir a área de trabalho.</p>
+        </div>
+        <div class="cards-header-actions">
+          <button id="collapseCardsBtn" class="secondary-btn" type="button">Recolher cards</button>
+        </div>
+      </div>
+      <div class="cards-scroll">
+        <div id="toolGrid" class="tool-grid"></div>
+      </div>
+    </section>
 
-  const closeList = () => {
-    if (listType) {
-      html += listType === "ul" ? "</ul>" : "</ol>";
-      listType = null;
-    }
-  };
+    <section class="compact-toolbar" aria-label="Menu compacto de ferramentas">
+      <div class="compact-left">
+        <div class="compact-title">
+          <span id="compactIcon" class="mini-icon">📅</span>
+          <span id="compactCurrentTool">Calcular Datas</span>
+        </div>
+      </div>
+      <div class="compact-right">
+        <label class="tool-select-wrap" for="toolSelect">
+          Ferramenta
+          <select id="toolSelect" class="tool-select" aria-label="Selecionar ferramenta"></select>
+        </label>
+        <button id="showCardsBtn" class="secondary-btn" type="button">Mostrar cards</button>
+      </div>
+    </section>
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+    <section class="content-panel" aria-label="Área de conteúdo da ferramenta">
+      <div class="content-header">
+        <div class="content-header-title" id="currentToolTitle">
+          <span>📅</span>
+          <span>Calcular Datas</span>
+        </div>
+        <div class="content-header-hint" id="contentHint">
+Primeiro item pré-carregado automaticamente.
+        </div>
+      </div>
+      <iframe id="toolFrame" name="conteudo" title="Ferramentas em exibição"></iframe>
+    </section>
+  </main>
 
-    if (!normalizeSpaces(line)) {
-      closeList();
-      html += "<br>";
-      continue;
-    }
-
-    if (/^h3\.\s+/.test(line)) {
-      closeList();
-      html += `<h3>${renderInline(line.replace(/^h3\.\s+/, ""))}</h3>`;
-      continue;
-    }
-
-    if (/^\*\*\s+/.test(line)) {
-      if (listType !== "ul") {
-        closeList();
-        html += "<ul>";
-        listType = "ul";
+  <script>
+    const tools = [
+      {
+        id: "calcular-datas",
+        label: "Calcular Datas",
+        description: "Cálculo e apoio para datas, ciclos e períodos.",
+        tag: "Datas",
+        icon: "📅",
+        url: "https://fbnmurad.github.io/alive/CalculadoraDatas.html"
+      },
+      {
+        id: "calcular-pro-rata",
+        label: "Calcular Pró-Rata",
+        description: "Cálculo proporcional de valores por período.",
+        tag: "Cálculo",
+        icon: "🧮",
+        url: "https://fbnmurad.github.io/alive/ValorProRata.html"
+      },
+      {
+        id: "comparador-merge",
+        label: "Comparador & Merge",
+        description: "Comparação, análise e união de textos.",
+        tag: "Texto",
+        icon: "🔀",
+        url: "https://fbnmurad.github.io/alive/CompararTexto.html"
+      },
+      {
+        id: "comparar-json",
+        label: "Comparar JSON",
+        description: "Validação e comparação de estruturas JSON.",
+        tag: "JSON",
+        icon: "{}",
+        url: "https://fbnmurad.github.io/alive/JSONCompare.html"
+      },
+      {
+        id: "contar-caracteres",
+        label: "Contar Caracteres",
+        description: "Contagem de caracteres, palavras e tamanho de texto.",
+        tag: "Texto",
+        icon: "🔢",
+        url: "https://fbnmurad.github.io/alive/ContarCaracter.html"
+      },
+      {
+        id: "corretor-ortografico-gramatical",
+        label: "Corretor Ortográfico & Gramatical",
+        description: "Apoio para revisão textual, escrita e gramática.",
+        tag: "Revisão",
+        icon: "✍️",
+        url: "https://fbnmurad.github.io/alive/Corretor.html"
+      },
+      {
+        id: "diferimento-receita",
+        label: "Diferimento de Receita",
+        description: "Apoio para cálculo e análise de diferimento.",
+        tag: "Receita",
+        icon: "📈",
+        url: "https://fbnmurad.github.io/alive/DIFReceita.html"
+      },
+      {
+        id: "gerar-cartao-credito",
+        label: "Gerar Cartão de Crédito",
+        description: "Geração de dados de cartão para testes controlados.",
+        tag: "Teste",
+        icon: "💳",
+        url: "https://fbnmurad.github.io/alive/GeradorCartaoCredito.html"
+      },
+      {
+        id: "gerar-cpf-cnpj",
+        label: "Gerar CPF/CNPJ",
+        description: "Geração de documentos para massa de teste.",
+        tag: "Teste",
+        icon: "🪪",
+        url: "https://fbnmurad.github.io/alive/GeradorCpfCnpj.html"
+      },
+      {
+        id: "renderizador-jira-wiki",
+        label: "Renderizador Jira/Wiki",
+        description: "Formatação e renderização de conteúdo Wiki Markup.",
+        tag: "Wiki",
+        icon: "🧾",
+        url: "https://fbnmurad.github.io/alive/JiraWikiMarkup.html"
+      },
+      {
+        id: "renderizador-mermaid",
+        label: "Renderizador Mermaid",
+        description: "Visualização de diagramas Mermaid em tempo real.",
+        tag: "Diagrama",
+        icon: "🧩",
+        url: "https://fbnmurad.github.io/alive/mermaid-local.html"
       }
-      html += `<li style="margin-left:18px">${renderInline(line.replace(/^\*\*\s+/, ""))}</li>`;
-      continue;
+    ].sort((a, b) => a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" }));
+
+    const body = document.body;
+    const toolGrid = document.getElementById("toolGrid");
+    const toolSelect = document.getElementById("toolSelect");
+    const toolFrame = document.getElementById("toolFrame");
+    const currentToolTitle = document.getElementById("currentToolTitle");
+    const compactIcon = document.getElementById("compactIcon");
+    const compactCurrentTool = document.getElementById("compactCurrentTool");
+    const contentHint = document.getElementById("contentHint");
+    const showCardsBtn = document.getElementById("showCardsBtn");
+    const collapseCardsBtn = document.getElementById("collapseCardsBtn");
+
+    function renderTools() {
+      toolGrid.innerHTML = tools.map(tool => `
+        <article class="tool-card" tabindex="0" role="button" data-tool-id="${tool.id}" aria-label="Abrir ${escapeHtml(tool.label)}">
+          <div class="tool-card-top">
+            <div class="tool-icon" aria-hidden="true">${escapeHtml(tool.icon)}</div>
+          </div>
+          <div class="tool-card-body">
+            <div class="tool-card-title">${escapeHtml(tool.label)}</div>
+            <div class="tool-card-description">${escapeHtml(tool.description)}</div>
+            <div class="tool-card-tag">${escapeHtml(tool.tag)}</div>
+            <button class="open-card-btn" type="button" data-tool-id="${tool.id}">Abrir</button>
+          </div>
+        </article>
+      `).join("");
+
+      toolSelect.innerHTML = tools.map(tool => `
+        <option value="${tool.id}">${escapeHtml(tool.label)}</option>
+      `).join("");
     }
 
-    if (/^\*\s+/.test(line)) {
-      if (listType !== "ul") {
-        closeList();
-        html += "<ul>";
-        listType = "ul";
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function getToolById(id) {
+      return tools.find(tool => tool.id === id) || tools[0];
+    }
+
+    function openTool(toolId, collapseCards = false) {
+      const tool = getToolById(toolId);
+      if (!tool) return;
+
+      toolFrame.src = tool.url;
+      toolSelect.value = tool.id;
+      compactIcon.textContent = tool.icon;
+      compactCurrentTool.textContent = tool.label;
+      currentToolTitle.innerHTML = `<span>${escapeHtml(tool.icon)}</span><span>${escapeHtml(tool.label)}</span>`;
+      contentHint.textContent = collapseCards
+        ? "Cards recolhidos. Use o menu compacto para alternar a ferramenta."
+        : "Menu de cards carregado. O primeiro item já está pré-carregado.";
+
+      document.querySelectorAll(".tool-card").forEach(card => {
+        card.classList.toggle("active", card.dataset.toolId === tool.id);
+      });
+
+      if (collapseCards) {
+        body.classList.add("cards-collapsed");
       }
-      html += `<li>${renderInline(line.replace(/^\*\s+/, ""))}</li>`;
-      continue;
     }
 
-    if (/^#\s+/.test(line)) {
-      if (listType !== "ol") {
-        closeList();
-        html += "<ol>";
-        listType = "ol";
+    function showCards() {
+      body.classList.remove("cards-collapsed");
+      contentHint.textContent = "Menu de cards carregado. Selecione uma ferramenta para abrir a área de trabalho.";
+    }
+
+    function bindEvents() {
+      toolGrid.addEventListener("click", event => {
+        const target = event.target.closest("[data-tool-id]");
+        if (!target) return;
+        openTool(target.dataset.toolId, true);
+      });
+
+      toolGrid.addEventListener("keydown", event => {
+        const card = event.target.closest(".tool-card");
+        if (!card) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openTool(card.dataset.toolId, true);
+        }
+      });
+
+      toolSelect.addEventListener("change", event => {
+        openTool(event.target.value, true);
+      });
+
+      showCardsBtn.addEventListener("click", showCards);
+
+      collapseCardsBtn.addEventListener("click", () => {
+        body.classList.add("cards-collapsed");
+        contentHint.textContent = "Cards recolhidos. Use o menu compacto para alternar a ferramenta.";
+      });
+    }
+
+    /* Tema claro/escuro com persistência */
+    const themeToggle = document.getElementById("themeToggle");
+    const themeIcon = document.getElementById("themeIcon");
+    const themeLabel = document.getElementById("themeLabel");
+
+    function applyTheme(theme) {
+      body.setAttribute("data-theme", theme);
+      if (theme === "dark") {
+        themeIcon.textContent = "☀️";
+        themeLabel.textContent = "Modo claro";
+      } else {
+        themeIcon.textContent = "🌙";
+        themeLabel.textContent = "Modo escuro";
       }
-      html += `<li>${renderInline(line.replace(/^#\s+/, ""))}</li>`;
-      continue;
+      localStorage.setItem("app-theme", theme);
     }
 
-    if (/^\|\|.*\|\|$/.test(line)) {
-      closeList();
-      const table = collectWikiTable(lines, i);
-      html += table.html;
-      i = table.nextIndex - 1;
-      continue;
+    function initTheme() {
+      const stored = localStorage.getItem("app-theme");
+      if (stored === "dark" || stored === "light") {
+        applyTheme(stored);
+      } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        applyTheme("dark");
+      } else {
+        applyTheme("light");
+      }
     }
 
-    closeList();
-    html += `<p>${renderInline(line)}</p>`;
-  }
+    themeToggle.addEventListener("click", () => {
+      const current = body.getAttribute("data-theme");
+      applyTheme(current === "dark" ? "light" : "dark");
+    });
 
-  closeList();
-  return html;
-}
+    function init() {
+      renderTools();
+      bindEvents();
+      initTheme();
+      openTool(tools[0].id, false);
+    }
 
-function collectWikiTable(lines, startIndex) {
-  let html = "<table>";
-  let i = startIndex;
-
-  if (/^\|\|.*\|\|$/.test(lines[i])) {
-    const headerCells = lines[i].replace(/^\|\|/, "").replace(/\|\|$/, "").split("||");
-    html += "<thead><tr>";
-    headerCells.forEach(cell => html += `<th>${renderInline(cell)}</th>`);
-    html += "</tr></thead>";
-    i++;
-  }
-
-  html += "<tbody>";
-  while (i < lines.length && /^\|.*\|$/.test(lines[i]) && !/^\|\|.*\|\|$/.test(lines[i])) {
-    const cells = lines[i].replace(/^\|/, "").replace(/\|$/, "").split("|");
-    html += "<tr>";
-    cells.forEach(cell => html += `<td>${renderInline(cell)}</td>`);
-    html += "</tr>";
-    i++;
-  }
-  html += "</tbody></table>";
-  return { html, nextIndex: i };
-}
-</script>
+    init();
+  </script>
 </body>
 </html>
