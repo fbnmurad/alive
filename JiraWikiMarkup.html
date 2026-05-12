@@ -3,58 +3,49 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Conversor Texto → Jira Panel + Preview</title>
+<title>Formatador Documento → Jira Wiki Markup</title>
 
 <style>
 :root {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
-  /* Background */
-  --bg-gradient-start: #eef1f7;   /* cinza frio claro */
-  --bg-gradient-end:   #f7f9fc;   /* quase branco */
+  --bg-gradient-start: #eef1f7;
+  --bg-gradient-end: #f7f9fc;
 
-  /* Roxo azulado (identidade) */
-  --primary: #5b6ee1;             /* purple-blue tech */
+  --primary: #5b6ee1;
   --primary-hover: #4b5fd1;
   --primary-active: #3f52b8;
 
-  /* Textos */
-  --text-title: #1f2a44;          /* azul grafite */
-  --text-default: #3a4563;        /* cinza azulado */
-  --text-dark: #111827;           /* quase preto */
-  --text-muted: #6b7280;          /* cinza neutro */
+  --text-title: #1f2a44;
+  --text-default: #3a4563;
+  --text-dark: #111827;
+  --text-muted: #6b7280;
 
-  /* Superfícies */
   --surface: #ffffff;
   --surface-soft: #f9fafb;
   --surface-muted: #f1f4f9;
-  --surface-highlight: #e9edff;   /* destaque roxo azulado */
+  --surface-highlight: #e9edff;
 
-  /* Bordas */
   --border-light: #d6dbea;
 
-  /* Feedback semântico */
   --success: #16a34a;
   --error: #dc2626;
   --info: #5b6ee1;
 
-  /* Neutros */
   --neutral: #9ca3af;
   --neutral-hover: #6b7280;
 }
 
-/* ===== Base ===== */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background: linear-gradient(
-    120deg,
-    var(--bg-gradient-start),
-    var(--bg-gradient-end)
-  );
+  background: linear-gradient(120deg, var(--bg-gradient-start), var(--bg-gradient-end));
   color: var(--text-default);
 }
 
-/* ===== Header ===== */
 header {
   padding: 18px 20px;
   border-bottom: 1px solid var(--border-light);
@@ -68,7 +59,12 @@ header h1 {
   color: var(--text-title);
 }
 
-/* ===== Layout ===== */
+header p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
 .wrap {
   padding: 16px 20px;
   display: grid;
@@ -79,6 +75,7 @@ header h1 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 14px;
+  align-items: start;
 }
 
 @media (max-width: 1180px) {
@@ -87,7 +84,6 @@ header h1 {
   }
 }
 
-/* ===== Cards / Containers ===== */
 .card {
   background: var(--surface);
   border: 1px solid var(--border-light);
@@ -110,7 +106,14 @@ header h1 {
   padding: 12px 14px;
 }
 
-/* ===== Inputs / Textareas ===== */
+label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-title);
+}
+
 input,
 textarea {
   width: 100%;
@@ -122,6 +125,13 @@ textarea {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 12.5px;
   line-height: 1.45;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(91,110,225,0.12);
 }
 
 input::placeholder,
@@ -130,18 +140,19 @@ textarea::placeholder {
 }
 
 textarea {
-  min-height: 320px;
+  min-height: 460px;
   resize: vertical;
 }
 
-/* ===== Toolbar ===== */
 .toolbar {
   display: flex;
   gap: 6px;
-  margin-bottom: 6px;
+  margin: 10px 0 8px;
+  flex-wrap: wrap;
 }
 
-.toolbar button {
+.toolbar button,
+button.secondary {
   padding: 6px 10px;
   font-size: 13px;
   font-weight: 700;
@@ -152,12 +163,12 @@ textarea {
   cursor: pointer;
 }
 
-.toolbar button:hover {
+.toolbar button:hover,
+button.secondary:hover {
   background: var(--primary);
   color: #ffffff;
 }
 
-/* ===== Botões ===== */
 button.action {
   border: none;
   background: var(--primary);
@@ -176,7 +187,14 @@ button.action:active {
   background: var(--primary-active);
 }
 
-/* ===== Preview ===== */
+button.danger {
+  background: var(--neutral);
+}
+
+button.danger:hover {
+  background: var(--neutral-hover);
+}
+
 .preview {
   display: flex;
   flex-direction: column;
@@ -184,7 +202,7 @@ button.action:active {
 }
 
 .pnl {
-  border: 2px solid var(--primary);
+  border: 2px solid #0052cc;
   border-radius: 14px;
   overflow: hidden;
   background: var(--surface-soft);
@@ -193,17 +211,53 @@ button.action:active {
 .pnl-title {
   padding: 10px 12px;
   font-weight: 800;
-  background: var(--surface-highlight);
+  background: #deebff;
   color: var(--text-title);
 }
 
 .pnl-body {
   padding: 10px 12px;
-  white-space: pre-wrap;
   color: var(--text-default);
+  font-size: 13px;
 }
 
-/* ===== Footer / textos auxiliares ===== */
+.pnl-body h3 {
+  margin: 10px 0 6px;
+  color: var(--text-title);
+  font-size: 14px;
+}
+
+.pnl-body p {
+  margin: 0 0 8px;
+}
+
+.pnl-body ul,
+.pnl-body ol {
+  margin: 4px 0 10px 20px;
+  padding: 0;
+}
+
+.pnl-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 10px;
+  font-size: 12px;
+  background: #ffffff;
+}
+
+.pnl-body th,
+.pnl-body td {
+  border: 1px solid var(--border-light);
+  padding: 7px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pnl-body th {
+  background: var(--surface-highlight);
+  color: var(--text-title);
+}
+
 .footer {
   display: flex;
   gap: 10px;
@@ -214,152 +268,799 @@ button.action:active {
 .small {
   font-size: 12px;
   color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.status {
+  min-height: 18px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--success);
+}
+
+.output-tools {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 </style>
-
-
-
 </head>
 
 <body>
 <header>
-<h1>Conversor Texto → Jira Wiki Markup</h1>
+  <h1>Formatador Documento → Jira Wiki Markup</h1>
+  <p>Converte um documento bruto em painéis Jira/Confluence, com listas, subtítulos, tabelas e critérios de aceite.</p>
 </header>
 
 <div class="wrap">
-<div class="grid">
+  <div class="grid">
 
-<section class="card">
-<h2>Entrada (título + conteúdo)</h2>
-<div class="body">
+    <section class="card">
+      <h2>Entrada</h2>
+      <div class="body">
+        <label for="inTitle">Título padrão, usado apenas se o texto não tiver seções identificáveis</label>
+        <input id="inTitle" placeholder="Ex.: Documento formatado" />
 
-<input id="inTitle" placeholder="Título do painel" />
+        <div class="toolbar">
+          <button type="button" onclick="wrapSelection('*')" title="Negrito Jira"><b>B</b></button>
+          <button type="button" onclick="insertAtCursor('h3. Subtítulo interno\n')" title="Subtítulo interno">h3.</button>
+          <button type="button" onclick="makeList('*')">• Lista</button>
+          <button type="button" onclick="makeList('#')"># Numerada</button>
+          <button type="button" onclick="insertAcceptanceTemplate()">Critérios</button>
+          <button type="button" onclick="insertTableTemplate()">Tabela</button>
+        </div>
 
-<div class="toolbar">
-  <button onclick="wrapSelection('*')"><b>B</b></button>
-  <button onclick="wrapSelection('_')"><i>I</i></button>
-  <button onclick="makeList()">• Lista</button>
-</div>
+        <textarea id="inBody" placeholder="Cole aqui o documento para formatar..."></textarea>
 
-<textarea id="inBody" placeholder="Digite o conteúdo..."></textarea>
+        <div class="footer">
+          <button class="action" type="button" onclick="convert()">Converter</button>
+          <button class="action danger" type="button" onclick="clearAll()">Limpar</button>
+        </div>
 
-<div class="footer">
-  <button class="action" onclick="convert()">Converter</button>
-  <button class="action" onclick="clearAll()">Limpar</button>
-</div>
+        <div class="small">
+          Seções como “1. Escopo”, “Notas Técnicas”, “Dependências” e “Critérios de Aceite” viram painéis próprios.
+        </div>
+      </div>
+    </section>
 
-</div>
-</section>
+    <section class="card">
+      <h2>Saída — Jira Wiki Markup</h2>
+      <div class="body">
+        <div class="output-tools">
+          <button class="secondary" type="button" onclick="copyOutput()">Copiar saída</button>
+        </div>
+        <textarea id="output" placeholder="O Wiki Markup será gerado aqui..."></textarea>
+        <div id="status" class="status"></div>
+      </div>
+    </section>
 
-<section class="card">
-<h2>Saída (Jira Wiki Markup)</h2>
-<div class="body">
-<textarea id="output"></textarea>
-</div>
-</section>
+    <section class="card">
+      <h2>Pré-visualização</h2>
+      <div class="body">
+        <div id="preview" class="preview"></div>
+      </div>
+    </section>
 
-<section class="card">
-<h2>Pré-visualização</h2>
-<div class="body">
-<div id="preview" class="preview"></div>
-</div>
-</section>
-
-</div>
+  </div>
 </div>
 
 <script>
-function wrapSelection(marker){
+const PANEL_OPTIONS = "borderStyle=solid|borderColor=#0052cc|titleBGColor=#deebff";
+
+const SPECIAL_SECTION_NAMES = [
+  "notas técnicas",
+  "nota técnica",
+  "dependências",
+  "dependencia",
+  "dependências técnicas",
+  "critérios de aceite",
+  "critério de aceite",
+  "criterios de aceite",
+  "criterio de aceite",
+  "critérios de aceitação",
+  "criterios de aceitacao",
+  "premissas",
+  "restrições",
+  "riscos",
+  "observações",
+  "fora de escopo"
+];
+
+const COMMON_SECTION_NAMES = [
+  "escopo",
+  "objetivo",
+  "objetivos",
+  "contexto",
+  "descrição",
+  "descricao",
+  "regras de negócio",
+  "regras de negocio",
+  "requisitos",
+  "fluxo",
+  "fluxo principal",
+  "campos",
+  "telas",
+  "integrações",
+  "integracoes",
+  "api",
+  "validações",
+  "validacoes",
+  "comportamento esperado",
+  "cenários",
+  "cenarios",
+  ...SPECIAL_SECTION_NAMES
+];
+
+function panelOpen(title) {
+  return `{panel:title=${sanitizeTitle(title)}|${PANEL_OPTIONS}}`;
+}
+
+function sanitizeTitle(title) {
+  return normalizeSpaces(title || "Sem Título")
+    .replace(/[{}]/g, "")
+    .replace(/\|/g, "-")
+    .trim();
+}
+
+function normalizeSpaces(value) {
+  return String(value || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .trim();
+}
+
+function normalizeLineText(line) {
+  return String(line || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/[ \t]+$/g, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/\s+([,.;:!?])/g, "$1");
+}
+
+function stripAccents(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function titleKey(value) {
+  return stripAccents(value)
+    .toLowerCase()
+    .replace(/[:.\-–—]+$/g, "")
+    .replace(/^\d+[.)]\s*/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function isSpecialSectionTitle(title) {
+  const key = titleKey(title);
+  return SPECIAL_SECTION_NAMES.map(titleKey).includes(key);
+}
+
+function isAcceptanceTitle(title) {
+  const key = titleKey(title);
+  return [
+    "criterios de aceite",
+    "criterio de aceite",
+    "criterios de aceitacao",
+    "criterio de aceitacao"
+  ].includes(key);
+}
+
+function getHeadingTitle(line, index, lines) {
+  const original = normalizeSpaces(line);
+  if (!original) return null;
+
+  const markdownHeading = original.match(/^#{1,6}\s+(.+)$/);
+  if (markdownHeading) return cleanHeading(markdownHeading[1]);
+
+  const withoutColon = original.replace(/[:：]\s*$/g, "");
+  const key = titleKey(withoutColon);
+
+  if (COMMON_SECTION_NAMES.map(titleKey).includes(key)) {
+    return cleanHeading(withoutColon);
+  }
+
+  const numbered = original.match(/^(\d+)[.)]\s+(.+)$/);
+  if (numbered) {
+    const headingText = numbered[2].trim();
+    const wordCount = headingText.split(/\s+/).filter(Boolean).length;
+    const endsAsSentence = /[.!?]$/.test(headingText);
+    const looksLikeBusinessSentence = /^(o|a|os|as|deve|devem|deverá|deverao|deverão|quando|dado|então|e|caso)\s/i.test(headingText);
+    if (wordCount <= 9 && !endsAsSentence && !looksLikeBusinessSentence) {
+      return `${numbered[1]}. ${cleanHeading(headingText)}`;
+    }
+  }
+
+  const isShort = withoutColon.length <= 80;
+  const hasNoSentenceEnd = !/[.!?]$/.test(withoutColon);
+  const nextHasContent = lines.slice(index + 1).some(l => normalizeSpaces(l));
+  const prevIsBlank = index === 0 || !normalizeSpaces(lines[index - 1]);
+
+  if (isShort && hasNoSentenceEnd && nextHasContent && prevIsBlank) {
+    const common = COMMON_SECTION_NAMES.some(name => titleKey(withoutColon).includes(titleKey(name)));
+    if (common) return cleanHeading(withoutColon);
+  }
+
+  return null;
+}
+
+function cleanHeading(value) {
+  return normalizeSpaces(value)
+    .replace(/^[-–—•#*\s]+/, "")
+    .replace(/[:：]\s*$/g, "")
+    .trim();
+}
+
+function splitIntoSections(rawText, fallbackTitle) {
+  const normalized = String(rawText || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+
+  if (!normalized) return [];
+
+  const lines = normalized.split("\n");
+  const sections = [];
+  let current = null;
+
+  lines.forEach((line, index) => {
+    const heading = getHeadingTitle(line, index, lines);
+
+    if (heading) {
+      if (current) sections.push(current);
+      current = { title: heading, bodyLines: [] };
+      return;
+    }
+
+    if (!current) {
+      current = {
+        title: normalizeSpaces(fallbackTitle) || "Documento formatado",
+        bodyLines: []
+      };
+    }
+
+    current.bodyLines.push(line);
+  });
+
+  if (current) sections.push(current);
+
+  return sections.map(section => ({
+    title: section.title,
+    body: section.bodyLines.join("\n").trim()
+  })).filter(section => section.title || section.body);
+}
+
+function formatInline(text) {
+  let value = normalizeLineText(text);
+
+  value = value
+    .replace(/<strong>(.*?)<\/strong>/gi, "*$1*")
+    .replace(/<b>(.*?)<\/b>/gi, "*$1*")
+    .replace(/\*\*(.*?)\*\*/g, "*$1*")
+    .replace(/__(.*?)__/g, "*$1*");
+
+  value = value.replace(/^\*\s*(.+?)\s*:\s+(.+)$/, "*$1:* $2");
+
+  return value;
+}
+
+function looksLikeSubtitle(line) {
+  const clean = normalizeSpaces(line);
+  if (!clean) return false;
+  if (/^h3\.\s+/.test(clean)) return false;
+  if (/^(\*|#)\s+/.test(clean)) return false;
+  if (/^\|/.test(clean)) return false;
+  if (!/[:：]$/.test(clean)) return false;
+  if (clean.length > 80) return false;
+
+  const label = clean.replace(/[:：]$/g, "");
+  const key = titleKey(label);
+
+  if (COMMON_SECTION_NAMES.map(titleKey).includes(key)) return true;
+
+  return /^[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(label) && label.split(/\s+/).length <= 7;
+}
+
+function parsePipeRow(line) {
+  return line
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map(cell => formatInline(cell.trim()));
+}
+
+function isMarkdownSeparatorRow(line) {
+  return /^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(line);
+}
+
+function isMarkdownTableStart(lines, index) {
+  const current = lines[index] || "";
+  const next = lines[index + 1] || "";
+  return /^\s*\|.*\|\s*$/.test(current) && isMarkdownSeparatorRow(next);
+}
+
+function convertMarkdownTable(lines, startIndex) {
+  const rows = [];
+  let i = startIndex;
+
+  rows.push(parsePipeRow(lines[i]));
+  i += 2; // pula cabeçalho + separador
+
+  while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
+    rows.push(parsePipeRow(lines[i]));
+    i++;
+  }
+
+  const output = [];
+  if (rows.length) {
+    output.push("||" + rows[0].join("||") + "||");
+    rows.slice(1).forEach(row => output.push("|" + row.join("|") + "|"));
+  }
+
+  return { outputLines: output, nextIndex: i };
+}
+
+function formatNormalBody(text) {
+  const lines = String(text || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+  const out = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = normalizeLineText(lines[i]);
+
+    if (!line) {
+      if (out.length && out[out.length - 1] !== "") out.push("");
+      continue;
+    }
+
+    if (isMarkdownTableStart(lines, i)) {
+      const table = convertMarkdownTable(lines, i);
+      out.push(...table.outputLines);
+      i = table.nextIndex - 1;
+      continue;
+    }
+
+    if (/^\|\|.*\|\|$/.test(line) || /^\|.*\|$/.test(line)) {
+      out.push(line);
+      continue;
+    }
+
+    const mdHeading = line.match(/^#{1,6}\s+(.+)$/);
+    if (mdHeading) {
+      out.push(`h3. ${formatInline(mdHeading[1])}`);
+      continue;
+    }
+
+    if (/^h3\.\s+/.test(line)) {
+      out.push(line);
+      continue;
+    }
+
+    if (looksLikeSubtitle(line)) {
+      out.push(`h3. ${formatInline(line.replace(/[:：]$/g, ""))}`);
+      continue;
+    }
+
+    const bullet = line.match(/^[-–—•]\s+(.+)$/);
+    if (bullet) {
+      out.push(`* ${formatInline(bullet[1])}`);
+      continue;
+    }
+
+    if (/^\*\s+/.test(line)) {
+      out.push(`* ${formatInline(line.replace(/^\*\s+/, ""))}`);
+      continue;
+    }
+
+    const numbered = line.match(/^\d+[.)]\s+(.+)$/);
+    if (numbered) {
+      out.push(`# ${formatInline(numbered[1])}`);
+      continue;
+    }
+
+    if (/^#\s+/.test(line)) {
+      out.push(`# ${formatInline(line.replace(/^#\s+/, ""))}`);
+      continue;
+    }
+
+    out.push(formatInline(line));
+  }
+
+  return out.join("\n").replace(/^\n+|\n+$/g, "");
+}
+
+function splitDescriptionEvidence(value) {
+  const text = normalizeSpaces(value);
+  const match = text.match(/^(.+?)\s+[–—-]\s+(.+)$/);
+  if (match) {
+    return {
+      description: normalizeSpaces(match[1]),
+      evidence: normalizeSpaces(match[2])
+    };
+  }
+
+  return {
+    description: text,
+    evidence: ""
+  };
+}
+
+function formatAcceptanceCriteria(text) {
+  const rawLines = String(text || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .split("\n")
+    .map(line => normalizeLineText(line))
+    .filter(Boolean);
+
+  if (!rawLines.length) {
+    return "||ID||Descrição do Critério de Aceite||Evidência||";
+  }
+
+  if (rawLines.some(line => /^\|\|.*\|\|$/.test(line))) {
+    const rows = normalizeExistingAcceptanceTable(rawLines);
+    return rows.join("\n");
+  }
+
+  if (rawLines.length >= 2 && isMarkdownSeparatorRow(rawLines[1])) {
+    const table = convertMarkdownTable(rawLines, 0).outputLines;
+    return normalizeExistingAcceptanceTable(table).join("\n");
+  }
+
+  const rows = [];
+  let autoId = 1;
+
+  rawLines.forEach(line => {
+    const cleaned = line
+      .replace(/^[-–—•]\s+/, "")
+      .replace(/^#\s+/, "")
+      .trim();
+
+    if (!cleaned) return;
+
+    let id = "";
+    let description = "";
+    let evidence = "";
+
+    if (cleaned.includes("|")) {
+      const parts = cleaned.split("|").map(part => normalizeSpaces(part));
+      id = parts[0] || "";
+      description = parts[1] || "";
+      evidence = parts.slice(2).join(" | ") || "";
+    } else {
+      const explicit = cleaned.match(/^(CA[- ]?\d+|\d+)[.)]?\s*[-–—:]\s*(.+)$/i);
+      if (explicit) {
+        id = explicit[1].toUpperCase().replace(/^(\d+)$/, n => `CA-${String(Number(n)).padStart(2, "0")}`);
+        const rest = explicit[2].trim();
+        const parsed = splitDescriptionEvidence(rest);
+        description = parsed.description;
+        evidence = parsed.evidence;
+      } else {
+        const numbered = cleaned.match(/^(\d+)[.)]\s+(.+)$/);
+        if (numbered) {
+          id = `CA-${String(Number(numbered[1])).padStart(2, "0")}`;
+          const parsed = splitDescriptionEvidence(numbered[2]);
+          description = parsed.description;
+          evidence = parsed.evidence;
+        } else {
+          id = `CA-${String(autoId).padStart(2, "0")}`;
+          description = cleaned;
+        }
+      }
+    }
+
+    if (!id) {
+      id = `CA-${String(autoId).padStart(2, "0")}`;
+    }
+
+    id = normalizeCriterionId(id, autoId);
+    description = formatInline(description || cleaned);
+    evidence = formatInline(evidence || "A definir");
+
+    rows.push(`|${safeTableCell(id)}|${safeTableCell(description)}|${safeTableCell(evidence)}|`);
+    autoId++;
+  });
+
+  return [
+    "||ID||Descrição do Critério de Aceite||Evidência||",
+    ...rows
+  ].join("\n");
+}
+
+function normalizeCriterionId(id, sequence) {
+  let value = normalizeSpaces(id).toUpperCase();
+  if (/^\d+$/.test(value)) return `CA-${String(Number(value)).padStart(2, "0")}`;
+  if (/^CA\s*\d+$/i.test(value)) return value.replace(/\s+/, "-").replace(/^CA-?(\d+)$/i, (_, n) => `CA-${String(Number(n)).padStart(2, "0")}`);
+  if (!value) return `CA-${String(sequence).padStart(2, "0")}`;
+  return value;
+}
+
+function safeTableCell(value) {
+  return String(value || "")
+    .replace(/\|/g, "/")
+    .replace(/\n/g, " ")
+    .trim();
+}
+
+function normalizeExistingAcceptanceTable(lines) {
+  const rows = [];
+  rows.push("||ID||Descrição do Critério de Aceite||Evidência||");
+
+  lines.forEach(line => {
+    if (!line || isMarkdownSeparatorRow(line)) return;
+
+    const isHeader = /^\|\|.*\|\|$/.test(line);
+    const cells = parsePipeRow(line.replace(/^\|\|/, "|").replace(/\|\|$/g, "|").replace(/\|\|/g, "|"));
+
+    const joined = titleKey(cells.join(" "));
+    if (isHeader && joined.includes("criterio")) return;
+    if (joined.includes("descricao") && joined.includes("evidencia")) return;
+
+    const id = normalizeCriterionId(cells[0] || "", rows.length);
+    const desc = cells[1] || cells[0] || "";
+    const evidence = cells[2] || "A definir";
+
+    if (desc) {
+      rows.push(`|${safeTableCell(id)}|${safeTableCell(formatInline(desc))}|${safeTableCell(formatInline(evidence))}|`);
+    }
+  });
+
+  return rows;
+}
+
+function formatSectionBody(section) {
+  if (isAcceptanceTitle(section.title)) {
+    return formatAcceptanceCriteria(section.body);
+  }
+
+  return formatNormalBody(section.body);
+}
+
+function buildWikiMarkup(sections) {
+  return sections.map(section => {
+    const title = sanitizeTitle(section.title);
+    const body = formatSectionBody(section);
+
+    // Sem linha em branco logo após abertura do painel.
+    return `${panelOpen(title)}\n${body}\n{panel}`;
+  }).join("\n\n");
+}
+
+function convert() {
+  const title = document.getElementById("inTitle").value || "Documento formatado";
+  const body = document.getElementById("inBody").value;
+
+  const sections = splitIntoSections(body, title);
+  const wiki = buildWikiMarkup(sections);
+
+  document.getElementById("output").value = wiki;
+  document.getElementById("preview").innerHTML = renderPreview(wiki);
+  setStatus(sections.length ? `${sections.length} painel(is) gerado(s).` : "Nenhum conteúdo informado.");
+}
+
+function clearAll() {
+  document.getElementById("inTitle").value = "";
+  document.getElementById("inBody").value = "";
+  document.getElementById("output").value = "";
+  document.getElementById("preview").innerHTML = "";
+  setStatus("");
+}
+
+async function copyOutput() {
+  const output = document.getElementById("output");
+  const value = output.value;
+
+  if (!value.trim()) {
+    setStatus("Nada para copiar.");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(value);
+    setStatus("Saída copiada.");
+  } catch (error) {
+    output.select();
+    document.execCommand("copy");
+    setStatus("Saída copiada.");
+  }
+}
+
+function setStatus(message) {
+  document.getElementById("status").textContent = message || "";
+}
+
+function wrapSelection(marker) {
   const ta = document.getElementById("inBody");
   const start = ta.selectionStart;
   const end = ta.selectionEnd;
-  const sel = ta.value.substring(start,end);
+  const sel = ta.value.substring(start, end);
   ta.setRangeText(marker + sel + marker);
   ta.focus();
 }
 
-function makeList(){
+function insertAtCursor(text) {
   const ta = document.getElementById("inBody");
-  const start = ta.selectionStart;
-  const end = ta.selectionEnd;
-  const lines = ta.value
-    .substring(start,end)
-    .split("\n")
-    .map(l => "* " + l)
-    .join("\n");
-  ta.setRangeText(lines);
+  ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, "end");
   ta.focus();
 }
 
-/* 🔹 Converte Jira Wiki básico → HTML (APENAS PARA PREVIEW) */
-function jiraToHtml(text){
-  if (!text) return "";
+function makeList(marker) {
+  const ta = document.getElementById("inBody");
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const selected = ta.value.substring(start, end) || "Item";
+  const lines = selected
+    .split("\n")
+    .map(line => `${marker} ${line.replace(/^[-–—•*#]\s*/, "")}`)
+    .join("\n");
 
-  let html = text;
+  ta.setRangeText(lines, start, end, "end");
+  ta.focus();
+}
 
-  // Negrito *texto*
-  html = html.replace(/\*(.*?)\*/g, "<strong>$1</strong>");
+function insertAcceptanceTemplate() {
+  insertAtCursor(
+`Critérios de Aceite
+CA-01 - Descreva o primeiro critério - Evidência esperada
+CA-02 - Descreva o segundo critério - Evidência esperada
+`
+  );
+}
 
-  // Itálico _texto_
-  html = html.replace(/_(.*?)_/g, "<em>$1</em>");
+function insertTableTemplate() {
+  insertAtCursor(
+`| Coluna 1 | Coluna 2 | Coluna 3 |
+| --- | --- | --- |
+| valor | valor | valor |
+`
+  );
+}
 
-  // Listas Jira
-  if (html.match(/^\* /m)) {
-    const lines = html.split("\n");
-    let inList = false;
-    let out = "";
+/* ===== Preview de Wiki Markup para HTML ===== */
 
-    lines.forEach(line => {
-      if (line.startsWith("* ")) {
-        if (!inList) {
-          inList = true;
-          out += "<ul>";
-        }
-        out += `<li>${line.substring(2)}</li>`;
-      } else {
-        if (inList) {
-          out += "</ul>";
-          inList = false;
-        }
-        out += line ? line + "<br>" : "<br>";
-      }
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function renderInline(text) {
+  return escapeHtml(text)
+    .replace(/\*(?!\s)([^*\n]+?)\*/g, "<strong>$1</strong>");
+}
+
+function parseWikiPanels(wiki) {
+  const panels = [];
+  const regex = /\{panel:title=([^|}]+)\|[^}]*\}\n([\s\S]*?)\n?\{panel\}/g;
+  let match;
+
+  while ((match = regex.exec(wiki)) !== null) {
+    panels.push({
+      title: match[1],
+      body: match[2] || ""
     });
-
-    if (inList) out += "</ul>";
-    html = out;
-  } else {
-    html = html.replace(/\n/g, "<br>");
   }
 
+  if (!panels.length && wiki.trim()) {
+    panels.push({ title: "Pré-visualização", body: wiki });
+  }
+
+  return panels;
+}
+
+function renderPreview(wiki) {
+  const panels = parseWikiPanels(wiki);
+
+  return panels.map(panel => `
+    <div class="pnl">
+      <div class="pnl-title">${escapeHtml(panel.title)}</div>
+      <div class="pnl-body">${renderWikiBody(panel.body) || "<em>(vazio)</em>"}</div>
+    </div>
+  `).join("");
+}
+
+function renderWikiBody(body) {
+  const lines = String(body || "").split("\n");
+  let html = "";
+  let listType = null;
+
+  const closeList = () => {
+    if (listType) {
+      html += listType === "ul" ? "</ul>" : "</ol>";
+      listType = null;
+    }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (!normalizeSpaces(line)) {
+      closeList();
+      html += "<br>";
+      continue;
+    }
+
+    if (/^h3\.\s+/.test(line)) {
+      closeList();
+      html += `<h3>${renderInline(line.replace(/^h3\.\s+/, ""))}</h3>`;
+      continue;
+    }
+
+    if (/^\*\s+/.test(line)) {
+      if (listType !== "ul") {
+        closeList();
+        html += "<ul>";
+        listType = "ul";
+      }
+      html += `<li>${renderInline(line.replace(/^\*\s+/, ""))}</li>`;
+      continue;
+    }
+
+    if (/^#\s+/.test(line)) {
+      if (listType !== "ol") {
+        closeList();
+        html += "<ol>";
+        listType = "ol";
+      }
+      html += `<li>${renderInline(line.replace(/^#\s+/, ""))}</li>`;
+      continue;
+    }
+
+    if (/^\|\|.*\|\|$/.test(line)) {
+      closeList();
+      const table = collectWikiTable(lines, i);
+      html += table.html;
+      i = table.nextIndex - 1;
+      continue;
+    }
+
+    closeList();
+    html += `<p>${renderInline(line)}</p>`;
+  }
+
+  closeList();
   return html;
 }
 
-function convert(){
-  const title = document.getElementById("inTitle").value || "Sem Título";
-  const body = document.getElementById("inBody").value.trim();
+function collectWikiTable(lines, startIndex) {
+  let html = "<table>";
+  let i = startIndex;
 
-  const jira =
-`{panel:title=${title}|borderStyle=solid|borderColor=#0052cc|titleBGColor=#deebff}
-${body}
-{panel}`;
+  if (/^\|\|.*\|\|$/.test(lines[i])) {
+    const headerCells = lines[i]
+      .replace(/^\|\|/, "")
+      .replace(/\|\|$/, "")
+      .split("||");
 
-  document.getElementById("output").value = jira;
+    html += "<thead><tr>";
+    headerCells.forEach(cell => html += `<th>${renderInline(cell)}</th>`);
+    html += "</tr></thead>";
+    i++;
+  }
 
-  // ✅ Preview agora renderiza formatação
-  document.getElementById("preview").innerHTML =
-    `<div class="pnl">
-      <div class="pnl-title">${title}</div>
-      <div class="pnl-body">${jiraToHtml(body) || "<i>(vazio)</i>"}</div>
-     </div>`;
-}
+  html += "<tbody>";
 
-function clearAll(){
-  inTitle.value="";
-  inBody.value="";
-  output.value="";
-  preview.innerHTML="";
+  while (i < lines.length && /^\|.*\|$/.test(lines[i]) && !/^\|\|.*\|\|$/.test(lines[i])) {
+    const cells = lines[i]
+      .replace(/^\|/, "")
+      .replace(/\|$/, "")
+      .split("|");
+
+    html += "<tr>";
+    cells.forEach(cell => html += `<td>${renderInline(cell)}</td>`);
+    html += "</tr>";
+    i++;
+  }
+
+  html += "</tbody></table>";
+
+  return { html, nextIndex: i };
 }
 </script>
-
 </body>
 </html>
