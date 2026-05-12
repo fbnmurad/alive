@@ -6,55 +6,110 @@
   <title>Ferramentas BRM</title>
   <style>
   :root {
-    /* === Tokens do theme-html.txt (Enterprise Light) === */
-    --bg-gradient-start: #eef1f7;   /* cinza frio claro */
-    --bg-gradient-end:   #f7f9fc;   /* quase branco */
+    /* === Paleta Vivo === */
+    --vivo-roxo: #660099;
+    --vivo-roxo-escuro: #3d005c;
+    --vivo-roxo-medio: #8a00e6;
+    --vivo-roxo-claro: #f3e5f9;
+    --vivo-azul: #006cff;
+    --vivo-azul-claro: #e6f0ff;
+    --vivo-magenta: #e6007e;
+    --branco: #ffffff;
+    --fundo: #f3f4f7;
+    --card: #ffffff;
+    --borda: #dfe3e8;
+    --borda-campo: #d8dde3;
+    --texto: #56606b;
+    --texto-escuro: #3f4650;
+    --texto-suave: #8a93a0;
+    --erro: #a94442;
+    --sucesso: #14855f;
+    --disabled: #e9edf2;
 
-    --primary: #5b6ee1;             /* purple-blue tech */
-    --primary-hover: #4b5fd1;
-    --primary-active: #3f52b8;
+    /* === Cores adicionais === */
+    --card-border: #e1e4e8;
+    --section-gradient-start: #e8edf2;
+    --section-gradient-end: #eef1f5;
+    --placeholder: #a0a7b0;
+    --texto-disabled: #8b94a1;
 
-    --text-title: #1f2a44;          /* azul grafite */
-    --text-default: #3a4563;        /* cinza azulado */
-    --text-dark: #111827;           /* quase preto */
-    --text-muted: #6b7280;          /* cinza neutro */
+    /* === Sombras e transparências === */
+    --shadow-main: 0 8px 24px rgba(61, 0, 92, 0.28);
+    --shadow-card: 0 8px 24px rgba(35, 35, 35, 0.20);
+    --shadow-footer: 0 -4px 16px rgba(61, 0, 92, 0.16);
+    --hover-white: rgba(255, 255, 255, 0.16);
+    --hover-logout: rgba(255, 255, 255, 0.26);
+    --outline-white: rgba(255, 255, 255, 0.45);
+    --focus-purple: rgba(102, 0, 153, 0.12);
+    --shadow-focus-purple: 0 0 0 4px rgba(102, 0, 153, 0.08);
+    --error-field: rgba(169, 68, 66, 0.12);
 
-    --surface: #ffffff;
-    --surface-soft: #f9fafb;
-    --surface-muted: #f1f4f9;
-    --surface-highlight: #e9edff;   /* destaque roxo azulado */
+    /* === Gradiente principal da interface === */
+    --main-gradient: linear-gradient(
+      90deg,
+      #3d005c,
+      #660099,
+      #8a00e6,
+      #006cff
+    );
 
-    --border-light: #d6dbea;
+    /* === Alias usados pelo CSS original === */
+    --bg-gradient-start: var(--section-gradient-start);
+    --bg-gradient-end: var(--section-gradient-end);
+    --primary: var(--vivo-roxo);
+    --primary-hover: var(--vivo-roxo-medio);
+    --primary-active: var(--vivo-roxo-escuro);
+    --text-title: var(--texto-escuro);
+    --text-default: var(--texto);
+    --text-dark: var(--texto-escuro);
+    --text-muted: var(--texto-suave);
+    --surface: var(--card);
+    --surface-soft: #eef1f5;
+    --surface-muted: var(--disabled);
+    --surface-highlight: var(--vivo-roxo-claro);
+    --border-light: var(--borda);
+    --success: var(--sucesso);
+    --error: var(--erro);
+    --info: var(--vivo-azul);
+    --neutral: var(--texto-suave);
+    --neutral-hover: var(--texto);
 
-    --success: #16a34a;
-    --error: #dc2626;
-    --info: #5b6ee1;
-
-    --neutral: #9ca3af;
-    --neutral-hover: #6b7280;
-
-    /* === Alias usados no seu CSS original ===
-       (IMPORTANTÍSSIMO: --color-bg precisa ser COR SÓLIDA, não gradiente) */
-    --color-bg: var(--bg-gradient-start);
-    --color-bg-elevated: var(--surface);
-    --color-text: var(--text-default);
-    --color-accent: var(--primary);
-    --color-accent-soft: var(--surface-highlight);
-    --color-header: var(--surface);
-    --color-border: var(--border-light);
-    --shadow-soft: 0 8px 24px rgba(31,42,68,0.08);
+    /* --color-bg permanece como cor sólida para uso no iframe */
+    --color-bg: var(--fundo);
+    --color-bg-elevated: var(--card);
+    --color-text: var(--texto);
+    --color-accent: var(--vivo-roxo);
+    --color-accent-hover: var(--vivo-roxo-medio);
+    --color-accent-active: var(--vivo-roxo-escuro);
+    --color-accent-soft: var(--vivo-roxo-claro);
+    --color-header: var(--main-gradient);
+    --color-border: var(--borda);
+    --shadow-soft: var(--shadow-card);
   }
 
   body[data-theme="dark"] {
-    /* Mantém dark mode funcional (tech purple) */
-    --color-bg: #0f1023;
-    --color-bg-elevated: #171733;
-    --color-text: #cfcbe9;
-    --color-accent: #6f5bd6;
-    --color-accent-soft: #2d2a6a;
-    --color-header: #171733;
-    --color-border: #35326e;
-    --shadow-soft: 0 8px 28px rgba(0,0,0,0.5);
+    /* Tema escuro preservado, usando a mesma paleta Vivo */
+    --bg-gradient-start: var(--vivo-roxo-escuro);
+    --bg-gradient-end: var(--vivo-roxo);
+    --text-title: var(--branco);
+    --text-default: var(--branco);
+    --text-dark: var(--branco);
+    --text-muted: var(--vivo-roxo-claro);
+    --surface: var(--vivo-roxo-escuro);
+    --surface-soft: rgba(255, 255, 255, 0.16);
+    --surface-muted: rgba(255, 255, 255, 0.10);
+    --surface-highlight: rgba(255, 255, 255, 0.16);
+    --border-light: rgba(255, 255, 255, 0.26);
+    --color-bg: var(--vivo-roxo-escuro);
+    --color-bg-elevated: var(--vivo-roxo-escuro);
+    --color-text: var(--branco);
+    --color-accent: var(--vivo-roxo-medio);
+    --color-accent-hover: var(--vivo-azul);
+    --color-accent-active: var(--vivo-roxo);
+    --color-accent-soft: rgba(255, 255, 255, 0.16);
+    --color-header: var(--main-gradient);
+    --color-border: rgba(255, 255, 255, 0.26);
+    --shadow-soft: 0 8px 28px rgba(61, 0, 92, 0.28);
   }
 
   * {
@@ -66,25 +121,21 @@
   body {
     font-family: Arial, sans-serif;
     color: var(--color-text);
-
-    /* ✅ Aqui vai o gradiente (background, não background-color) */
     background: linear-gradient(120deg, var(--bg-gradient-start), var(--bg-gradient-end));
-
     height: 100vh;
     display: flex;
     flex-direction: column;
   }
 
-  /* Cabeçalho tipo app */
   header {
     height: 56px;
-    background-color: var(--color-header);
-    border-bottom: 1px solid var(--color-border);
+    background: var(--color-header);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-main);
     z-index: 10;
   }
 
@@ -94,13 +145,14 @@
     gap: 8px;
     font-size: 18px;
     font-weight: 600;
-    color: var(--text-title);
+    color: var(--branco);
   }
 
   .app-title span {
     font-size: 13px;
     font-weight: 400;
-    opacity: 0.7;
+    color: var(--branco);
+    opacity: 0.86;
   }
 
   .header-actions {
@@ -110,7 +162,7 @@
   }
 
   .icon-btn {
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--outline-white);
     background: transparent;
     border-radius: 999px;
     padding: 6px 12px;
@@ -119,7 +171,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    color: var(--color-text);
+    color: var(--branco);
     transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
   }
 
@@ -128,8 +180,8 @@
   }
 
   .icon-btn:hover {
-    background-color: var(--color-accent-soft);
-    box-shadow: var(--shadow-soft);
+    background-color: var(--hover-white);
+    box-shadow: var(--shadow-main);
   }
 
   .icon-btn:active {
@@ -137,11 +189,10 @@
   }
 
   .icon-btn:focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--outline-white);
     outline-offset: 2px;
   }
 
-  /* Layout principal */
   .app-shell {
     flex: 1;
     display: flex;
@@ -153,11 +204,16 @@
   nav {
     width: 260px;
     background-color: var(--color-bg-elevated);
+    border: 1px solid var(--card-border);
     border-radius: 12px;
     box-shadow: var(--shadow-soft);
     padding: 12px 0;
     display: flex;
     flex-direction: column;
+  }
+
+  body[data-theme="dark"] nav {
+    border-color: var(--color-border);
   }
 
   .nav-header {
@@ -170,8 +226,8 @@
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    opacity: 0.7;
     color: var(--text-title);
+    opacity: 0.78;
   }
 
   nav ul {
@@ -193,7 +249,7 @@
     font-size: 14px;
     border-radius: 8px;
     margin: 0 8px;
-    transition: background-color 0.2s, transform 0.1s;
+    transition: background-color 0.2s, color 0.2s, transform 0.1s, box-shadow 0.2s;
   }
 
   nav a span.label {
@@ -212,32 +268,43 @@
 
   nav a:hover {
     background-color: var(--color-accent-soft);
+    color: var(--vivo-roxo-escuro);
     transform: translateX(1px);
   }
 
+  body[data-theme="dark"] nav a:hover {
+    color: var(--branco);
+  }
+
   nav a.active {
-    background-color: var(--color-accent);
-    color: #ffffff;
+    background: var(--main-gradient);
+    color: var(--branco);
+    box-shadow: 0 4px 14px rgba(61, 0, 92, 0.28);
   }
 
   nav a.active span.dot {
-    background: #ffffff;
+    background: var(--branco);
   }
 
   nav a:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
+    box-shadow: var(--shadow-focus-purple);
   }
 
-  /* Área de conteúdo */
   .content-panel {
     flex: 1;
     background-color: var(--color-bg-elevated);
+    border: 1px solid var(--card-border);
     border-radius: 12px;
     box-shadow: var(--shadow-soft);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+  }
+
+  body[data-theme="dark"] .content-panel {
+    border-color: var(--color-border);
   }
 
   .content-header {
@@ -246,30 +313,76 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 16px;
     font-size: 13px;
-    background: var(--surface-soft);
+    background: linear-gradient(90deg, var(--section-gradient-start), var(--section-gradient-end));
+  }
+
+  body[data-theme="dark"] .content-header {
+    background: rgba(255, 255, 255, 0.16);
   }
 
   .content-header-title {
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text-title);
   }
 
   .content-header-hint {
-    opacity: 0.7;
+    color: var(--texto-suave);
     font-size: 12px;
+  }
+
+  body[data-theme="dark"] .content-header-hint {
+    color: var(--vivo-roxo-claro);
   }
 
   iframe {
     flex: 1;
     border: none;
     width: 100%;
-
-    /* ✅ iframe precisa de cor sólida */
     background-color: var(--color-bg);
   }
 
-  /* Mobile / telas pequenas */
+  input,
+  textarea,
+  select {
+    border: 1px solid var(--borda-campo);
+    color: var(--texto-escuro);
+    background: var(--branco);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--placeholder);
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--vivo-roxo);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-purple);
+  }
+
+  input:disabled,
+  textarea:disabled,
+  select:disabled,
+  button:disabled {
+    background: var(--disabled);
+    color: var(--texto-disabled);
+    cursor: not-allowed;
+  }
+
+  .erro,
+  .error {
+    color: var(--erro);
+  }
+
+  .sucesso,
+  .success {
+    color: var(--sucesso);
+  }
+
   @media (max-width: 900px) {
     .app-shell {
       flex-direction: column;
@@ -312,6 +425,9 @@
 
     .content-header {
       padding: 8px 12px;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 4px;
     }
   }
 </style>
@@ -408,6 +524,13 @@
             <span class="dot"></span>
           </a>
         </li>
+        <li>
+          <a href="https://fbnmurad.github.io/alive/mermaid-local.html"
+             target="conteudo">
+            <span class="label">Renderizador Mermaid</span>
+            <span class="dot"></span>
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -432,6 +555,18 @@
     // Gerenciar link ativo e título da área de conteúdo
     const navLinks = document.querySelectorAll('nav a');
     const titleEl = document.getElementById('currentToolTitle');
+
+    // Estado inicial do link marcado com aria-current
+    (function initActiveLink() {
+      const currentLink = document.querySelector('nav a[aria-current="page"]') || navLinks[0];
+      if (currentLink) {
+        currentLink.classList.add('active');
+        const label = currentLink.querySelector('.label')?.textContent?.trim();
+        if (label) {
+          titleEl.textContent = label;
+        }
+      }
+    })();
 
     navLinks.forEach(link => {
       link.addEventListener('click', function () {
