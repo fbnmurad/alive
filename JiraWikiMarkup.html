@@ -5,85 +5,68 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Formatador Documento → Jira Wiki Markup</title>
 
+<!-- Bibliotecas opcionais para upload de DOCX e PDF. TXT não depende de biblioteca externa. -->
+<script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 <style>
 :root {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-
   --bg-gradient-start: #eef1f7;
   --bg-gradient-end: #f7f9fc;
-
   --primary: #5b6ee1;
   --primary-hover: #4b5fd1;
   --primary-active: #3f52b8;
-
   --text-title: #1f2a44;
   --text-default: #3a4563;
   --text-dark: #111827;
   --text-muted: #6b7280;
-
   --surface: #ffffff;
   --surface-soft: #f9fafb;
   --surface-muted: #f1f4f9;
   --surface-highlight: #e9edff;
-
   --border-light: #d6dbea;
-
   --success: #16a34a;
   --error: #dc2626;
-  --info: #5b6ee1;
-
   --neutral: #9ca3af;
   --neutral-hover: #6b7280;
 }
-
-* {
-  box-sizing: border-box;
-}
-
+* { box-sizing: border-box; }
 body {
   margin: 0;
   background: linear-gradient(120deg, var(--bg-gradient-start), var(--bg-gradient-end));
   color: var(--text-default);
 }
-
 header {
   padding: 18px 20px;
   border-bottom: 1px solid var(--border-light);
   background: var(--surface);
 }
-
 header h1 {
   margin: 0;
   font-size: 18px;
   font-weight: 750;
   color: var(--text-title);
 }
-
 header p {
   margin: 6px 0 0;
   font-size: 13px;
   color: var(--text-muted);
 }
-
 .wrap {
   padding: 16px 20px;
   display: grid;
   gap: 14px;
 }
-
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 14px;
   align-items: start;
 }
-
 @media (max-width: 1180px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
+  .grid { grid-template-columns: 1fr; }
 }
-
 .card {
   background: var(--surface);
   border: 1px solid var(--border-light);
@@ -91,7 +74,6 @@ header p {
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(31,42,68,0.08);
 }
-
 .card h2 {
   margin: 0;
   padding: 12px 14px;
@@ -101,11 +83,7 @@ header p {
   color: var(--text-title);
   background: var(--surface-soft);
 }
-
-.card .body {
-  padding: 12px 14px;
-}
-
+.card .body { padding: 12px 14px; }
 label {
   display: block;
   margin: 0 0 6px;
@@ -113,9 +91,7 @@ label {
   font-weight: 700;
   color: var(--text-title);
 }
-
-input,
-textarea {
+input, textarea {
   width: 100%;
   border-radius: 12px;
   border: 1px solid var(--border-light);
@@ -127,32 +103,23 @@ textarea {
   line-height: 1.45;
   outline: none;
 }
-
-input:focus,
-textarea:focus {
+input[type="file"] {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #fff;
+}
+input:focus, textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(91,110,225,0.12);
 }
-
-input::placeholder,
-textarea::placeholder {
-  color: var(--text-muted);
-}
-
-textarea {
-  min-height: 460px;
-  resize: vertical;
-}
-
+input::placeholder, textarea::placeholder { color: var(--text-muted); }
+textarea { min-height: 460px; resize: vertical; }
 .toolbar {
   display: flex;
   gap: 6px;
   margin: 10px 0 8px;
   flex-wrap: wrap;
 }
-
-.toolbar button,
-button.secondary {
+.toolbar button, button.secondary {
   padding: 6px 10px;
   font-size: 13px;
   font-weight: 700;
@@ -162,13 +129,10 @@ button.secondary {
   color: var(--primary);
   cursor: pointer;
 }
-
-.toolbar button:hover,
-button.secondary:hover {
+.toolbar button:hover, button.secondary:hover {
   background: var(--primary);
   color: #ffffff;
 }
-
 button.action {
   border: none;
   background: var(--primary);
@@ -178,65 +142,35 @@ button.action {
   font-weight: 700;
   cursor: pointer;
 }
-
-button.action:hover {
-  background: var(--primary-hover);
-}
-
-button.action:active {
-  background: var(--primary-active);
-}
-
-button.danger {
-  background: var(--neutral);
-}
-
-button.danger:hover {
-  background: var(--neutral-hover);
-}
-
-.preview {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
+button.action:hover { background: var(--primary-hover); }
+button.action:active { background: var(--primary-active); }
+button.danger { background: var(--neutral); }
+button.danger:hover { background: var(--neutral-hover); }
+.preview { display: flex; flex-direction: column; gap: 10px; }
 .pnl {
   border: 2px solid #0052cc;
   border-radius: 14px;
   overflow: hidden;
   background: var(--surface-soft);
 }
-
 .pnl-title {
   padding: 10px 12px;
   font-weight: 800;
   background: #deebff;
   color: var(--text-title);
 }
-
 .pnl-body {
   padding: 10px 12px;
   color: var(--text-default);
   font-size: 13px;
 }
-
 .pnl-body h3 {
   margin: 10px 0 6px;
   color: var(--text-title);
   font-size: 14px;
 }
-
-.pnl-body p {
-  margin: 0 0 8px;
-}
-
-.pnl-body ul,
-.pnl-body ol {
-  margin: 4px 0 10px 20px;
-  padding: 0;
-}
-
+.pnl-body p { margin: 0 0 8px; }
+.pnl-body ul, .pnl-body ol { margin: 4px 0 10px 20px; padding: 0; }
 .pnl-body table {
   width: 100%;
   border-collapse: collapse;
@@ -244,63 +178,41 @@ button.danger:hover {
   font-size: 12px;
   background: #ffffff;
 }
-
-.pnl-body th,
-.pnl-body td {
+.pnl-body th, .pnl-body td {
   border: 1px solid var(--border-light);
   padding: 7px 8px;
   text-align: left;
   vertical-align: top;
 }
-
-.pnl-body th {
-  background: var(--surface-highlight);
-  color: var(--text-title);
-}
-
-.footer {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
-
-.small {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 8px;
-}
-
-.status {
-  min-height: 18px;
-  margin-top: 8px;
-  font-size: 12px;
-  color: var(--success);
-}
-
-.output-tools {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
-}
+.pnl-body th { background: var(--surface-highlight); color: var(--text-title); }
+.footer { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.small { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+.status { min-height: 18px; margin-top: 8px; font-size: 12px; color: var(--success); }
+.status.error { color: var(--error); }
+.output-tools { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.file-row { margin: 10px 0 8px; }
 </style>
 </head>
 
 <body>
 <header>
   <h1>Formatador Documento → Jira Wiki Markup</h1>
-  <p>Converte um documento bruto em painéis Jira/Confluence, com listas, subtítulos, tabelas e critérios de aceite.</p>
+  <p>Converte texto, TXT, DOCX ou PDF em painéis Jira/Confluence, com listas, subtítulos, tabelas e critérios de aceite.</p>
 </header>
 
 <div class="wrap">
   <div class="grid">
-
     <section class="card">
       <h2>Entrada</h2>
       <div class="body">
         <label for="inTitle">Título padrão, usado apenas se o texto não tiver seções identificáveis</label>
         <input id="inTitle" placeholder="Ex.: Documento formatado" />
+
+        <div class="file-row">
+          <label for="fileInput">Upload de arquivo opcional — TXT, DOCX ou PDF</label>
+          <input id="fileInput" type="file" accept=".txt,.text,.md,.html,.docx,.pdf,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onchange="handleFileUpload(event)" />
+          <div class="small">Após selecionar o arquivo, o conteúdo será carregado no campo abaixo. Em seguida, clique em Converter.</div>
+        </div>
 
         <div class="toolbar">
           <button type="button" onclick="wrapSelection('*')" title="Negrito Jira"><b>B</b></button>
@@ -311,7 +223,7 @@ button.danger:hover {
           <button type="button" onclick="insertTableTemplate()">Tabela</button>
         </div>
 
-        <textarea id="inBody" placeholder="Cole aqui o documento para formatar..."></textarea>
+        <textarea id="inBody" placeholder="Cole aqui o documento para formatar ou faça upload de TXT, DOCX ou PDF..."></textarea>
 
         <div class="footer">
           <button class="action" type="button" onclick="convert()">Converter</button>
@@ -319,7 +231,7 @@ button.danger:hover {
         </div>
 
         <div class="small">
-          Seções como “1. Escopo”, “Notas Técnicas”, “Dependências” e “Critérios de Aceite” viram painéis próprios.
+          Painéis principais são criados para seções numeradas, Notas Técnicas, Dependências e Critérios de Aceite. Subitens como Premissas, Restrições, Fluxo Principal e Objetivo viram h3.
         </div>
       </div>
     </section>
@@ -341,14 +253,13 @@ button.danger:hover {
         <div id="preview" class="preview"></div>
       </div>
     </section>
-
   </div>
 </div>
 
 <script>
 const PANEL_OPTIONS = "borderStyle=solid|borderColor=#0052cc|titleBGColor=#deebff";
 
-const SPECIAL_SECTION_NAMES = [
+const STANDALONE_PANEL_TITLES = [
   "notas técnicas",
   "nota técnica",
   "dependências",
@@ -359,37 +270,26 @@ const SPECIAL_SECTION_NAMES = [
   "criterios de aceite",
   "criterio de aceite",
   "critérios de aceitação",
-  "criterios de aceitacao",
-  "premissas",
-  "restrições",
-  "riscos",
-  "observações",
-  "fora de escopo"
+  "criterios de aceitacao"
 ];
 
-const COMMON_SECTION_NAMES = [
-  "escopo",
-  "objetivo",
-  "objetivos",
-  "contexto",
-  "descrição",
-  "descricao",
-  "regras de negócio",
-  "regras de negocio",
-  "requisitos",
-  "fluxo",
+const SUBHEADING_TITLES = [
+  "pré-condições",
+  "pre-condicoes",
+  "pré condições",
+  "pre condicoes",
+  "premissas",
+  "restrições",
+  "restricoes",
   "fluxo principal",
-  "campos",
-  "telas",
-  "integrações",
-  "integracoes",
-  "api",
-  "validações",
-  "validacoes",
-  "comportamento esperado",
-  "cenários",
-  "cenarios",
-  ...SPECIAL_SECTION_NAMES
+  "fluxos alternativos",
+  "fluxos de exceção",
+  "fluxos de excecao",
+  "objetivo",
+  "escopo detalhado",
+  "requisitos funcionais",
+  "regras de negócio",
+  "regras de negocio"
 ];
 
 function panelOpen(title) {
@@ -433,59 +333,6 @@ function titleKey(value) {
     .trim();
 }
 
-function isSpecialSectionTitle(title) {
-  const key = titleKey(title);
-  return SPECIAL_SECTION_NAMES.map(titleKey).includes(key);
-}
-
-function isAcceptanceTitle(title) {
-  const key = titleKey(title);
-  return [
-    "criterios de aceite",
-    "criterio de aceite",
-    "criterios de aceitacao",
-    "criterio de aceitacao"
-  ].includes(key);
-}
-
-function getHeadingTitle(line, index, lines) {
-  const original = normalizeSpaces(line);
-  if (!original) return null;
-
-  const markdownHeading = original.match(/^#{1,6}\s+(.+)$/);
-  if (markdownHeading) return cleanHeading(markdownHeading[1]);
-
-  const withoutColon = original.replace(/[:：]\s*$/g, "");
-  const key = titleKey(withoutColon);
-
-  if (COMMON_SECTION_NAMES.map(titleKey).includes(key)) {
-    return cleanHeading(withoutColon);
-  }
-
-  const numbered = original.match(/^(\d+)[.)]\s+(.+)$/);
-  if (numbered) {
-    const headingText = numbered[2].trim();
-    const wordCount = headingText.split(/\s+/).filter(Boolean).length;
-    const endsAsSentence = /[.!?]$/.test(headingText);
-    const looksLikeBusinessSentence = /^(o|a|os|as|deve|devem|deverá|deverao|deverão|quando|dado|então|e|caso)\s/i.test(headingText);
-    if (wordCount <= 9 && !endsAsSentence && !looksLikeBusinessSentence) {
-      return `${numbered[1]}. ${cleanHeading(headingText)}`;
-    }
-  }
-
-  const isShort = withoutColon.length <= 80;
-  const hasNoSentenceEnd = !/[.!?]$/.test(withoutColon);
-  const nextHasContent = lines.slice(index + 1).some(l => normalizeSpaces(l));
-  const prevIsBlank = index === 0 || !normalizeSpaces(lines[index - 1]);
-
-  if (isShort && hasNoSentenceEnd && nextHasContent && prevIsBlank) {
-    const common = COMMON_SECTION_NAMES.some(name => titleKey(withoutColon).includes(titleKey(name)));
-    if (common) return cleanHeading(withoutColon);
-  }
-
-  return null;
-}
-
 function cleanHeading(value) {
   return normalizeSpaces(value)
     .replace(/^[-–—•#*\s]+/, "")
@@ -493,10 +340,58 @@ function cleanHeading(value) {
     .trim();
 }
 
+function isStandalonePanelTitle(title) {
+  return STANDALONE_PANEL_TITLES.map(titleKey).includes(titleKey(title));
+}
+
+function isAcceptanceTitle(title) {
+  return [
+    "criterios de aceite",
+    "criterio de aceite",
+    "criterios de aceitacao",
+    "criterio de aceitacao"
+  ].includes(titleKey(title));
+}
+
+function isSubheadingTitle(line) {
+  const clean = cleanHeading(line);
+  if (!clean) return false;
+  const key = titleKey(clean);
+  return SUBHEADING_TITLES.map(titleKey).includes(key);
+}
+
+function getPanelHeadingTitle(line, index, lines) {
+  const original = normalizeSpaces(line);
+  if (!original) return null;
+
+  const markdownHeading = original.match(/^#{1,6}\s+(.+)$/);
+  if (markdownHeading) return cleanHeading(markdownHeading[1]);
+
+  const numbered = original.match(/^(\d+)[.)]\s+(.+)$/);
+  if (numbered) {
+    const headingText = cleanHeading(numbered[2]);
+    const words = headingText.split(/\s+/).filter(Boolean).length;
+    const endsAsSentence = /[.!?]$/.test(headingText);
+    if (words <= 12 && !endsAsSentence) {
+      return `${numbered[1]}. ${headingText}`;
+    }
+  }
+
+  const cleaned = cleanHeading(original);
+  if (isStandalonePanelTitle(cleaned)) return cleaned;
+
+  const isFirstNonBlank = lines.slice(0, index).every(l => !normalizeSpaces(l));
+  if (isFirstNonBlank && cleaned.length <= 90) return cleaned;
+
+  return null;
+}
+
 function splitIntoSections(rawText, fallbackTitle) {
   const normalized = String(rawText || "")
     .replace(/\r\n/g, "\n")
     .replace(/\r/g, "\n")
+    .replace(/[“”]/g, '"')
+    .replace(/[‘’]/g, "'")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 
@@ -507,10 +402,12 @@ function splitIntoSections(rawText, fallbackTitle) {
   let current = null;
 
   lines.forEach((line, index) => {
-    const heading = getHeadingTitle(line, index, lines);
+    const heading = getPanelHeadingTitle(line, index, lines);
 
     if (heading) {
-      if (current) sections.push(current);
+      if (current && (current.bodyLines.some(l => normalizeSpaces(l)) || current.title)) {
+        sections.push(current);
+      }
       current = { title: heading, bodyLines: [] };
       return;
     }
@@ -525,12 +422,13 @@ function splitIntoSections(rawText, fallbackTitle) {
     current.bodyLines.push(line);
   });
 
-  if (current) sections.push(current);
+  if (current && (current.bodyLines.some(l => normalizeSpaces(l)) || current.title)) {
+    sections.push(current);
+  }
 
-  return sections.map(section => ({
-    title: section.title,
-    body: section.bodyLines.join("\n").trim()
-  })).filter(section => section.title || section.body);
+  return sections
+    .map(section => ({ title: section.title, body: section.bodyLines.join("\n").trim() }))
+    .filter(section => section.title || section.body);
 }
 
 function formatInline(text) {
@@ -542,26 +440,10 @@ function formatInline(text) {
     .replace(/\*\*(.*?)\*\*/g, "*$1*")
     .replace(/__(.*?)__/g, "*$1*");
 
+  value = value.replace(/^(COMO|QUERO|PARA)\b\s*(.*)$/i, (_, label, rest) => `*${label.toUpperCase()}* ${rest.trim()}`);
   value = value.replace(/^\*\s*(.+?)\s*:\s+(.+)$/, "*$1:* $2");
 
   return value;
-}
-
-function looksLikeSubtitle(line) {
-  const clean = normalizeSpaces(line);
-  if (!clean) return false;
-  if (/^h3\.\s+/.test(clean)) return false;
-  if (/^(\*|#)\s+/.test(clean)) return false;
-  if (/^\|/.test(clean)) return false;
-  if (!/[:：]$/.test(clean)) return false;
-  if (clean.length > 80) return false;
-
-  const label = clean.replace(/[:：]$/g, "");
-  const key = titleKey(label);
-
-  if (COMMON_SECTION_NAMES.map(titleKey).includes(key)) return true;
-
-  return /^[A-ZÁÉÍÓÚÂÊÔÃÕÇ]/.test(label) && label.split(/\s+/).length <= 7;
 }
 
 function parsePipeRow(line) {
@@ -586,9 +468,8 @@ function isMarkdownTableStart(lines, index) {
 function convertMarkdownTable(lines, startIndex) {
   const rows = [];
   let i = startIndex;
-
   rows.push(parsePipeRow(lines[i]));
-  i += 2; // pula cabeçalho + separador
+  i += 2;
 
   while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) {
     rows.push(parsePipeRow(lines[i]));
@@ -604,20 +485,111 @@ function convertMarkdownTable(lines, startIndex) {
   return { outputLines: output, nextIndex: i };
 }
 
+function isTabTableStart(lines, index) {
+  const line = lines[index] || "";
+  if (!line.includes("\t")) return false;
+  const cells = line.split(/\t+/).map(normalizeSpaces).filter(Boolean);
+  if (cells.length < 2) return false;
+
+  let dataLines = 0;
+  for (let i = index + 1; i < lines.length; i++) {
+    const candidate = lines[i] || "";
+    if (!normalizeSpaces(candidate)) break;
+    if (candidate.includes("\t") && candidate.split(/\t+/).map(normalizeSpaces).filter(Boolean).length >= 2) dataLines++;
+    else break;
+  }
+  return dataLines >= 1;
+}
+
+function convertTabTable(lines, startIndex) {
+  const rows = [];
+  let i = startIndex;
+
+  while (i < lines.length) {
+    const line = lines[i] || "";
+    if (!normalizeSpaces(line)) break;
+    if (!line.includes("\t")) break;
+    const cells = line.split(/\t+/).map(cell => formatInline(cell.trim())).filter(cell => cell !== "");
+    if (cells.length < 2) break;
+    rows.push(cells);
+    i++;
+  }
+
+  if (!rows.length) return { outputLines: [], nextIndex: startIndex + 1 };
+
+  const width = Math.max(...rows.map(r => r.length));
+  const normalizedRows = rows.map(row => {
+    const copy = row.slice();
+    while (copy.length < width) copy.push("");
+    return copy;
+  });
+
+  const output = [];
+  output.push("||" + normalizedRows[0].join("||") + "||");
+  normalizedRows.slice(1).forEach(row => output.push("|" + row.join("|") + "|"));
+
+  return { outputLines: output, nextIndex: i };
+}
+
+function isSingleColumnReportTableStart(lines, index) {
+  const title = normalizeSpaces(lines[index]);
+  if (!/^novos? relatórios? flexbill$/i.test(stripAccents(title))) return false;
+  let count = 0;
+  for (let i = index + 1; i < lines.length; i++) {
+    const line = normalizeSpaces(lines[i]);
+    if (!line) break;
+    if (/^Relat[oó]rio\b/i.test(line)) count++;
+    else break;
+  }
+  return count >= 2;
+}
+
+function convertSingleColumnReportTable(lines, startIndex) {
+  const header = formatInline(lines[startIndex]);
+  const output = [`||${header}||`];
+  let i = startIndex + 1;
+
+  while (i < lines.length) {
+    const line = normalizeSpaces(lines[i]);
+    if (!line) break;
+    if (!/^Relat[oó]rio\b/i.test(line)) break;
+    output.push(`|${formatInline(line)}|`);
+    i++;
+  }
+
+  return { outputLines: output, nextIndex: i };
+}
+
 function formatNormalBody(text) {
   const lines = String(text || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
   const out = [];
 
   for (let i = 0; i < lines.length; i++) {
-    let line = normalizeLineText(lines[i]);
+    const rawLine = lines[i] || "";
+    let line = normalizeLineText(rawLine);
+    const trimmed = normalizeSpaces(rawLine);
 
-    if (!line) {
+    if (!trimmed) {
       if (out.length && out[out.length - 1] !== "") out.push("");
       continue;
     }
 
     if (isMarkdownTableStart(lines, i)) {
       const table = convertMarkdownTable(lines, i);
+      out.push(...table.outputLines);
+      i = table.nextIndex - 1;
+      continue;
+    }
+
+    if (isTabTableStart(lines, i)) {
+      const table = convertTabTable(lines, i);
+      out.push(...table.outputLines);
+      i = table.nextIndex - 1;
+      continue;
+    }
+
+    if (isSingleColumnReportTableStart(lines, i)) {
+      const table = convertSingleColumnReportTable(lines, i);
       out.push(...table.outputLines);
       i = table.nextIndex - 1;
       continue;
@@ -639,14 +611,21 @@ function formatNormalBody(text) {
       continue;
     }
 
-    if (looksLikeSubtitle(line)) {
-      out.push(`h3. ${formatInline(line.replace(/[:：]$/g, ""))}`);
+    if (isSubheadingTitle(line)) {
+      out.push(`h3. ${formatInline(cleanHeading(line))}`);
       continue;
     }
 
-    const bullet = line.match(/^[-–—•]\s+(.+)$/);
+    const rfRn = line.match(/^(RF\d+|RN\d+)\s*[-–—]\s*(.+)$/i);
+    if (rfRn) {
+      out.push(`* *${rfRn[1].toUpperCase()}* - ${formatInline(rfRn[2])}`);
+      continue;
+    }
+
+    const bullet = rawLine.match(/^(\s*)[-–—•]\s+(.+)$/);
     if (bullet) {
-      out.push(`* ${formatInline(bullet[1])}`);
+      const marker = bullet[1] && bullet[1].length > 0 ? "**" : "*";
+      out.push(`${marker} ${formatInline(bullet[2])}`);
       continue;
     }
 
@@ -676,49 +655,121 @@ function splitDescriptionEvidence(value) {
   const text = normalizeSpaces(value);
   const match = text.match(/^(.+?)\s+[–—-]\s+(.+)$/);
   if (match) {
-    return {
-      description: normalizeSpaces(match[1]),
-      evidence: normalizeSpaces(match[2])
-    };
+    return { description: normalizeSpaces(match[1]), evidence: normalizeSpaces(match[2]) };
+  }
+  return { description: text, evidence: "" };
+}
+
+function normalizeCriterionId(id, sequence) {
+  let value = normalizeSpaces(id).toUpperCase();
+  if (/^\d+$/.test(value)) return `CA${String(Number(value)).padStart(2, "0")}`;
+  if (/^CA[-\s]*\d+$/i.test(value)) return value.replace(/^CA[-\s]*(\d+)$/i, (_, n) => `CA${String(Number(n)).padStart(2, "0")}`);
+  if (!value) return `CA${String(sequence).padStart(2, "0")}`;
+  return value;
+}
+
+function safeTableCell(value) {
+  return String(value || "")
+    .replace(/\|/g, "/")
+    .replace(/\n/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function formatEvidenceItems(text) {
+  const value = String(text || "").trim();
+  if (!value) return "A definir";
+
+  const normalized = value
+    .replace(/\s+(\d+[.)]\s+)/g, " \\ # $1")
+    .replace(/^(\d+[.)]\s+)/, "# $1")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+  return normalized;
+}
+
+function parseTabbedAcceptanceRows(rawLines) {
+  const rows = [];
+  let current = null;
+
+  rawLines.forEach(raw => {
+    const line = String(raw || "").replace(/\r/g, "");
+    if (!normalizeSpaces(line)) return;
+
+    if (/^ID\s*\t/i.test(line) || /^ID\s+Crit[eé]rio/i.test(line)) return;
+
+    const startsNew = line.match(/^\s*(CA\d+|CA[-\s]*\d+|\d+)\b\s*\t?(.*)$/i);
+    if (startsNew && /^\s*(CA\d+|CA[-\s]*\d+|\d+)\b/i.test(line)) {
+      if (current) rows.push(current);
+      current = { id: normalizeCriterionId(startsNew[1], rows.length + 1), desc: [], evid: [] };
+      const rest = startsNew[2] || "";
+      addAcceptanceLine(current, rest);
+      return;
+    }
+
+    if (!current) return;
+    addAcceptanceLine(current, line);
+  });
+
+  if (current) rows.push(current);
+  return rows;
+}
+
+function addAcceptanceLine(current, rawLine) {
+  const parts = String(rawLine || "").split(/\t+/);
+
+  if (parts.length >= 2) {
+    const desc = normalizeSpaces(parts[0]);
+    const evidence = normalizeSpaces(parts.slice(1).join(" "));
+    if (desc) current.desc.push(desc);
+    if (evidence) current.evid.push(evidence);
+    return;
   }
 
-  return {
-    description: text,
-    evidence: ""
-  };
+  const clean = normalizeSpaces(rawLine);
+  if (!clean) return;
+
+  if (/^\d+[.)]\s+/.test(clean)) current.evid.push(clean);
+  else current.desc.push(clean);
 }
 
 function formatAcceptanceCriteria(text) {
-  const rawLines = String(text || "")
-    .replace(/\r\n/g, "\n")
-    .replace(/\r/g, "\n")
-    .split("\n")
-    .map(line => normalizeLineText(line))
-    .filter(Boolean);
+  const originalLines = String(text || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+  const nonBlank = originalLines.map(line => normalizeLineText(line)).filter(Boolean);
 
-  if (!rawLines.length) {
+  if (!nonBlank.length) {
     return "||ID||Descrição do Critério de Aceite||Evidência||";
   }
 
-  if (rawLines.some(line => /^\|\|.*\|\|$/.test(line))) {
-    const rows = normalizeExistingAcceptanceTable(rawLines);
-    return rows.join("\n");
+  if (originalLines.some(line => line.includes("\t")) || nonBlank.some(line => /^CA\d+\b/i.test(line))) {
+    const parsedRows = parseTabbedAcceptanceRows(originalLines);
+    if (parsedRows.length) {
+      return [
+        "||ID||Descrição do Critério de Aceite||Evidência||",
+        ...parsedRows.map(row => {
+          const desc = row.desc.map(formatInline).join(" \\ ");
+          const evid = formatEvidenceItems(row.evid.join(" "));
+          return `|${safeTableCell(row.id)}|${safeTableCell(desc)}|${safeTableCell(evid)}|`;
+        })
+      ].join("\n");
+    }
   }
 
-  if (rawLines.length >= 2 && isMarkdownSeparatorRow(rawLines[1])) {
-    const table = convertMarkdownTable(rawLines, 0).outputLines;
+  if (nonBlank.some(line => /^\|\|.*\|\|$/.test(line))) {
+    return normalizeExistingAcceptanceTable(nonBlank).join("\n");
+  }
+
+  if (nonBlank.length >= 2 && isMarkdownSeparatorRow(nonBlank[1])) {
+    const table = convertMarkdownTable(nonBlank, 0).outputLines;
     return normalizeExistingAcceptanceTable(table).join("\n");
   }
 
   const rows = [];
   let autoId = 1;
 
-  rawLines.forEach(line => {
-    const cleaned = line
-      .replace(/^[-–—•]\s+/, "")
-      .replace(/^#\s+/, "")
-      .trim();
-
+  nonBlank.forEach(line => {
+    const cleaned = line.replace(/^[-–—•]\s+/, "").replace(/^#\s+/, "").trim();
     if (!cleaned) return;
 
     let id = "";
@@ -733,68 +784,33 @@ function formatAcceptanceCriteria(text) {
     } else {
       const explicit = cleaned.match(/^(CA[- ]?\d+|\d+)[.)]?\s*[-–—:]\s*(.+)$/i);
       if (explicit) {
-        id = explicit[1].toUpperCase().replace(/^(\d+)$/, n => `CA-${String(Number(n)).padStart(2, "0")}`);
-        const rest = explicit[2].trim();
-        const parsed = splitDescriptionEvidence(rest);
+        id = explicit[1];
+        const parsed = splitDescriptionEvidence(explicit[2]);
         description = parsed.description;
         evidence = parsed.evidence;
       } else {
-        const numbered = cleaned.match(/^(\d+)[.)]\s+(.+)$/);
-        if (numbered) {
-          id = `CA-${String(Number(numbered[1])).padStart(2, "0")}`;
-          const parsed = splitDescriptionEvidence(numbered[2]);
-          description = parsed.description;
-          evidence = parsed.evidence;
-        } else {
-          id = `CA-${String(autoId).padStart(2, "0")}`;
-          description = cleaned;
-        }
+        id = `CA${String(autoId).padStart(2, "0")}`;
+        description = cleaned;
       }
-    }
-
-    if (!id) {
-      id = `CA-${String(autoId).padStart(2, "0")}`;
     }
 
     id = normalizeCriterionId(id, autoId);
     description = formatInline(description || cleaned);
     evidence = formatInline(evidence || "A definir");
-
     rows.push(`|${safeTableCell(id)}|${safeTableCell(description)}|${safeTableCell(evidence)}|`);
     autoId++;
   });
 
-  return [
-    "||ID||Descrição do Critério de Aceite||Evidência||",
-    ...rows
-  ].join("\n");
-}
-
-function normalizeCriterionId(id, sequence) {
-  let value = normalizeSpaces(id).toUpperCase();
-  if (/^\d+$/.test(value)) return `CA-${String(Number(value)).padStart(2, "0")}`;
-  if (/^CA\s*\d+$/i.test(value)) return value.replace(/\s+/, "-").replace(/^CA-?(\d+)$/i, (_, n) => `CA-${String(Number(n)).padStart(2, "0")}`);
-  if (!value) return `CA-${String(sequence).padStart(2, "0")}`;
-  return value;
-}
-
-function safeTableCell(value) {
-  return String(value || "")
-    .replace(/\|/g, "/")
-    .replace(/\n/g, " ")
-    .trim();
+  return ["||ID||Descrição do Critério de Aceite||Evidência||", ...rows].join("\n");
 }
 
 function normalizeExistingAcceptanceTable(lines) {
-  const rows = [];
-  rows.push("||ID||Descrição do Critério de Aceite||Evidência||");
+  const rows = ["||ID||Descrição do Critério de Aceite||Evidência||"];
 
   lines.forEach(line => {
     if (!line || isMarkdownSeparatorRow(line)) return;
-
     const isHeader = /^\|\|.*\|\|$/.test(line);
     const cells = parsePipeRow(line.replace(/^\|\|/, "|").replace(/\|\|$/g, "|").replace(/\|\|/g, "|"));
-
     const joined = titleKey(cells.join(" "));
     if (isHeader && joined.includes("criterio")) return;
     if (joined.includes("descricao") && joined.includes("evidencia")) return;
@@ -802,20 +818,14 @@ function normalizeExistingAcceptanceTable(lines) {
     const id = normalizeCriterionId(cells[0] || "", rows.length);
     const desc = cells[1] || cells[0] || "";
     const evidence = cells[2] || "A definir";
-
-    if (desc) {
-      rows.push(`|${safeTableCell(id)}|${safeTableCell(formatInline(desc))}|${safeTableCell(formatInline(evidence))}|`);
-    }
+    if (desc) rows.push(`|${safeTableCell(id)}|${safeTableCell(formatInline(desc))}|${safeTableCell(formatInline(evidence))}|`);
   });
 
   return rows;
 }
 
 function formatSectionBody(section) {
-  if (isAcceptanceTitle(section.title)) {
-    return formatAcceptanceCriteria(section.body);
-  }
-
+  if (isAcceptanceTitle(section.title)) return formatAcceptanceCriteria(section.body);
   return formatNormalBody(section.body);
 }
 
@@ -823,8 +833,6 @@ function buildWikiMarkup(sections) {
   return sections.map(section => {
     const title = sanitizeTitle(section.title);
     const body = formatSectionBody(section);
-
-    // Sem linha em branco logo após abertura do painel.
     return `${panelOpen(title)}\n${body}\n{panel}`;
   }).join("\n\n");
 }
@@ -832,10 +840,8 @@ function buildWikiMarkup(sections) {
 function convert() {
   const title = document.getElementById("inTitle").value || "Documento formatado";
   const body = document.getElementById("inBody").value;
-
   const sections = splitIntoSections(body, title);
   const wiki = buildWikiMarkup(sections);
-
   document.getElementById("output").value = wiki;
   document.getElementById("preview").innerHTML = renderPreview(wiki);
   setStatus(sections.length ? `${sections.length} painel(is) gerado(s).` : "Nenhum conteúdo informado.");
@@ -846,18 +852,17 @@ function clearAll() {
   document.getElementById("inBody").value = "";
   document.getElementById("output").value = "";
   document.getElementById("preview").innerHTML = "";
+  document.getElementById("fileInput").value = "";
   setStatus("");
 }
 
 async function copyOutput() {
   const output = document.getElementById("output");
   const value = output.value;
-
   if (!value.trim()) {
     setStatus("Nada para copiar.");
     return;
   }
-
   try {
     await navigator.clipboard.writeText(value);
     setStatus("Saída copiada.");
@@ -868,8 +873,67 @@ async function copyOutput() {
   }
 }
 
-function setStatus(message) {
-  document.getElementById("status").textContent = message || "";
+function setStatus(message, type) {
+  const status = document.getElementById("status");
+  status.textContent = message || "";
+  status.classList.toggle("error", type === "error");
+}
+
+async function handleFileUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  try {
+    setStatus(`Lendo arquivo: ${file.name}...`);
+    const text = await readUploadedFile(file);
+    document.getElementById("inBody").value = text;
+    if (!document.getElementById("inTitle").value) {
+      document.getElementById("inTitle").value = file.name.replace(/\.[^.]+$/, "");
+    }
+    setStatus(`Arquivo carregado: ${file.name}`);
+  } catch (error) {
+    console.error(error);
+    setStatus(`Não foi possível ler o arquivo: ${error.message || error}`, "error");
+  }
+}
+
+async function readUploadedFile(file) {
+  const name = file.name.toLowerCase();
+  const type = file.type || "";
+
+  if (name.endsWith(".txt") || name.endsWith(".text") || name.endsWith(".md") || name.endsWith(".html") || type.startsWith("text/")) {
+    return await file.text();
+  }
+
+  if (name.endsWith(".docx") || type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+    if (typeof mammoth === "undefined") {
+      throw new Error("Biblioteca Mammoth não carregada. Verifique a conexão ou inclua mammoth.browser.min.js localmente.");
+    }
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value || "";
+  }
+
+  if (name.endsWith(".pdf") || type === "application/pdf") {
+    if (typeof pdfjsLib === "undefined") {
+      throw new Error("Biblioteca PDF.js não carregada. Verifique a conexão ou inclua pdf.min.js localmente.");
+    }
+    if (pdfjsLib.GlobalWorkerOptions) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const pages = [];
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(item => item.str).join(" ");
+      pages.push(pageText);
+    }
+    return pages.join("\n\n");
+  }
+
+  throw new Error("Formato não suportado. Use TXT, DOCX ou PDF.");
 }
 
 function wrapSelection(marker) {
@@ -896,7 +960,6 @@ function makeList(marker) {
     .split("\n")
     .map(line => `${marker} ${line.replace(/^[-–—•*#]\s*/, "")}`)
     .join("\n");
-
   ta.setRangeText(lines, start, end, "end");
   ta.focus();
 }
@@ -904,8 +967,8 @@ function makeList(marker) {
 function insertAcceptanceTemplate() {
   insertAtCursor(
 `Critérios de Aceite
-CA-01 - Descreva o primeiro critério - Evidência esperada
-CA-02 - Descreva o segundo critério - Evidência esperada
+CA01 - Descreva o primeiro critério - Evidência esperada
+CA02 - Descreva o segundo critério - Evidência esperada
 `
   );
 }
@@ -919,8 +982,6 @@ function insertTableTemplate() {
   );
 }
 
-/* ===== Preview de Wiki Markup para HTML ===== */
-
 function escapeHtml(value) {
   return String(value || "")
     .replace(/&/g, "&amp;")
@@ -930,32 +991,22 @@ function escapeHtml(value) {
 }
 
 function renderInline(text) {
-  return escapeHtml(text)
-    .replace(/\*(?!\s)([^*\n]+?)\*/g, "<strong>$1</strong>");
+  return escapeHtml(text).replace(/\*(?!\s)([^*\n]+?)\*/g, "<strong>$1</strong>");
 }
 
 function parseWikiPanels(wiki) {
   const panels = [];
   const regex = /\{panel:title=([^|}]+)\|[^}]*\}\n([\s\S]*?)\n?\{panel\}/g;
   let match;
-
   while ((match = regex.exec(wiki)) !== null) {
-    panels.push({
-      title: match[1],
-      body: match[2] || ""
-    });
+    panels.push({ title: match[1], body: match[2] || "" });
   }
-
-  if (!panels.length && wiki.trim()) {
-    panels.push({ title: "Pré-visualização", body: wiki });
-  }
-
+  if (!panels.length && wiki.trim()) panels.push({ title: "Pré-visualização", body: wiki });
   return panels;
 }
 
 function renderPreview(wiki) {
   const panels = parseWikiPanels(wiki);
-
   return panels.map(panel => `
     <div class="pnl">
       <div class="pnl-title">${escapeHtml(panel.title)}</div>
@@ -988,6 +1039,16 @@ function renderWikiBody(body) {
     if (/^h3\.\s+/.test(line)) {
       closeList();
       html += `<h3>${renderInline(line.replace(/^h3\.\s+/, ""))}</h3>`;
+      continue;
+    }
+
+    if (/^\*\*\s+/.test(line)) {
+      if (listType !== "ul") {
+        closeList();
+        html += "<ul>";
+        listType = "ul";
+      }
+      html += `<li style="margin-left:18px">${renderInline(line.replace(/^\*\*\s+/, ""))}</li>`;
       continue;
     }
 
@@ -1032,11 +1093,7 @@ function collectWikiTable(lines, startIndex) {
   let i = startIndex;
 
   if (/^\|\|.*\|\|$/.test(lines[i])) {
-    const headerCells = lines[i]
-      .replace(/^\|\|/, "")
-      .replace(/\|\|$/, "")
-      .split("||");
-
+    const headerCells = lines[i].replace(/^\|\|/, "").replace(/\|\|$/, "").split("||");
     html += "<thead><tr>";
     headerCells.forEach(cell => html += `<th>${renderInline(cell)}</th>`);
     html += "</tr></thead>";
@@ -1044,21 +1101,14 @@ function collectWikiTable(lines, startIndex) {
   }
 
   html += "<tbody>";
-
   while (i < lines.length && /^\|.*\|$/.test(lines[i]) && !/^\|\|.*\|\|$/.test(lines[i])) {
-    const cells = lines[i]
-      .replace(/^\|/, "")
-      .replace(/\|$/, "")
-      .split("|");
-
+    const cells = lines[i].replace(/^\|/, "").replace(/\|$/, "").split("|");
     html += "<tr>";
     cells.forEach(cell => html += `<td>${renderInline(cell)}</td>`);
     html += "</tr>";
     i++;
   }
-
   html += "</tbody></table>";
-
   return { html, nextIndex: i };
 }
 </script>
