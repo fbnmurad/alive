@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Renderizador Mermaid Local</title>
+
+  <!-- Mermaid via CDN -->
+  <!-- Para uso 100% offline, baixe o mermaid.min.js e troque o src por: ./mermaid.min.js -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --border: #d7dce5;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --code-bg: #0f172a;
+      --code-text: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 18px 28px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 42% 58%;
+      gap: 16px;
+      padding: 16px;
+      height: calc(100vh - 78px);
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: #fafafa;
+      flex-shrink: 0;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 15px;
+      white-space: nowrap;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      background: var(--primary);
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: var(--primary-hover);
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    button.secondary:hover {
+      background: #d1d5db;
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button.danger:hover {
+      background: #b91c1c;
+    }
+
+    .zoom-indicator {
+      font-size: 13px;
+      color: var(--muted);
+      min-width: 64px;
+      text-align: center;
+      padding: 7px 8px;
+      background: #f3f4f6;
+      border-radius: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      border: none;
+      resize: none;
+      outline: none;
+      padding: 16px;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--code-text);
+      background: var(--code-bg);
+    }
+
+    #diagramContainer {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background-color: #ffffff;
+      background-image:
+        linear-gradient(#eef2f7 1px, transparent 1px),
+        linear-gradient(90deg, #eef2f7 1px, transparent 1px);
+      background-size: 24px 24px;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+    }
+
+    #diagramContainer.dragging {
+      cursor: grabbing;
+    }
+
+    #diagramOutput {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      padding: 24px;
+      min-width: 300px;
+      min-height: 200px;
+    }
+
+    #diagramOutput svg {
+      display: block;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .status {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+      background: #fafafa;
+      min-height: 40px;
+      flex-shrink: 0;
+    }
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .status.error {
+      color: var(--danger);
+      white-space: pre-wrap;
+    }
+
+    #previewPanel:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      border: none;
+      background: #ffffff;
+    }
+
+    #previewPanel:fullscreen .panel-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    #previewPanel:fullscreen #diagramContainer {
+      height: 100%;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow: auto;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .panel {
+        height: 50vh;
+      }
+
+      #previewPanel {
+        height: 70vh;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Renderizador Mermaid Local</h1>
+    <p></p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Código Mermaid</h2>
+        <div class="actions">
+          <button onclick="renderDiagram()">Renderizar</button>
+          <button class="secondary" onclick="copyCode()">Copiar</button>
+          <button class="secondary" onclick="downloadSvg()">Baixar SVG</button>
+          <button class="danger" onclick="clearCode()">Limpar</button>
+        </div>
+      </div>
+
+      <textarea id="mermaidCode" spellcheck="false">flowchart LR
+    A[Compra no SFA] --> B[Request API Trial]
+    B --> C[Oracle BRM inicia Trial Billing]
+    C --> D[Billing Care exibe pré-faturamento]
+    D --> E{Trial aprovado?}
+    E -- Sim --> F[Executa Billnow / Production Billing]
+    E -- Não --> G[BRM informa reprovação ao SFA]
+    F --> H[Aciona integrações externas]
+    H --> I[Hub de Pagamentos]
+    H --> J[Smart Bill]
+    H --> K[Sirius]
+    H --> L[Control-M]
+</textarea>
+
+      <div id="status" class="status">Pronto para renderizar. Atalho: Ctrl + Enter.</div>
+    </section>
+
+    <section id="previewPanel" class="panel">
+      <div class="panel-header">
+        <h2>Diagrama renderizado</h2>
+        <div class="actions">
+          <button class="secondary" onclick="zoomOut()">Zoom -</button>
+          <span id="zoomIndicator" class="zoom-indicator">100%</span>
+          <button class="secondary" onclick="zoomIn()">Zoom +</button>
+          <button class="secondary" onclick="fitToScreen()">Ajustar</button>
+          <button class="secondary" onclick="centerDiagram()">Centralizar</button>
+          <button class="secondary" onclick="resetZoom()">Resetar</button>
+          <button onclick="toggleFullscreen()">Tela cheia</button>
+        </div>
+      </div>
+
+      <div id="diagramContainer">
+        <div id="diagramOutput"></div>
+      </div>
+
+      <div class="status">
+        Navegação: arraste o diagrama com o mouse. Use o scroll para zoom. Ctrl + Enter renderiza novamente.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let currentSvg = "";
+    let zoomLevel = 1;
+    let panX = 0;
+    let panY = 0;
+
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let startPanX = 0;
+    let startPanY = 0;
+
+    const mermaidCode = document.getElementById("mermaidCode");
+    const diagramContainer = document.getElementById("diagramContainer");
+    const diagramOutput = document.getElementById("diagramOutput");
+    const statusBox = document.getElementById("status");
+    const zoomIndicator = document.getElementById("zoomIndicator");
+    const previewPanel = document.getElementById("previewPanel");
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "default",
+      securityLevel: "strict",
+      flowchart: {
+        htmlLabels: true,
+        curve: "basis"
+      },
+      sequence: {
+        showSequenceNumbers: true
+      }
+    });
+
+    function cleanMermaidCode(rawCode) {
+      return rawCode
+        .trim()
+        .replace(/^```mermaid\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/```$/i, "")
+        .trim();
+    }
+
+    function saveCodeLocally() {
+      localStorage.setItem("mermaid-local-code", mermaidCode.value);
+    }
+
+    function loadCodeLocally() {
+      const savedCode = localStorage.getItem("mermaid-local-code");
+      if (savedCode && savedCode.trim()) {
+        mermaidCode.value = savedCode;
+      }
+    }
+
+    async function renderDiagram() {
+      let code = cleanMermaidCode(mermaidCode.value);
+
+      statusBox.className = "status";
+      statusBox.textContent = "Renderizando...";
+      diagramOutput.innerHTML = "";
+      currentSvg = "";
+
+      try {
+        const diagramId = "diagram_" + Date.now();
+        const result = await mermaid.render(diagramId, code);
+
+        currentSvg = result.svg;
+        diagramOutput.innerHTML = currentSvg;
+
+        const svg = diagramOutput.querySelector("svg");
+
+        if (svg) {
+          const viewBox = svg.getAttribute("viewBox");
+
+          if (viewBox) {
+            const parts = viewBox.split(" ").map(Number);
+            const width = parts[2];
+            const height = parts[3];
+
+            if (width && height) {
+              svg.setAttribute("width", width);
+              svg.setAttribute("height", height);
+              svg.style.width = width + "px";
+              svg.style.height = height + "px";
+            }
+          }
+        }
+
+        if (result.bindFunctions) {
+          result.bindFunctions(diagramOutput);
+        }
+
+        saveCodeLocally();
+
+        statusBox.className = "status success";
+        statusBox.textContent = "Diagrama renderizado com sucesso.";
+
+        setTimeout(() => {
+          fitToScreen();
+        }, 100);
+
+      } catch (error) {
+        diagramOutput.innerHTML = "";
+        currentSvg = "";
+
+        statusBox.className = "status error";
+        statusBox.textContent = "Erro ao renderizar Mermaid:\n\n" + error.message;
+      }
+    }
+
+    function copyCode() {
+      const code = mermaidCode.value;
+
+      navigator.clipboard.writeText(code).then(() => {
+        statusBox.className = "status success";
+        statusBox.textContent = "Código copiado para a área de transferência.";
+      });
+    }
+
+    function clearCode() {
+      mermaidCode.value = "";
+      diagramOutput.innerHTML = "";
+      currentSvg = "";
+      localStorage.removeItem("mermaid-local-code");
+
+      statusBox.className = "status";
+      statusBox.textContent = "Código limpo.";
+      zoomLevel = 1;
+      panX = 0;
+      panY = 0;
+      applyTransform();
+    }
+
+    function downloadSvg() {
+      if (!currentSvg) {
+        statusBox.className = "status error";
+        statusBox.textContent = "Nenhum SVG disponível. Renderize o diagrama primeiro.";
+        return;
+      }
+
+      const blob = new Blob([currentSvg], { type: "image/svg+xml;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "diagrama-mermaid.svg";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    }
+
+    function getSvgSize() {
+      const svg = diagramOutput.querySelector("svg");
+
+      if (!svg) {
+        return { width: 0, height: 0 };
+      }
+
+      const viewBox = svg.getAttribute("viewBox");
+
+      if (viewBox) {
+        const parts = viewBox.split(" ").map(Number);
+        const width = parts[2];
+        const height = parts[3];
+
+        if (width && height) {
+          return {
+            width: width + 48,
+            height: height + 48
+          };
+        }
+      }
+
+      const box = svg.getBoundingClientRect();
+
+      return {
+        width: box.width + 48,
+        height: box.height + 48
+      };
+    }
+
+    function applyTransform() {
+      diagramOutput.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+      zoomIndicator.textContent = `${Math.round(zoomLevel * 100)}%`;
+    }
+
+    function zoomIn() {
+      setZoom(zoomLevel * 1.15);
+    }
+
+    function zoomOut() {
+      setZoom(zoomLevel / 1.15);
+    }
+
+    function setZoom(newZoom, originX = null, originY = null) {
+      const minZoom = 0.05;
+      const maxZoom = 5;
+
+      newZoom = Math.max(minZoom, Math.min(maxZoom, newZoom));
+
+      if (originX !== null && originY !== null) {
+        const worldX = (originX - panX) / zoomLevel;
+        const worldY = (originY - panY) / zoomLevel;
+
+        panX = originX - worldX * newZoom;
+        panY = originY - worldY * newZoom;
+      }
+
+      zoomLevel = newZoom;
+      applyTransform();
+    }
+
+    function resetZoom() {
+      zoomLevel = 1;
+      centerDiagram();
+    }
+
+    function centerDiagram() {
+      const size = getSvgSize();
+      const containerRect = diagramContainer.getBoundingClientRect();
+
+      if (!size.width || !size.height) {
+        return;
+      }
+
+      panX = Math.max(20, (containerRect.width - size.width * zoomLevel) / 2);
+      panY = Math.max(20, (containerRect.height - size.height * zoomLevel) / 2);
+
+      applyTransform();
+    }
+
+    function fitToScreen() {
+      const size = getSvgSize();
+      const containerRect = diagramContainer.getBoundingClientRect();
+
+      if (!size.width || !size.height) {
+        return;
+      }
+
+      const padding = 60;
+      const scaleX = (containerRect.width - padding) / size.width;
+      const scaleY = (containerRect.height - padding) / size.height;
+
+      zoomLevel = Math.max(0.15, Math.min(scaleX, scaleY, 1.2));
+
+      panX = Math.max(20, (containerRect.width - size.width * zoomLevel) / 2);
+      panY = Math.max(20, (containerRect.height - size.height * zoomLevel) / 2);
+
+      applyTransform();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        previewPanel.requestFullscreen().then(() => {
+          setTimeout(fitToScreen, 200);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    diagramContainer.addEventListener("wheel", function(event) {
+      event.preventDefault();
+
+      const rect = diagramContainer.getBoundingClientRect();
+      const mouseX = event.clientX - rect.left;
+      const mouseY = event.clientY - rect.top;
+
+      const zoomFactor = event.deltaY < 0 ? 1.12 : 1 / 1.12;
+      setZoom(zoomLevel * zoomFactor, mouseX, mouseY);
+    }, { passive: false });
+
+    diagramContainer.addEventListener("pointerdown", function(event) {
+      if (!diagramOutput.innerHTML.trim()) {
+        return;
+      }
+
+      isDragging = true;
+      diagramContainer.classList.add("dragging");
+
+      dragStartX = event.clientX;
+      dragStartY = event.clientY;
+      startPanX = panX;
+      startPanY = panY;
+
+      diagramContainer.setPointerCapture(event.pointerId);
+    });
+
+    diagramContainer.addEventListener("pointermove", function(event) {
+      if (!isDragging) {
+        return;
+      }
+
+      const dx = event.clientX - dragStartX;
+      const dy = event.clientY - dragStartY;
+
+      panX = startPanX + dx;
+      panY = startPanY + dy;
+
+      applyTransform();
+    });
+
+    diagramContainer.addEventListener("pointerup", function(event) {
+      isDragging = false;
+      diagramContainer.classList.remove("dragging");
+
+      try {
+        diagramContainer.releasePointerCapture(event.pointerId);
+      } catch (e) {}
+    });
+
+    diagramContainer.addEventListener("pointerleave", function() {
+      if (isDragging) {
+        isDragging = false;
+        diagramContainer.classList.remove("dragging");
+      }
+    });
+
+    document.addEventListener("fullscreenchange", function() {
+      setTimeout(fitToScreen, 200);
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        renderDiagram();
+      }
+
+      if (event.key === "Escape" && document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+    });
+
+    mermaidCode.addEventListener("input", function() {
+      saveCodeLocally();
+    });
+
+    window.addEventListener("resize", function() {
+      setTimeout(fitToScreen, 150);
+    });
+
+    window.addEventListener("load", function() {
+      loadCodeLocally();
+      renderDiagram();
+    });
+  </script>
+</body>
+</html>
