@@ -31,59 +31,171 @@
   --neutral: #9ca3af;
   --neutral-hover: #6b7280;
 }
+
 * { box-sizing: border-box; }
+
 body {
   margin: 0;
   background: linear-gradient(120deg, var(--bg-gradient-start), var(--bg-gradient-end));
   color: var(--text-default);
+  min-height: 100vh;
+  overflow: hidden;
 }
+
 header {
   padding: 18px 20px;
   border-bottom: 1px solid var(--border-light);
   background: var(--surface);
 }
+
 header h1 {
   margin: 0;
   font-size: 18px;
   font-weight: 750;
   color: var(--text-title);
 }
+
 header p {
   margin: 6px 0 0;
   font-size: 13px;
   color: var(--text-muted);
 }
+
 .wrap {
+  height: calc(100vh - 78px);
   padding: 16px 20px;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
+  min-height: 0;
 }
+
 .grid {
+  flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 14px;
-  align-items: start;
+  grid-template-columns: minmax(240px, 33.333fr) 10px minmax(240px, 33.333fr) 10px minmax(240px, 33.334fr);
+  gap: 0;
+  align-items: stretch;
 }
-@media (max-width: 1180px) {
-  .grid { grid-template-columns: 1fr; }
-}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--border-light);
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 8px 24px rgba(31,42,68,0.08);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
 }
-.card h2 {
+
+.input-card { margin-right: 7px; }
+.output-card { margin-left: 7px; margin-right: 7px; }
+.preview-card { margin-left: 7px; }
+
+.card-header {
+  min-height: 46px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--surface-soft);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.card-header h2 {
   margin: 0;
-  padding: 12px 14px;
   font-size: 14px;
   font-weight: 700;
-  border-bottom: 1px solid var(--border-light);
   color: var(--text-title);
-  background: var(--surface-soft);
 }
-.card .body { padding: 12px 14px; }
+
+.card .body {
+  padding: 12px 14px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.card-actions,
+.toolbar,
+.footer,
+.output-tools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.toolbar {
+  margin: 10px 0 8px;
+}
+
+.output-tools {
+  margin-bottom: 8px;
+}
+
+.footer {
+  margin-top: 10px;
+  position: sticky;
+  bottom: -12px;
+  z-index: 3;
+  padding: 10px 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0), var(--surface) 35%);
+}
+
+.splitter {
+  position: relative;
+  width: 10px;
+  min-width: 10px;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splitter::before {
+  content: "";
+  width: 4px;
+  height: 72px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+  transition: background 0.2s, height 0.2s, width 0.2s;
+}
+
+.splitter:hover::before,
+body.is-resizing .splitter.active::before {
+  width: 5px;
+  height: 110px;
+  background: var(--primary);
+}
+
+.splitter:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+body.is-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+body.is-resizing iframe {
+  pointer-events: none;
+}
+
 label {
   display: block;
   margin: 0 0 6px;
@@ -91,7 +203,9 @@ label {
   font-weight: 700;
   color: var(--text-title);
 }
-input, textarea {
+
+input,
+textarea {
   width: 100%;
   border-radius: 12px;
   border: 1px solid var(--border-light);
@@ -103,24 +217,47 @@ input, textarea {
   line-height: 1.45;
   outline: none;
 }
+
 input[type="file"] {
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: #fff;
 }
-input:focus, textarea:focus {
+
+input:focus,
+textarea:focus {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(91,110,225,0.12);
 }
-input::placeholder, textarea::placeholder { color: var(--text-muted); }
-textarea { min-height: 460px; resize: vertical; }
-.toolbar {
-  display: flex;
-  gap: 6px;
-  margin: 10px 0 8px;
-  flex-wrap: wrap;
+
+input::placeholder,
+textarea::placeholder { color: var(--text-muted); }
+
+textarea {
+  min-height: 180px;
+  resize: vertical;
 }
-.toolbar button, button.secondary {
-  padding: 6px 10px;
+
+#inBody,
+#output {
+  flex: 1;
+  min-height: 140px;
+}
+
+.input-card #inBody {
+  min-height: 120px;
+}
+
+button,
+.toolbar button,
+button.secondary,
+button.action {
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.toolbar button,
+button.secondary {
+  padding: 7px 10px;
   font-size: 13px;
   font-weight: 700;
   border-radius: 8px;
@@ -129,10 +266,13 @@ textarea { min-height: 460px; resize: vertical; }
   color: var(--primary);
   cursor: pointer;
 }
-.toolbar button:hover, button.secondary:hover {
+
+.toolbar button:hover,
+button.secondary:hover {
   background: var(--primary);
   color: #ffffff;
 }
+
 button.action {
   border: none;
   background: var(--primary);
@@ -142,55 +282,141 @@ button.action {
   font-weight: 700;
   cursor: pointer;
 }
+
 button.action:hover { background: var(--primary-hover); }
 button.action:active { background: var(--primary-active); }
 button.danger { background: var(--neutral); }
 button.danger:hover { background: var(--neutral-hover); }
-.preview { display: flex; flex-direction: column; gap: 10px; }
-.pnl {
-  border: 2px solid #0052cc;
-  border-radius: 14px;
-  overflow: hidden;
-  background: var(--surface-soft);
+
+button.success,
+button.success:hover {
+  background: var(--success);
+  border-color: var(--success);
+  color: #ffffff;
 }
-.pnl-title {
-  padding: 10px 12px;
-  font-weight: 800;
-  background: #deebff;
-  color: var(--text-title);
-}
-.pnl-body {
-  padding: 10px 12px;
-  color: var(--text-default);
-  font-size: 13px;
-}
-.pnl-body h3 {
-  margin: 10px 0 6px;
-  color: var(--text-title);
-  font-size: 14px;
-}
-.pnl-body p { margin: 0 0 8px; }
-.pnl-body ul, .pnl-body ol { margin: 4px 0 10px 20px; padding: 0; }
-.pnl-body table {
+
+.preview-frame {
+  flex: 1;
   width: 100%;
-  border-collapse: collapse;
-  margin: 8px 0 10px;
-  font-size: 12px;
+  min-height: 260px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
   background: #ffffff;
 }
-.pnl-body th, .pnl-body td {
-  border: 1px solid var(--border-light);
-  padding: 7px 8px;
-  text-align: left;
-  vertical-align: top;
+
+.small {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
 }
-.pnl-body th { background: var(--surface-highlight); color: var(--text-title); }
-.footer { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-.small { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
-.status { min-height: 18px; margin-top: 8px; font-size: 12px; color: var(--success); }
+
+.status {
+  min-height: 18px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--success);
+}
+
 .status.error { color: var(--error); }
-.output-tools { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .file-row { margin: 10px 0 8px; }
+
+/* === Modo expandido por bloco === */
+body.card-expanded {
+  overflow: hidden;
+}
+
+body.card-expanded header {
+  display: none;
+}
+
+body.card-expanded .wrap {
+  height: 100vh;
+  padding: 0;
+}
+
+body.card-expanded .grid {
+  display: block;
+  height: 100vh;
+}
+
+body.card-expanded .splitter,
+body.card-expanded .card:not(.expanded-card) {
+  display: none;
+}
+
+body.card-expanded .expanded-card {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.card-expanded .expanded-card .card-header {
+  border-radius: 0;
+}
+
+body.card-expanded .expanded-card textarea,
+body.card-expanded .expanded-card .preview-frame {
+  min-height: 0;
+}
+
+@media (max-width: 1180px) {
+  body {
+    overflow: auto;
+  }
+
+  .card-header {
+    align-items: flex-start;
+  }
+
+  .card-actions,
+  .toolbar,
+  .footer,
+  .output-tools {
+    gap: 6px;
+  }
+
+  button.action,
+  button.secondary,
+  .toolbar button {
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .wrap {
+    height: auto;
+    min-height: calc(100vh - 78px);
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .input-card,
+  .output-card,
+  .preview-card {
+    margin: 0;
+  }
+
+  .splitter {
+    display: none;
+  }
+
+  .card {
+    min-height: 420px;
+  }
+
+  body.card-expanded .wrap,
+  body.card-expanded .grid {
+    height: 100vh;
+  }
+}
 </style>
 </head>
 
@@ -201,9 +427,16 @@ button.danger:hover { background: var(--neutral-hover); }
 </header>
 
 <div class="wrap">
-  <div class="grid">
-    <section class="card">
-      <h2>Entrada</h2>
+  <div id="gridLayout" class="grid">
+    <section id="inputCard" class="card input-card">
+      <div class="card-header">
+        <h2>Entrada</h2>
+        <div class="card-actions">
+          <button class="secondary" type="button" data-copy-target="input">Copiar conteúdo</button>
+          <button class="secondary" type="button" data-expand-target="inputCard" aria-pressed="false">Expandir</button>
+        </div>
+      </div>
+
       <div class="body">
         <label for="inTitle">Título padrão, usado apenas se o texto não tiver seções identificáveis</label>
         <input id="inTitle" placeholder="Ex.: Documento formatado" />
@@ -227,6 +460,7 @@ button.danger:hover { background: var(--neutral-hover); }
 
         <div class="footer">
           <button class="action" type="button" onclick="convert()">Converter</button>
+          <button class="action" type="button" onclick="loadExample()">Exemplo</button>
           <button class="action danger" type="button" onclick="clearAll()">Limpar</button>
         </div>
 
@@ -236,21 +470,62 @@ button.danger:hover { background: var(--neutral-hover); }
       </div>
     </section>
 
-    <section class="card">
-      <h2>Saída — Jira Wiki Markup</h2>
+    <div
+      id="splitterInputOutput"
+      class="splitter"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Redimensionar Entrada e Saída"
+      aria-valuemin="15"
+      aria-valuemax="70"
+      aria-valuenow="33"
+      tabindex="0"
+      data-splitter-index="0"
+    ></div>
+
+    <section id="outputCard" class="card output-card">
+      <div class="card-header">
+        <h2>Saída — Jira Wiki Markup</h2>
+        <div class="card-actions">
+          <button class="secondary" type="button" data-copy-target="output">Copiar conteúdo</button>
+          <button class="secondary" type="button" data-expand-target="outputCard" aria-pressed="false">Expandir</button>
+        </div>
+      </div>
+
       <div class="body">
         <div class="output-tools">
-          <button class="secondary" type="button" onclick="copyOutput()">Copiar saída</button>
+          <button class="secondary" type="button" onclick="renderFromOutput()">Renderizar pré-visualização</button>
+          <button class="secondary" type="button" onclick="undoRender()">Desfazer renderização</button>
         </div>
-        <textarea id="output" placeholder="O Wiki Markup será gerado aqui..."></textarea>
+        <textarea id="output" placeholder="O Wiki Markup será gerado aqui. Você pode editar e clicar em Renderizar pré-visualização..."></textarea>
         <div id="status" class="status"></div>
       </div>
     </section>
 
-    <section class="card">
-      <h2>Pré-visualização</h2>
+    <div
+      id="splitterOutputPreview"
+      class="splitter"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Redimensionar Saída e Pré-visualização"
+      aria-valuemin="15"
+      aria-valuemax="70"
+      aria-valuenow="67"
+      tabindex="0"
+      data-splitter-index="1"
+    ></div>
+
+    <section id="previewCard" class="card preview-card">
+      <div class="card-header">
+        <h2>Pré-visualização</h2>
+        <div class="card-actions">
+          <button class="secondary" type="button" data-copy-target="preview">Copiar HTML</button>
+          <button class="secondary" type="button" data-expand-target="previewCard" aria-pressed="false">Expandir</button>
+        </div>
+      </div>
+
       <div class="body">
-        <div id="preview" class="preview"></div>
+        <iframe id="previewFrame" class="preview-frame" title="Pré-visualização renderizada"></iframe>
       </div>
     </section>
   </div>
@@ -258,6 +533,11 @@ button.danger:hover { background: var(--neutral-hover); }
 
 <script>
 const PANEL_OPTIONS = "borderStyle=solid|borderColor=#0052cc|titleBGColor=#deebff";
+
+let columnPercents = [33.333, 33.333, 33.334];
+let activeSplitterIndex = null;
+let originalGeneratedWiki = "";
+let lastRenderedWiki = "";
 
 const STANDALONE_PANEL_TITLES = [
   "notas técnicas",
@@ -842,35 +1122,242 @@ function convert() {
   const body = document.getElementById("inBody").value;
   const sections = splitIntoSections(body, title);
   const wiki = buildWikiMarkup(sections);
+
+  originalGeneratedWiki = wiki;
+  lastRenderedWiki = wiki;
+
   document.getElementById("output").value = wiki;
-  document.getElementById("preview").innerHTML = renderPreview(wiki);
+  setPreviewHTML(wiki);
   setStatus(sections.length ? `${sections.length} painel(is) gerado(s).` : "Nenhum conteúdo informado.");
+}
+
+function renderFromOutput() {
+  const wiki = document.getElementById("output").value;
+
+  if (!wiki.trim()) {
+    setPreviewHTML("");
+    setStatus("Nada para renderizar.", "error");
+    return;
+  }
+
+  lastRenderedWiki = wiki;
+  setPreviewHTML(wiki);
+  setStatus("Pré-visualização renderizada a partir da saída atual.");
+}
+
+function undoRender() {
+  const output = document.getElementById("output");
+  const wikiAtual = output.value;
+
+  if (!wikiAtual.trim()) {
+    setPreviewRawWiki("");
+    setStatus("Não há conteúdo na saída para exibir sem renderização.", "error");
+    return;
+  }
+
+  lastRenderedWiki = wikiAtual;
+  setPreviewRawWiki(wikiAtual);
+  setStatus("Renderização desfeita. A pré-visualização agora mostra exatamente o Wiki Markup atual, sem transformar em painéis HTML.");
 }
 
 function clearAll() {
   document.getElementById("inTitle").value = "";
   document.getElementById("inBody").value = "";
   document.getElementById("output").value = "";
-  document.getElementById("preview").innerHTML = "";
   document.getElementById("fileInput").value = "";
+  originalGeneratedWiki = "";
+  lastRenderedWiki = "";
+  setPreviewHTML("");
   setStatus("");
+}
+
+function loadExample() {
+  document.getElementById("inTitle").value = "História de usuário - exemplo";
+  document.getElementById("inBody").value = `1. História de Usuário
+COMO analista de negócio
+QUERO converter documentos em Jira Wiki Markup
+PARA padronizar a documentação técnica
+
+Objetivo
+Transformar textos longos em painéis organizados para o Jira.
+
+Premissas
+- O usuário pode revisar o Wiki Markup antes da pré-visualização
+- A saída pode ser copiada para uso no Jira
+
+2. Regras de Negócio
+RF01 - O sistema deve identificar seções numeradas
+RN01 - Critérios de aceite devem virar tabela
+
+Critérios de Aceite
+CA01 - Deve gerar painéis Jira - Evidência esperada: painel visível na pré-visualização
+CA02 - Deve permitir edição da saída - Evidência esperada: botão Renderizar pré-visualização atualiza o painel
+
+| Coluna 1 | Coluna 2 | Coluna 3 |
+| --- | --- | --- |
+| valor A | valor B | valor C |`;
+  convert();
 }
 
 async function copyOutput() {
   const output = document.getElementById("output");
   const value = output.value;
   if (!value.trim()) {
-    setStatus("Nada para copiar.");
+    setStatus("Nada para copiar.", "error");
     return;
   }
-  try {
-    await navigator.clipboard.writeText(value);
-    setStatus("Saída copiada.");
-  } catch (error) {
-    output.select();
-    document.execCommand("copy");
-    setStatus("Saída copiada.");
+  await copyTextWithFeedback(value, document.querySelector('[data-copy-target="output"]'), "Saída copiada.");
+}
+
+async function copyInput() {
+  const title = document.getElementById("inTitle").value.trim();
+  const body = document.getElementById("inBody").value.trim();
+  const value = [title, body].filter(Boolean).join("\n\n");
+
+  if (!value.trim()) {
+    setStatus("Nada para copiar na entrada.", "error");
+    return;
   }
+
+  await copyTextWithFeedback(value, document.querySelector('[data-copy-target="input"]'), "Entrada copiada.");
+}
+
+async function copyPreviewHTML() {
+  try {
+    const frame = document.getElementById("previewFrame");
+    const doc = frame.contentDocument || frame.contentWindow?.document;
+    const html = doc?.documentElement?.outerHTML || "";
+
+    if (!html.trim() || !lastRenderedWiki.trim()) {
+      setStatus("Nada renderizado para copiar.", "error");
+      return;
+    }
+
+    await copyTextWithFeedback(html, document.querySelector('[data-copy-target="preview"]'), "HTML renderizado copiado.");
+  } catch (error) {
+    console.error(error);
+    setStatus("Não foi possível copiar o HTML renderizado.", "error");
+  }
+}
+
+async function copyTextWithFeedback(value, button, message) {
+  try {
+    await copyTextToClipboard(value);
+    if (button) {
+      const originalText = button.textContent;
+      button.textContent = "Copiado!";
+      button.classList.add("success");
+      window.setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove("success");
+      }, 1500);
+    }
+    setStatus(message || "Conteúdo copiado.");
+  } catch (error) {
+    console.error(error);
+    setStatus("Não foi possível copiar automaticamente.", "error");
+  }
+}
+
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const temporaryTextarea = document.createElement("textarea");
+  temporaryTextarea.value = text;
+  temporaryTextarea.setAttribute("readonly", "");
+  temporaryTextarea.style.position = "fixed";
+  temporaryTextarea.style.left = "-9999px";
+  document.body.appendChild(temporaryTextarea);
+  temporaryTextarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(temporaryTextarea);
+}
+
+function setPreviewHTML(wiki) {
+  const frame = document.getElementById("previewFrame");
+  frame.srcdoc = renderPreviewDocument(wiki || "");
+}
+
+function setPreviewRawWiki(wiki) {
+  const frame = document.getElementById("previewFrame");
+  frame.srcdoc = renderRawWikiDocument(wiki || "");
+}
+
+function renderRawWikiDocument(wiki) {
+  const content = wiki.trim()
+    ? `<textarea class="raw-wiki" readonly spellcheck="false">${escapeTextareaValue(wiki)}</textarea>`
+    : `<div class="empty">Não há Wiki Markup para exibir sem renderização.</div>`;
+
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+* { box-sizing: border-box; }
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+body {
+  padding: 14px;
+  background: #ffffff;
+  color: #111827;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.raw-wiki {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 28px);
+  min-height: 220px;
+  resize: none;
+  overflow: auto;
+  white-space: pre-wrap;
+  border: 1px solid #d6dbea;
+  border-radius: 12px;
+  outline: none;
+  background: #f9fafb;
+  color: #111827;
+  padding: 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.raw-wiki:focus {
+  border-color: #5b6ee1;
+  box-shadow: 0 0 0 3px rgba(91,110,225,0.12);
+}
+.empty {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #d6dbea;
+  border-radius: 14px;
+  color: #6b7280;
+  text-align: center;
+  padding: 24px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+</style>
+</head>
+<body>
+  ${content}
+</body>
+</html>`;
+}
+
+function escapeTextareaValue(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\u2028/g, "&#8232;")
+    .replace(/\u2029/g, "&#8233;");
 }
 
 function setStatus(message, type) {
@@ -1015,6 +1502,98 @@ function renderPreview(wiki) {
   `).join("");
 }
 
+function renderPreviewDocument(wiki) {
+  const content = wiki.trim()
+    ? renderPreview(wiki)
+    : `<div class="empty">A pré-visualização aparecerá aqui após converter ou renderizar a saída.</div>`;
+
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+:root {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --text-title: #1f2a44;
+  --text-default: #3a4563;
+  --surface-soft: #f9fafb;
+  --surface-highlight: #e9edff;
+  --border-light: #d6dbea;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 14px;
+  background: #ffffff;
+  color: var(--text-default);
+}
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pnl {
+  border: 2px solid #0052cc;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface-soft);
+}
+.pnl-title {
+  padding: 10px 12px;
+  font-weight: 800;
+  background: #deebff;
+  color: var(--text-title);
+}
+.pnl-body {
+  padding: 10px 12px;
+  color: var(--text-default);
+  font-size: 13px;
+}
+.pnl-body h3 {
+  margin: 10px 0 6px;
+  color: var(--text-title);
+  font-size: 14px;
+}
+.pnl-body p { margin: 0 0 8px; }
+.pnl-body ul, .pnl-body ol { margin: 4px 0 10px 20px; padding: 0; }
+.pnl-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 10px;
+  font-size: 12px;
+  background: #ffffff;
+}
+.pnl-body th, .pnl-body td {
+  border: 1px solid var(--border-light);
+  padding: 7px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+.pnl-body th {
+  background: var(--surface-highlight);
+  color: var(--text-title);
+}
+.empty {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--border-light);
+  border-radius: 14px;
+  color: #6b7280;
+  text-align: center;
+  padding: 24px;
+}
+</style>
+</head>
+<body>
+  <main class="preview">
+    ${content}
+  </main>
+</body>
+</html>`;
+}
+
 function renderWikiBody(body) {
   const lines = String(body || "").split("\n");
   let html = "";
@@ -1111,6 +1690,163 @@ function collectWikiTable(lines, startIndex) {
   html += "</tbody></table>";
   return { html, nextIndex: i };
 }
+
+function applyColumnLayout() {
+  const grid = document.getElementById("gridLayout");
+  grid.style.gridTemplateColumns = `minmax(240px, ${columnPercents[0]}fr) 10px minmax(240px, ${columnPercents[1]}fr) 10px minmax(240px, ${columnPercents[2]}fr)`;
+
+  const splitters = document.querySelectorAll(".splitter");
+  splitters[0]?.setAttribute("aria-valuenow", Math.round(columnPercents[0]));
+  splitters[1]?.setAttribute("aria-valuenow", Math.round(columnPercents[0] + columnPercents[1]));
+}
+
+function setSplitterPosition(splitterIndex, clientX) {
+  if (document.body.classList.contains("card-expanded")) return;
+  if (window.matchMedia("(max-width: 1180px)").matches) return;
+
+  const grid = document.getElementById("gridLayout");
+  const rect = grid.getBoundingClientRect();
+  const min = 15;
+  const total = 100;
+  const pointerPercent = Math.max(0, Math.min(total, ((clientX - rect.left) / rect.width) * total));
+
+  if (splitterIndex === 0) {
+    const pairTotal = columnPercents[0] + columnPercents[1];
+    const nextFirst = Math.max(min, Math.min(pairTotal - min, pointerPercent));
+    columnPercents[0] = nextFirst;
+    columnPercents[1] = pairTotal - nextFirst;
+  }
+
+  if (splitterIndex === 1) {
+    const pairTotal = columnPercents[1] + columnPercents[2];
+    const rawSecond = pointerPercent - columnPercents[0];
+    const nextSecond = Math.max(min, Math.min(pairTotal - min, rawSecond));
+    columnPercents[1] = nextSecond;
+    columnPercents[2] = pairTotal - nextSecond;
+  }
+
+  applyColumnLayout();
+}
+
+function startResize(event) {
+  if (window.matchMedia("(max-width: 1180px)").matches) return;
+
+  const splitter = event.currentTarget;
+  activeSplitterIndex = Number(splitter.dataset.splitterIndex);
+  document.body.classList.add("is-resizing");
+  splitter.classList.add("active");
+  splitter.setPointerCapture?.(event.pointerId);
+  setSplitterPosition(activeSplitterIndex, event.clientX);
+  event.preventDefault();
+}
+
+function moveResize(event) {
+  if (!document.body.classList.contains("is-resizing")) return;
+  if (activeSplitterIndex === null) return;
+  setSplitterPosition(activeSplitterIndex, event.clientX);
+}
+
+function stopResize(event) {
+  if (!document.body.classList.contains("is-resizing")) return;
+
+  document.body.classList.remove("is-resizing");
+  document.querySelectorAll(".splitter.active").forEach(item => item.classList.remove("active"));
+  event.currentTarget.releasePointerCapture?.(event.pointerId);
+  activeSplitterIndex = null;
+}
+
+function moveSplitterWithKeyboard(event) {
+  const splitterIndex = Number(event.currentTarget.dataset.splitterIndex);
+  const step = event.shiftKey ? 6 : 2;
+  const min = 15;
+
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+  event.preventDefault();
+
+  if (splitterIndex === 0) {
+    const pairTotal = columnPercents[0] + columnPercents[1];
+    if (event.key === "ArrowLeft") columnPercents[0] -= step;
+    if (event.key === "ArrowRight") columnPercents[0] += step;
+    if (event.key === "Home") columnPercents[0] = min;
+    if (event.key === "End") columnPercents[0] = pairTotal - min;
+    columnPercents[0] = Math.max(min, Math.min(pairTotal - min, columnPercents[0]));
+    columnPercents[1] = pairTotal - columnPercents[0];
+  }
+
+  if (splitterIndex === 1) {
+    const pairTotal = columnPercents[1] + columnPercents[2];
+    if (event.key === "ArrowLeft") columnPercents[1] -= step;
+    if (event.key === "ArrowRight") columnPercents[1] += step;
+    if (event.key === "Home") columnPercents[1] = min;
+    if (event.key === "End") columnPercents[1] = pairTotal - min;
+    columnPercents[1] = Math.max(min, Math.min(pairTotal - min, columnPercents[1]));
+    columnPercents[2] = pairTotal - columnPercents[1];
+  }
+
+  applyColumnLayout();
+}
+
+function setExpandedCard(cardId) {
+  const isAlreadyExpanded = document.getElementById(cardId)?.classList.contains("expanded-card");
+
+  document.body.classList.toggle("card-expanded", !isAlreadyExpanded);
+  document.querySelectorAll(".card").forEach(card => card.classList.remove("expanded-card"));
+  document.querySelectorAll("[data-expand-target]").forEach(button => {
+    button.textContent = "Expandir";
+    button.setAttribute("aria-pressed", "false");
+  });
+
+  if (!isAlreadyExpanded) {
+    const card = document.getElementById(cardId);
+    const button = document.querySelector(`[data-expand-target="${cardId}"]`);
+    card?.classList.add("expanded-card");
+    if (button) {
+      button.textContent = "Reduzir";
+      button.setAttribute("aria-pressed", "true");
+    }
+  }
+}
+
+function reduceExpandedCard() {
+  document.body.classList.remove("card-expanded");
+  document.querySelectorAll(".card").forEach(card => card.classList.remove("expanded-card"));
+  document.querySelectorAll("[data-expand-target]").forEach(button => {
+    button.textContent = "Expandir";
+    button.setAttribute("aria-pressed", "false");
+  });
+}
+
+function bindLayoutEvents() {
+  document.querySelectorAll(".splitter").forEach(splitter => {
+    splitter.addEventListener("pointerdown", startResize);
+    splitter.addEventListener("pointermove", moveResize);
+    splitter.addEventListener("pointerup", stopResize);
+    splitter.addEventListener("pointercancel", stopResize);
+    splitter.addEventListener("keydown", moveSplitterWithKeyboard);
+  });
+
+  document.querySelectorAll("[data-expand-target]").forEach(button => {
+    button.addEventListener("click", () => setExpandedCard(button.dataset.expandTarget));
+  });
+
+  document.querySelectorAll("[data-copy-target]").forEach(button => {
+    button.addEventListener("click", () => {
+      if (button.dataset.copyTarget === "input") copyInput();
+      if (button.dataset.copyTarget === "output") copyOutput();
+      if (button.dataset.copyTarget === "preview") copyPreviewHTML();
+    });
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && document.body.classList.contains("card-expanded")) {
+      reduceExpandedCard();
+    }
+  });
+}
+
+bindLayoutEvents();
+applyColumnLayout();
+setPreviewHTML("");
 </script>
 </body>
 </html>
