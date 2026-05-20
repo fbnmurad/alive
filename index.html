@@ -482,13 +482,18 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: background 0.18s, color 0.18s, border-color 0.18s;
+      transition: background 0.18s, color 0.18s, border-color 0.18s, opacity 0.18s;
     }
 
-    .plain-btn:hover {
+    .plain-btn:hover:not(:disabled) {
       background: var(--color-accent-soft);
       color: var(--color-accent);
       border-color: rgba(102, 0, 153, 0.18);
+    }
+
+    .plain-btn:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
     }
 
     .tool-select-wrap {
@@ -518,6 +523,8 @@
       min-height: 0;
       padding: 12px;
       display: flex;
+      align-items: stretch;
+      justify-content: center;
     }
 
     iframe {
@@ -528,6 +535,54 @@
       border-radius: 14px;
       background: #ffffff;
       box-shadow: var(--shadow-soft);
+    }
+
+    iframe.is-hidden {
+      display: none;
+    }
+
+    .workspace-empty {
+      flex: 1;
+      min-height: 0;
+      border: 1px dashed var(--color-border);
+      border-radius: 16px;
+      background: var(--color-bg-elevated);
+      color: var(--color-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 28px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .workspace-empty-card {
+      max-width: 460px;
+    }
+
+    .workspace-empty-icon {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 14px;
+      border-radius: 18px;
+      background: var(--color-accent-soft);
+      color: var(--color-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .workspace-empty strong {
+      display: block;
+      color: var(--color-title);
+      font-size: 18px;
+      margin-bottom: 7px;
+    }
+
+    .workspace-empty p {
+      font-size: 13px;
+      line-height: 1.5;
     }
 
     .empty-state {
@@ -580,7 +635,8 @@
       padding: 0;
     }
 
-    body.workspace-expanded iframe {
+    body.workspace-expanded iframe,
+    body.workspace-expanded .workspace-empty {
       border: 0;
       border-radius: 0;
       box-shadow: none;
@@ -704,7 +760,7 @@
     <aside class="sidebar" aria-label="Menu de ferramentas">
       <div class="sidebar-head">
         <h2>Ferramentas</h2>
-        <p>Use a busca ou navegue por categoria. A ferramenta abre no painel ao lado.</p>
+        <p>Use a busca ou navegue por categoria. Clique em uma opção para abrir no painel ao lado.</p>
       </div>
 
       <div class="search-area">
@@ -724,10 +780,10 @@
     <section class="workspace" aria-label="Área de trabalho da ferramenta">
       <div class="workspace-header">
         <div class="current-tool">
-          <span id="currentToolIcon" class="current-tool-icon">📅</span>
+          <span id="currentToolIcon" class="current-tool-icon">⌁</span>
           <div class="current-tool-text">
-            <div id="currentToolTitle" class="current-tool-title">Calcular Datas</div>
-            <div id="currentToolSubtitle" class="current-tool-subtitle">Cálculo e apoio para datas, ciclos e períodos.</div>
+            <div id="currentToolTitle" class="current-tool-title">Nenhuma ferramenta selecionada</div>
+            <div id="currentToolSubtitle" class="current-tool-subtitle">Abra uma categoria no menu e escolha uma ferramenta.</div>
           </div>
         </div>
 
@@ -736,13 +792,20 @@
             Ferramenta
             <select id="toolSelect" class="tool-select" aria-label="Selecionar ferramenta"></select>
           </label>
-          <button id="reloadToolBtn" class="plain-btn" type="button">↻ Recarregar</button>
+          <button id="reloadToolBtn" class="plain-btn" type="button" disabled>↻ Recarregar</button>
           <button id="expandWorkspaceBtn" class="plain-btn" type="button" aria-pressed="false">⛶ Expandir</button>
         </div>
       </div>
 
       <div class="frame-wrap">
-        <iframe id="toolFrame" name="conteudo" title="Ferramenta em exibição"></iframe>
+        <div id="workspaceEmpty" class="workspace-empty">
+          <div class="workspace-empty-card">
+            <div class="workspace-empty-icon">⚙️</div>
+            <strong>Selecione uma ferramenta</strong>
+            <p>Os menus começam fechados para deixar a tela limpa. Abra uma categoria à esquerda e clique em uma opção para carregar aqui.</p>
+          </div>
+        </div>
+        <iframe id="toolFrame" class="is-hidden" name="conteudo" title="Ferramenta em exibição"></iframe>
       </div>
     </section>
   </main>
@@ -876,9 +939,10 @@
     const themeToggle = document.getElementById("themeToggle");
     const themeIcon = document.getElementById("themeIcon");
     const themeLabel = document.getElementById("themeLabel");
+    const workspaceEmpty = document.getElementById("workspaceEmpty");
 
-    let activeToolId = tools[0]?.id || "";
-    const collapsedCategories = new Set();
+    let activeToolId = "";
+    const collapsedCategories = new Set(tools.map(tool => tool.category));
 
     function normalizeSearch(value) {
       return String(value || "")
@@ -898,7 +962,7 @@
     }
 
     function getToolById(id) {
-      return tools.find(tool => tool.id === id) || tools[0];
+      return tools.find(tool => tool.id === id) || null;
     }
 
     function getFilteredTools() {
@@ -921,6 +985,7 @@
       const filtered = getFilteredTools();
       const groups = groupByCategory(filtered);
       const categories = Object.keys(groups).sort((a, b) => a.localeCompare(b, "pt-BR", { sensitivity: "base" }));
+      const hasSearch = Boolean(toolSearch.value.trim());
 
       toolCount.textContent = `${filtered.length} ferramenta(s)`;
 
@@ -937,7 +1002,7 @@
       }
 
       sidebarTools.innerHTML = categories.map(category => {
-        const isCollapsed = collapsedCategories.has(category);
+        const isCollapsed = !hasSearch && collapsedCategories.has(category);
         const toolsHtml = groups[category].map(tool => `
           <button class="tool-row ${tool.id === activeToolId ? "active" : ""}" type="button" data-tool-id="${tool.id}" title="${escapeHtml(tool.label)}">
             <span class="tool-icon" aria-hidden="true">${escapeHtml(tool.icon)}</span>
@@ -966,9 +1031,10 @@
     }
 
     function renderSelect() {
-      toolSelect.innerHTML = tools.map(tool => `
-        <option value="${tool.id}">${escapeHtml(tool.label)}</option>
-      `).join("");
+      toolSelect.innerHTML = `
+        <option value="">Selecione...</option>
+        ${tools.map(tool => `<option value="${tool.id}">${escapeHtml(tool.label)}</option>`).join("")}
+      `;
       toolSelect.value = activeToolId;
     }
 
@@ -978,6 +1044,10 @@
 
       activeToolId = tool.id;
       toolFrame.src = tool.url;
+      toolFrame.classList.remove("is-hidden");
+      workspaceEmpty.style.display = "none";
+      reloadToolBtn.disabled = false;
+
       toolSelect.value = tool.id;
       currentToolIcon.textContent = tool.icon;
       currentToolTitle.textContent = tool.label;
@@ -1054,7 +1124,9 @@
       toolSearch.addEventListener("input", renderTools);
 
       toolSelect.addEventListener("change", event => {
-        openTool(event.target.value, { closeSidebarOnMobile: true });
+        if (event.target.value) {
+          openTool(event.target.value, { closeSidebarOnMobile: true });
+        }
       });
 
       sidebarTools.addEventListener("click", event => {
@@ -1102,7 +1174,6 @@
       renderTools();
       bindEvents();
       initTheme();
-      openTool(activeToolId);
     }
 
     init();
