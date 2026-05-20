@@ -782,8 +782,8 @@
         <div class="current-tool">
           <span id="currentToolIcon" class="current-tool-icon">⌁</span>
           <div class="current-tool-text">
-            <div id="currentToolTitle" class="current-tool-title">Nenhuma ferramenta selecionada</div>
-            <div id="currentToolSubtitle" class="current-tool-subtitle">Abra uma categoria no menu e escolha uma ferramenta.</div>
+            <div id="currentToolTitle" class="current-tool-title">Carregando...</div>
+            <div id="currentToolSubtitle" class="current-tool-subtitle">Abrindo ferramenta inicial.</div>
           </div>
         </div>
 
@@ -800,9 +800,9 @@
       <div class="frame-wrap">
         <div id="workspaceEmpty" class="workspace-empty">
           <div class="workspace-empty-card">
-            <div class="workspace-empty-icon">⚙️</div>
-            <strong>Selecione uma ferramenta</strong>
-            <p>Os menus começam fechados para deixar a tela limpa. Abra uma categoria à esquerda e clique em uma opção para carregar aqui.</p>
+            <div class="workspace-empty-icon">🧱</div>
+            <strong>Carregando Tetris</strong>
+            <p>O jogo será aberto automaticamente aqui. Clique em Iniciar dentro do jogo para começar.</p>
           </div>
         </div>
         <iframe id="toolFrame" class="is-hidden" name="conteudo" title="Ferramenta em exibição"></iframe>
@@ -811,6 +811,8 @@
   </main>
 
   <script>
+    const INITIAL_TOOL_ID = "tetris";
+
     const tools = [
       {
         id: "calcular-datas",
@@ -915,6 +917,14 @@
         category: "Renderizadores",
         icon: "🧩",
         url: "https://fbnmurad.github.io/alive/mermaid-local.html"
+      },
+      {
+        id: "tetris",
+        label: "Tetris",
+        description: "Jogo de blocos com pontuação, níveis, próxima peça e reserva.",
+        category: "Jogos",
+        icon: "🧱",
+        url: "tetris.html"
       }
     ].sort((a, b) => {
       const byCategory = a.category.localeCompare(b.category, "pt-BR", { sensitivity: "base" });
@@ -941,7 +951,7 @@
     const themeLabel = document.getElementById("themeLabel");
     const workspaceEmpty = document.getElementById("workspaceEmpty");
 
-    let activeToolId = "";
+    let activeToolId = INITIAL_TOOL_ID;
     const collapsedCategories = new Set(tools.map(tool => tool.category));
 
     function normalizeSearch(value) {
@@ -1174,6 +1184,7 @@
       renderTools();
       bindEvents();
       initTheme();
+      openTool(INITIAL_TOOL_ID);
     }
 
     init();
