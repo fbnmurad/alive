@@ -6,84 +6,58 @@
   <title>Ferramentas BRM</title>
   <style>
     :root {
-      /* === Paleta Vivo === */
       --vivo-roxo: #660099;
       --vivo-roxo-escuro: #3d005c;
       --vivo-roxo-medio: #8a00e6;
       --vivo-roxo-claro: #f3e5f9;
       --vivo-azul: #006cff;
-      --vivo-azul-claro: #e6f0ff;
-      --vivo-magenta: #e6007e;
       --branco: #ffffff;
       --fundo: #f3f4f7;
       --card: #ffffff;
       --borda: #dfe3e8;
-      --borda-campo: #d8dde3;
       --texto: #56606b;
-      --texto-escuro: #3f4650;
-      --texto-suave: #8a93a0;
-      --erro: #a94442;
-      --sucesso: #14855f;
-      --disabled: #e9edf2;
-      --card-border: #e1e4e8;
-      --section-gradient-start: #e8edf2;
-      --section-gradient-end: #eef1f5;
-      --placeholder: #a0a7b0;
-      --texto-disabled: #8b94a1;
-      --shadow-main: 0 8px 24px rgba(61, 0, 92, 0.28);
-      --shadow-card: 0 8px 24px rgba(35, 35, 35, 0.20);
-      --hover-white: rgba(255, 255, 255, 0.16);
-      --outline-white: rgba(255, 255, 255, 0.45);
-      --focus-purple: rgba(102, 0, 153, 0.12);
-      --shadow-focus-purple: 0 0 0 4px rgba(102, 0, 153, 0.08);
+      --texto-escuro: #2f3744;
+      --texto-suave: #788391;
+      --shadow-main: 0 8px 24px rgba(61, 0, 92, 0.24);
+      --shadow-soft: 0 8px 22px rgba(31, 42, 68, 0.10);
       --main-gradient: linear-gradient(90deg, #3d005c, #660099, #8a00e6, #006cff);
-      --card-gradient: linear-gradient(135deg, #660099, #8a00e6 62%, #006cff);
-      --bg-gradient-start: var(--section-gradient-start);
-      --bg-gradient-end: var(--section-gradient-end);
-      --primary: var(--vivo-roxo);
-      --primary-hover: var(--vivo-roxo-medio);
-      --primary-active: var(--vivo-roxo-escuro);
-      --text-title: var(--texto-escuro);
-      --text-default: var(--texto);
-      --text-muted: var(--texto-suave);
       --surface: var(--card);
-      --surface-soft: #eef1f5;
-      --surface-muted: var(--disabled);
-      --surface-highlight: var(--vivo-roxo-claro);
-      --border-light: var(--borda);
+      --surface-soft: #f7f8fb;
+      --surface-muted: #eef1f5;
+      --surface-hover: #f3eafd;
       --color-bg: var(--fundo);
       --color-bg-elevated: var(--card);
       --color-text: var(--texto);
+      --color-title: var(--texto-escuro);
+      --color-muted: var(--texto-suave);
       --color-accent: var(--vivo-roxo);
-      --color-accent-hover: var(--vivo-roxo-medio);
-      --color-accent-active: var(--vivo-roxo-escuro);
       --color-accent-soft: var(--vivo-roxo-claro);
-      --color-header: var(--main-gradient);
       --color-border: var(--borda);
-      --shadow-soft: var(--shadow-card);
+      --focus-ring: 0 0 0 4px rgba(102, 0, 153, 0.10);
+      --sidebar-width: 310px;
+      --header-height: 56px;
     }
 
     body[data-theme="dark"] {
-      --bg-gradient-start: var(--vivo-roxo-escuro);
-      --bg-gradient-end: var(--vivo-roxo);
-      --text-title: var(--branco);
-      --text-default: var(--branco);
-      --text-muted: var(--vivo-roxo-claro);
-      --surface: var(--vivo-roxo-escuro);
-      --surface-soft: rgba(255, 255, 255, 0.16);
-      --surface-muted: rgba(255, 255, 255, 0.10);
-      --surface-highlight: rgba(255, 255, 255, 0.16);
-      --border-light: rgba(255, 255, 255, 0.26);
-      --color-bg: var(--vivo-roxo-escuro);
-      --color-bg-elevated: var(--vivo-roxo-escuro);
-      --color-text: var(--branco);
-      --color-accent: var(--vivo-roxo-medio);
-      --color-accent-hover: var(--vivo-azul);
-      --color-accent-active: var(--vivo-roxo);
-      --color-accent-soft: rgba(255, 255, 255, 0.16);
-      --color-header: var(--main-gradient);
-      --color-border: rgba(255, 255, 255, 0.26);
-      --shadow-soft: 0 8px 28px rgba(61, 0, 92, 0.28);
+      --fundo: #1f102b;
+      --card: #29143a;
+      --borda: rgba(255, 255, 255, 0.18);
+      --texto: rgba(255, 255, 255, 0.84);
+      --texto-escuro: #ffffff;
+      --texto-suave: rgba(255, 255, 255, 0.62);
+      --surface: rgba(255, 255, 255, 0.08);
+      --surface-soft: rgba(255, 255, 255, 0.10);
+      --surface-muted: rgba(255, 255, 255, 0.12);
+      --surface-hover: rgba(255, 255, 255, 0.15);
+      --color-bg: #1f102b;
+      --color-bg-elevated: #29143a;
+      --color-text: rgba(255, 255, 255, 0.84);
+      --color-title: #ffffff;
+      --color-muted: rgba(255, 255, 255, 0.62);
+      --color-accent: #d9a7ff;
+      --color-accent-soft: rgba(255, 255, 255, 0.14);
+      --color-border: rgba(255, 255, 255, 0.18);
+      --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.28);
     }
 
     * {
@@ -92,548 +66,617 @@
       padding: 0;
     }
 
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
     body {
       min-height: 100vh;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       color: var(--color-text);
-      background: linear-gradient(120deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      background: var(--color-bg);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
     header {
-      height: 56px;
-      background: var(--color-header);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+      height: var(--header-height);
+      background: var(--main-gradient);
+      color: var(--branco);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
+      gap: 12px;
+      padding: 0 14px;
       box-shadow: var(--shadow-main);
-      z-index: 10;
+      z-index: 30;
+      flex-shrink: 0;
     }
 
     .app-title {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--branco);
+      min-width: 0;
+      font-size: 17px;
+      font-weight: 800;
+      white-space: nowrap;
     }
 
-    .app-title span {
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--branco);
-      opacity: 0.86;
+    .app-title small {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: 0.82;
     }
 
     .header-actions {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .icon-btn,
-    .secondary-btn,
-    .primary-btn {
-      border: 1px solid var(--outline-white);
+    button {
+      font-family: inherit;
+    }
+
+    .header-btn,
+    .icon-btn {
+      border: 1px solid rgba(255, 255, 255, 0.42);
       background: transparent;
+      color: var(--branco);
       border-radius: 999px;
       padding: 7px 12px;
       font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
+      font-weight: 800;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      color: var(--branco);
-      transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s, color 0.2s;
+      gap: 7px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
     }
 
-    .icon-btn:hover,
-    .secondary-btn:hover,
-    .primary-btn:hover {
-      background-color: var(--hover-white);
+    .header-btn:hover,
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
       box-shadow: var(--shadow-main);
     }
 
-    .icon-btn:active,
-    .secondary-btn:active,
-    .primary-btn:active {
+    .header-btn:active,
+    .icon-btn:active {
       transform: scale(0.97);
     }
 
-    button:focus-visible,
-    select:focus-visible,
-    .tool-card:focus-visible {
-      outline: 2px solid var(--color-accent);
-      outline-offset: 3px;
-      box-shadow: var(--shadow-focus-purple);
-    }
-
-    .app-shell {
+    .app-layout {
       flex: 1;
       min-height: 0;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .cards-panel,
-    .compact-toolbar,
-    .content-panel {
-      background-color: var(--color-bg-elevated);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
-      box-shadow: var(--shadow-soft);
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
       overflow: hidden;
     }
 
-    body[data-theme="dark"] .cards-panel,
-    body[data-theme="dark"] .compact-toolbar,
-    body[data-theme="dark"] .content-panel {
-      border-color: var(--color-border);
-    }
-
-    .cards-panel {
-      flex: 1;
-      min-height: 0;
+    .sidebar {
+      background: var(--color-bg-elevated);
+      border-right: 1px solid var(--color-border);
+      box-shadow: var(--shadow-soft);
       display: flex;
       flex-direction: column;
-      transition: max-height 0.32s ease, opacity 0.2s ease, transform 0.25s ease, margin 0.25s ease;
+      min-width: 0;
+      min-height: 0;
+      z-index: 20;
     }
 
-    body:not(.cards-collapsed) .cards-panel {
-      max-height: none;
-    }
-
-    body.cards-collapsed .cards-panel {
-      max-height: 0;
-      opacity: 0;
-      transform: translateY(-8px);
-      pointer-events: none;
-      margin: 0;
-      border-width: 0;
-      flex: 0 0 auto;
-    }
-
-    .cards-header {
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      background: linear-gradient(90deg, var(--section-gradient-start), var(--section-gradient-end));
+    .sidebar-head {
+      padding: 14px;
       border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
     }
 
-    body[data-theme="dark"] .cards-header {
-      background: rgba(255, 255, 255, 0.16);
+    .sidebar-head h2 {
+      color: var(--color-title);
+      font-size: 15px;
+      margin-bottom: 4px;
     }
 
-    .cards-header h2 {
-      font-size: 16px;
-      color: var(--text-title);
-      margin-bottom: 3px;
-    }
-
-    .cards-header p {
+    .sidebar-head p {
+      color: var(--color-muted);
       font-size: 12px;
-      color: var(--text-muted);
       line-height: 1.35;
     }
 
-    .cards-header-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+    .search-area {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--color-border);
+      flex-shrink: 0;
     }
 
-    .cards-header-actions .secondary-btn {
-      background: var(--color-accent-soft);
-      color: var(--color-accent);
-      border-color: var(--border-light);
+    .search-wrap {
+      position: relative;
+      display: block;
     }
 
-    .cards-header-actions .secondary-btn:hover {
-      color: var(--branco);
-      background: var(--main-gradient);
+    .search-wrap span {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-muted);
+      pointer-events: none;
+      font-size: 14px;
     }
 
-    .cards-scroll {
+    .search-input {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      background: var(--surface-soft);
+      color: var(--color-title);
+      padding: 11px 12px 11px 36px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: var(--color-muted);
+    }
+
+    .search-input:focus-visible,
+    .tool-row:focus-visible,
+    .category-toggle:focus-visible,
+    .header-btn:focus-visible,
+    .icon-btn:focus-visible,
+    .plain-btn:focus-visible,
+    .tool-select:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+      box-shadow: var(--focus-ring);
+    }
+
+    .sidebar-tools {
       flex: 1;
       min-height: 0;
       overflow: auto;
-      padding: 18px;
+      padding: 8px;
     }
 
-    .tool-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
-      gap: 16px;
-      align-content: start;
+    .category {
+      margin-bottom: 6px;
     }
 
-    .tool-card {
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      background: var(--surface);
-      min-height: 210px;
-      box-shadow: 0 7px 18px rgba(31, 42, 68, 0.12);
-      overflow: hidden;
+    .category-toggle {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--color-title);
+      border-radius: 10px;
+      padding: 9px 8px;
       cursor: pointer;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 900;
       text-align: left;
-      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
     }
 
-    .tool-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 30px rgba(61, 0, 92, 0.24);
-      border-color: rgba(102, 0, 153, 0.32);
+    .category-toggle:hover {
+      background: var(--surface-hover);
     }
 
-    .tool-card.active {
-      border-color: var(--vivo-roxo);
-      box-shadow: 0 12px 34px rgba(102, 0, 153, 0.26);
-    }
-
-    .tool-card-top {
-      height: 72px;
-      background: var(--card-gradient);
+    .category-toggle-left {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .category-caret {
+      color: var(--color-muted);
+      font-size: 11px;
+      width: 14px;
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      position: relative;
+      transition: transform 0.18s ease;
     }
 
-    .tool-card-top::before,
-    .tool-card-top::after {
-      content: "";
-      width: 7px;
-      height: 7px;
-      border: 2px solid rgba(255,255,255,0.48);
-      border-radius: 50%;
-      position: absolute;
-      right: 12px;
+    .category.collapsed .category-caret {
+      transform: rotate(-90deg);
     }
 
-    .tool-card-top::before { top: 12px; }
-    .tool-card-top::after { top: 31px; }
+    .category-count {
+      color: var(--color-muted);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .tool-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 0 4px;
+    }
+
+    .category.collapsed .tool-list {
+      display: none;
+    }
+
+    .tool-row {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--color-text);
+      border-radius: 11px;
+      padding: 8px 8px 8px 30px;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 8px;
+      align-items: center;
+      text-align: left;
+      transition: background 0.16s, border-color 0.16s, color 0.16s;
+    }
+
+    .tool-row:hover {
+      background: var(--surface-hover);
+    }
+
+    .tool-row.active {
+      background: var(--color-accent-soft);
+      border-color: rgba(102, 0, 153, 0.18);
+      color: var(--color-accent);
+    }
 
     .tool-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #ffffff, #f3e5f9);
-      border: 3px solid rgba(255, 255, 255, 0.86);
-      box-shadow: 0 8px 18px rgba(61, 0, 92, 0.24);
-      transform: translateY(22px);
-      display: flex;
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: var(--surface-muted);
+      color: var(--color-accent);
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
+      font-size: 15px;
+      font-weight: 900;
+      flex-shrink: 0;
     }
 
-    .tool-card-body {
-      padding: 32px 14px 14px;
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .tool-card-title {
-      font-size: 14px;
-      font-weight: 800;
-      color: var(--text-title);
-      line-height: 1.25;
-      min-height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .tool-card-description {
-      margin-top: 6px;
-      color: var(--text-muted);
-      font-size: 12px;
-      line-height: 1.35;
-      min-height: 34px;
-    }
-
-    .tool-card-tag {
-      margin-top: 8px;
-      font-size: 11px;
+    .tool-row.active .tool-icon {
+      background: var(--branco);
       color: var(--vivo-roxo);
-      background: var(--vivo-roxo-claro);
-      border: 1px solid rgba(102, 0, 153, 0.12);
-      border-radius: 999px;
-      padding: 3px 9px;
-      font-weight: 700;
     }
 
-    .open-card-btn {
-      margin-top: auto;
-      border: none;
-      background: var(--main-gradient);
+    body[data-theme="dark"] .tool-row.active .tool-icon {
+      background: rgba(255, 255, 255, 0.16);
       color: var(--branco);
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 12px;
+    }
+
+    .tool-text {
+      min-width: 0;
+    }
+
+    .tool-name {
+      display: block;
+      color: inherit;
+      font-size: 13px;
       font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 5px 13px rgba(102, 0, 153, 0.20);
-      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    .open-card-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 18px rgba(102, 0, 153, 0.28);
+    .tool-description {
+      display: block;
+      color: var(--color-muted);
+      font-size: 11px;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-top: 2px;
     }
 
-    .compact-toolbar {
+    .sidebar-footer {
+      padding: 10px 14px;
+      border-top: 1px solid var(--color-border);
+      color: var(--color-muted);
+      font-size: 11px;
+      line-height: 1.35;
+      flex-shrink: 0;
+    }
+
+    .workspace {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
       min-height: 0;
-      padding: 10px 12px;
-      display: none;
+      background: var(--color-bg);
+    }
+
+    .workspace-header {
+      height: 52px;
+      min-height: 52px;
+      padding: 0 14px;
+      background: var(--color-bg-elevated);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      box-shadow: 0 2px 10px rgba(31, 42, 68, 0.05);
+      z-index: 10;
     }
 
-    body.cards-collapsed .compact-toolbar {
-      display: flex;
-    }
-
-    .compact-left,
-    .compact-right {
+    .current-tool {
       display: flex;
       align-items: center;
       gap: 10px;
       min-width: 0;
     }
 
-    .compact-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-title);
-      font-size: 14px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .compact-title .mini-icon {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: var(--main-gradient);
+    .current-tool-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: var(--color-accent-soft);
+      color: var(--color-accent);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      color: var(--branco);
       font-size: 16px;
+      font-weight: 900;
       flex-shrink: 0;
     }
 
-    .tool-select-wrap {
+    .current-tool-text {
+      min-width: 0;
+    }
+
+    .current-tool-title {
+      color: var(--color-title);
+      font-size: 14px;
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+
+    .current-tool-subtitle {
+      color: var(--color-muted);
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.25;
+      margin-top: 2px;
+    }
+
+    .workspace-actions {
       display: flex;
       align-items: center;
-      gap: 7px;
-      color: var(--text-muted);
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .plain-btn {
+      border: 1px solid var(--color-border);
+      background: var(--surface-soft);
+      color: var(--color-title);
+      border-radius: 999px;
+      padding: 8px 12px;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+    }
+
+    .plain-btn:hover {
+      background: var(--color-accent-soft);
+      color: var(--color-accent);
+      border-color: rgba(102, 0, 153, 0.18);
+    }
+
+    .tool-select-wrap {
+      display: none;
+      align-items: center;
+      gap: 7px;
+      color: var(--color-muted);
+      font-size: 12px;
+      font-weight: 800;
     }
 
     .tool-select {
       appearance: none;
-      min-width: 260px;
-      max-width: min(42vw, 420px);
+      min-width: 220px;
       border-radius: 999px;
-      border: 1px solid var(--borda-campo);
-      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23660099' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 13px center;
-      color: var(--text-title);
-      padding: 9px 38px 9px 13px;
-      font-size: 13px;
-      font-weight: 700;
+      border: 1px solid var(--color-border);
+      background: var(--surface-soft);
+      color: var(--color-title);
+      padding: 8px 34px 8px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      outline: none;
     }
 
-    body[data-theme="dark"] .tool-select {
-      background-color: rgba(255, 255, 255, 0.12);
-      color: var(--branco);
-      border-color: rgba(255, 255, 255, 0.26);
-    }
-
-    .compact-right .secondary-btn {
-      border-color: var(--border-light);
-      background: var(--color-accent-soft);
-      color: var(--color-accent);
-    }
-
-    .compact-right .secondary-btn:hover {
-      color: var(--branco);
-      background: var(--main-gradient);
-    }
-
-    .content-panel {
+    .frame-wrap {
       flex: 1;
       min-height: 0;
-      display: none;
-      flex-direction: column;
-    }
-
-    body.cards-collapsed .content-panel {
+      padding: 12px;
       display: flex;
-    }
-
-    .content-header {
-      min-height: 42px;
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--color-border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      font-size: 13px;
-      background: linear-gradient(90deg, var(--section-gradient-start), var(--section-gradient-end));
-    }
-
-    body[data-theme="dark"] .content-header {
-      background: rgba(255, 255, 255, 0.16);
-    }
-
-    .content-header-title {
-      font-weight: 800;
-      color: var(--text-title);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .content-header-title span:last-child {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .content-header-hint {
-      color: var(--texto-suave);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    body[data-theme="dark"] .content-header-hint {
-      color: var(--vivo-roxo-claro);
     }
 
     iframe {
       flex: 1;
-      border: none;
       width: 100%;
-      background-color: var(--color-bg);
+      min-height: 0;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: var(--shadow-soft);
     }
 
-    @media (max-width: 900px) {
-      body {
-        overflow: auto;
-      }
+    .empty-state {
+      flex: 1;
+      border: 1px dashed var(--color-border);
+      border-radius: 14px;
+      background: var(--color-bg-elevated);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--color-muted);
+      padding: 24px;
+    }
 
-      .app-shell {
-        min-height: calc(100vh - 56px);
-      }
+    .empty-state strong {
+      display: block;
+      color: var(--color-title);
+      margin-bottom: 4px;
+    }
 
-      .cards-panel {
-        max-height: none;
-      }
+    body.sidebar-collapsed {
+      --sidebar-width: 0px;
+    }
 
-      body.cards-collapsed .cards-panel {
-        max-height: 0;
-      }
+    body.sidebar-collapsed .sidebar {
+      overflow: hidden;
+      border-right-width: 0;
+      box-shadow: none;
+    }
 
-      .tool-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      }
+    body.sidebar-collapsed .sidebar > * {
+      display: none;
+    }
 
-      .compact-toolbar {
-        align-items: stretch;
-        flex-direction: column;
-      }
+    body.workspace-expanded header,
+    body.workspace-expanded .sidebar {
+      display: none !important;
+    }
 
-      .compact-left,
-      .compact-right {
-        width: 100%;
-        justify-content: space-between;
+    body.workspace-expanded .app-layout {
+      grid-template-columns: 1fr;
+      height: 100vh;
+    }
+
+    body.workspace-expanded .workspace {
+      height: 100vh;
+    }
+
+    body.workspace-expanded .frame-wrap {
+      padding: 0;
+    }
+
+    body.workspace-expanded iframe {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    @media (max-width: 980px) {
+      :root {
+        --sidebar-width: 290px;
       }
 
       .tool-select-wrap {
-        flex: 1;
+        display: flex;
+      }
+
+      .app-layout {
+        position: relative;
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: var(--header-height);
+        left: 0;
+        bottom: 0;
+        width: min(86vw, 330px);
+        transform: translateX(-105%);
+        transition: transform 0.22s ease;
+      }
+
+      body.sidebar-open .sidebar {
+        transform: translateX(0);
+      }
+
+      body.sidebar-open::after {
+        content: "";
+        position: fixed;
+        inset: var(--header-height) 0 0 0;
+        background: rgba(0, 0, 0, 0.34);
+        z-index: 15;
+      }
+
+      body.sidebar-open .sidebar {
+        z-index: 25;
+      }
+
+      body.sidebar-collapsed {
+        --sidebar-width: 290px;
+      }
+
+      body.sidebar-collapsed .sidebar > * {
+        display: flex;
+      }
+
+      body.sidebar-collapsed .sidebar {
+        border-right: 1px solid var(--color-border);
+      }
+    }
+
+    @media (max-width: 620px) {
+      header {
+        height: auto;
+        min-height: var(--header-height);
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 10px;
+      }
+
+      .app-title small {
+        display: none;
+      }
+
+      .header-actions,
+      .workspace-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .workspace-header {
+        height: auto;
+        min-height: 52px;
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 10px;
+      }
+
+      .tool-select-wrap {
+        width: 100%;
       }
 
       .tool-select {
         width: 100%;
-        max-width: none;
         min-width: 0;
       }
 
-      .content-panel {
-        min-height: 62vh;
-      }
-    }
-
-    @media (max-width: 600px) {
-      header {
-        padding: 0 10px;
-      }
-
-      .app-title {
-        font-size: 16px;
-      }
-
-      .app-title span {
-        display: none;
-      }
-
-      .app-shell {
+      .frame-wrap {
         padding: 8px;
-        gap: 8px;
-      }
-
-      .cards-header,
-      .content-header {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .cards-header-actions {
-        justify-content: flex-start;
-      }
-
-      .tool-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .compact-left,
-      .compact-right {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .compact-title {
-        white-space: normal;
-      }
-
-      .content-header-hint {
-        white-space: normal;
       }
     }
   </style>
@@ -641,10 +684,15 @@
 <body data-theme="light">
   <header>
     <div class="app-title">
-      ⚙️ Ferramentas
-      <span>Utilitários BRM</span>
+      <span>⚙️ Ferramentas</span>
+      <small>Utilitários BRM</small>
     </div>
+
     <div class="header-actions">
+      <button id="sidebarToggle" class="header-btn" type="button" aria-label="Abrir ou fechar menu lateral">
+        <span id="sidebarToggleIcon">☰</span>
+        <span id="sidebarToggleLabel">Menu</span>
+      </button>
       <button id="themeToggle" class="icon-btn" type="button" aria-label="Alternar tema claro/escuro">
         <span id="themeIcon">🌙</span>
         <span id="themeLabel">Modo escuro</span>
@@ -652,49 +700,50 @@
     </div>
   </header>
 
-  <main class="app-shell">
-    <section class="cards-panel" aria-label="Cards de ferramentas">
-      <div class="cards-header">
-        <div>
-          <h2>Ferramentas úteis</h2>
-          <p>Menu de ferramentas carregado. Escolha uma ferramenta para recolher os cards e abrir a área de trabalho.</p>
-        </div>
-        <div class="cards-header-actions">
-          <button id="collapseCardsBtn" class="secondary-btn" type="button">Recolher cards</button>
-        </div>
+  <main class="app-layout">
+    <aside class="sidebar" aria-label="Menu de ferramentas">
+      <div class="sidebar-head">
+        <h2>Ferramentas</h2>
+        <p>Use a busca ou navegue por categoria. A ferramenta abre no painel ao lado.</p>
       </div>
-      <div class="cards-scroll">
-        <div id="toolGrid" class="tool-grid"></div>
-      </div>
-    </section>
 
-    <section class="compact-toolbar" aria-label="Menu compacto de ferramentas">
-      <div class="compact-left">
-        <div class="compact-title">
-          <span id="compactIcon" class="mini-icon">📅</span>
-          <span id="compactCurrentTool">Calcular Datas</span>
-        </div>
-      </div>
-      <div class="compact-right">
-        <label class="tool-select-wrap" for="toolSelect">
-          Ferramenta
-          <select id="toolSelect" class="tool-select" aria-label="Selecionar ferramenta"></select>
+      <div class="search-area">
+        <label class="search-wrap" for="toolSearch">
+          <span>🔎</span>
+          <input id="toolSearch" class="search-input" type="search" placeholder="Buscar..." autocomplete="off" />
         </label>
-        <button id="showCardsBtn" class="secondary-btn" type="button">Mostrar cards</button>
       </div>
-    </section>
 
-    <section class="content-panel" aria-label="Área de conteúdo da ferramenta">
-      <div class="content-header">
-        <div class="content-header-title" id="currentToolTitle">
-          <span>📅</span>
-          <span>Calcular Datas</span>
+      <nav id="sidebarTools" class="sidebar-tools" aria-label="Lista de ferramentas"></nav>
+
+      <div class="sidebar-footer">
+        <span id="toolCount">0 ferramentas</span>
+      </div>
+    </aside>
+
+    <section class="workspace" aria-label="Área de trabalho da ferramenta">
+      <div class="workspace-header">
+        <div class="current-tool">
+          <span id="currentToolIcon" class="current-tool-icon">📅</span>
+          <div class="current-tool-text">
+            <div id="currentToolTitle" class="current-tool-title">Calcular Datas</div>
+            <div id="currentToolSubtitle" class="current-tool-subtitle">Cálculo e apoio para datas, ciclos e períodos.</div>
+          </div>
         </div>
-        <div class="content-header-hint" id="contentHint">
-          Primeiro item pré-carregado automaticamente.
+
+        <div class="workspace-actions">
+          <label class="tool-select-wrap" for="toolSelect">
+            Ferramenta
+            <select id="toolSelect" class="tool-select" aria-label="Selecionar ferramenta"></select>
+          </label>
+          <button id="reloadToolBtn" class="plain-btn" type="button">↻ Recarregar</button>
+          <button id="expandWorkspaceBtn" class="plain-btn" type="button" aria-pressed="false">⛶ Expandir</button>
         </div>
       </div>
-      <iframe id="toolFrame" name="conteudo" title="Ferramentas em exibição"></iframe>
+
+      <div class="frame-wrap">
+        <iframe id="toolFrame" name="conteudo" title="Ferramenta em exibição"></iframe>
+      </div>
     </section>
   </main>
 
@@ -704,7 +753,7 @@
         id: "calcular-datas",
         label: "Calcular Datas",
         description: "Cálculo e apoio para datas, ciclos e períodos.",
-        tag: "Datas",
+        category: "Cálculo",
         icon: "📅",
         url: "https://fbnmurad.github.io/alive/CalculadoraDatas.html"
       },
@@ -712,55 +761,31 @@
         id: "calcular-pro-rata",
         label: "Calcular Pró-Rata",
         description: "Cálculo proporcional de valores por período.",
-        tag: "Cálculo",
+        category: "Cálculo",
         icon: "🧮",
         url: "https://fbnmurad.github.io/alive/ValorProRata.html"
-      },
-      {
-        id: "comparador-merge",
-        label: "Comparador & Merge",
-        description: "Comparação, análise e união de textos.",
-        tag: "Texto",
-        icon: "🔀",
-        url: "https://fbnmurad.github.io/alive/CompararTexto.html"
-      },
-      {
-        id: "comparar-json",
-        label: "Comparar JSON",
-        description: "Validação e comparação de estruturas JSON.",
-        tag: "JSON",
-        icon: "{}",
-        url: "https://fbnmurad.github.io/alive/JSONCompare.html"
-      },
-      {
-        id: "contar-caracteres",
-        label: "Contar Caracteres",
-        description: "Contagem de caracteres, palavras e tamanho de texto.",
-        tag: "Texto",
-        icon: "🔢",
-        url: "https://fbnmurad.github.io/alive/ContarCaracter.html"
-      },
-      {
-        id: "corretor-ortografico-gramatical",
-        label: "Corretor Ortográfico & Gramatical",
-        description: "Apoio para revisão textual, escrita e gramática.",
-        tag: "Revisão",
-        icon: "✍️",
-        url: "https://fbnmurad.github.io/alive/Corretor.html"
       },
       {
         id: "diferimento-receita",
         label: "Diferimento de Receita",
         description: "Apoio para cálculo e análise de diferimento.",
-        tag: "Receita",
+        category: "Financeiro",
         icon: "📈",
         url: "https://fbnmurad.github.io/alive/DIFReceita.html"
+      },
+      {
+        id: "comparar-json",
+        label: "Comparar JSON",
+        description: "Validação e comparação de estruturas JSON.",
+        category: "Dados",
+        icon: "{}",
+        url: "https://fbnmurad.github.io/alive/JSONCompare.html"
       },
       {
         id: "gerar-cartao-credito",
         label: "Gerar Cartão de Crédito",
         description: "Geração de dados de cartão para testes controlados.",
-        tag: "Teste",
+        category: "Teste",
         icon: "💳",
         url: "https://fbnmurad.github.io/alive/GeradorCartaoCredito.html"
       },
@@ -768,15 +793,39 @@
         id: "gerar-cpf-cnpj",
         label: "Gerar CPF/CNPJ",
         description: "Geração de documentos para massa de teste.",
-        tag: "Teste",
+        category: "Teste",
         icon: "🪪",
         url: "https://fbnmurad.github.io/alive/GeradorCpfCnpj.html"
+      },
+      {
+        id: "comparador-merge",
+        label: "Comparador & Merge",
+        description: "Comparação, análise e união de textos.",
+        category: "Texto",
+        icon: "🔀",
+        url: "https://fbnmurad.github.io/alive/CompararTexto.html"
+      },
+      {
+        id: "contar-caracteres",
+        label: "Contar Caracteres",
+        description: "Contagem de caracteres, palavras e tamanho de texto.",
+        category: "Texto",
+        icon: "🔢",
+        url: "https://fbnmurad.github.io/alive/ContarCaracter.html"
+      },
+      {
+        id: "corretor-ortografico-gramatical",
+        label: "Corretor Ortográfico & Gramatical",
+        description: "Apoio para revisão textual, escrita e gramática.",
+        category: "Texto",
+        icon: "✍️",
+        url: "https://fbnmurad.github.io/alive/Corretor.html"
       },
       {
         id: "renderizador-html-css-js",
         label: "Renderizador HTML/CSS/JS",
         description: "Editor para colar HTML, CSS e JavaScript e visualizar o resultado renderizado.",
-        tag: "HTML",
+        category: "Renderizadores",
         icon: "🌐",
         url: "renderizador_html_duas_colunas.html"
       },
@@ -784,49 +833,59 @@
         id: "renderizador-jira-wiki",
         label: "Renderizador Jira/Wiki",
         description: "Formatação e renderização de conteúdo Wiki Markup.",
-        tag: "Wiki",
+        category: "Renderizadores",
         icon: "🧾",
         url: "https://fbnmurad.github.io/alive/JiraWikiMarkup.html"
+      },
+      {
+        id: "desformatador-jira-wiki",
+        label: "Desformatador Jira/Wiki",
+        description: "Remove formatação Wiki Markup e transforma em texto limpo.",
+        category: "Renderizadores",
+        icon: "🧹",
+        url: "desformatador_jira_wiki_para_texto.html"
       },
       {
         id: "renderizador-mermaid",
         label: "Renderizador Mermaid",
         description: "Visualização de diagramas Mermaid em tempo real.",
-        tag: "Diagrama",
+        category: "Renderizadores",
         icon: "🧩",
         url: "https://fbnmurad.github.io/alive/mermaid-local.html"
       }
-    ].sort((a, b) => a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" }));
+    ].sort((a, b) => {
+      const byCategory = a.category.localeCompare(b.category, "pt-BR", { sensitivity: "base" });
+      if (byCategory !== 0) return byCategory;
+      return a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" });
+    });
 
     const body = document.body;
-    const toolGrid = document.getElementById("toolGrid");
-    const toolSelect = document.getElementById("toolSelect");
+    const sidebarTools = document.getElementById("sidebarTools");
+    const toolSearch = document.getElementById("toolSearch");
     const toolFrame = document.getElementById("toolFrame");
+    const toolSelect = document.getElementById("toolSelect");
+    const currentToolIcon = document.getElementById("currentToolIcon");
     const currentToolTitle = document.getElementById("currentToolTitle");
-    const compactIcon = document.getElementById("compactIcon");
-    const compactCurrentTool = document.getElementById("compactCurrentTool");
-    const contentHint = document.getElementById("contentHint");
-    const showCardsBtn = document.getElementById("showCardsBtn");
-    const collapseCardsBtn = document.getElementById("collapseCardsBtn");
+    const currentToolSubtitle = document.getElementById("currentToolSubtitle");
+    const toolCount = document.getElementById("toolCount");
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebarToggleIcon = document.getElementById("sidebarToggleIcon");
+    const sidebarToggleLabel = document.getElementById("sidebarToggleLabel");
+    const reloadToolBtn = document.getElementById("reloadToolBtn");
+    const expandWorkspaceBtn = document.getElementById("expandWorkspaceBtn");
+    const themeToggle = document.getElementById("themeToggle");
+    const themeIcon = document.getElementById("themeIcon");
+    const themeLabel = document.getElementById("themeLabel");
 
-    function renderTools() {
-      toolGrid.innerHTML = tools.map(tool => `
-        <article class="tool-card" tabindex="0" role="button" data-tool-id="${tool.id}" aria-label="Abrir ${escapeHtml(tool.label)}">
-          <div class="tool-card-top">
-            <div class="tool-icon" aria-hidden="true">${escapeHtml(tool.icon)}</div>
-          </div>
-          <div class="tool-card-body">
-            <div class="tool-card-title">${escapeHtml(tool.label)}</div>
-            <div class="tool-card-description">${escapeHtml(tool.description)}</div>
-            <div class="tool-card-tag">${escapeHtml(tool.tag)}</div>
-            <button class="open-card-btn" type="button" data-tool-id="${tool.id}">Abrir</button>
-          </div>
-        </article>
-      `).join("");
+    let activeToolId = tools[0]?.id || "";
+    const collapsedCategories = new Set();
 
-      toolSelect.innerHTML = tools.map(tool => `
-        <option value="${tool.id}">${escapeHtml(tool.label)}</option>
-      `).join("");
+    function normalizeSearch(value) {
+      return String(value || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
     }
 
     function escapeHtml(value) {
@@ -842,65 +901,122 @@
       return tools.find(tool => tool.id === id) || tools[0];
     }
 
-    function openTool(toolId, collapseCards = false) {
+    function getFilteredTools() {
+      const query = normalizeSearch(toolSearch.value);
+      return tools.filter(tool => {
+        const searchText = normalizeSearch(`${tool.label} ${tool.description} ${tool.category}`);
+        return !query || searchText.includes(query);
+      });
+    }
+
+    function groupByCategory(list) {
+      return list.reduce((groups, tool) => {
+        if (!groups[tool.category]) groups[tool.category] = [];
+        groups[tool.category].push(tool);
+        return groups;
+      }, {});
+    }
+
+    function renderTools() {
+      const filtered = getFilteredTools();
+      const groups = groupByCategory(filtered);
+      const categories = Object.keys(groups).sort((a, b) => a.localeCompare(b, "pt-BR", { sensitivity: "base" }));
+
+      toolCount.textContent = `${filtered.length} ferramenta(s)`;
+
+      if (!filtered.length) {
+        sidebarTools.innerHTML = `
+          <div class="empty-state">
+            <div>
+              <strong>Nada encontrado</strong>
+              Tente buscar por outro termo.
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      sidebarTools.innerHTML = categories.map(category => {
+        const isCollapsed = collapsedCategories.has(category);
+        const toolsHtml = groups[category].map(tool => `
+          <button class="tool-row ${tool.id === activeToolId ? "active" : ""}" type="button" data-tool-id="${tool.id}" title="${escapeHtml(tool.label)}">
+            <span class="tool-icon" aria-hidden="true">${escapeHtml(tool.icon)}</span>
+            <span class="tool-text">
+              <span class="tool-name">${escapeHtml(tool.label)}</span>
+              <span class="tool-description">${escapeHtml(tool.description)}</span>
+            </span>
+          </button>
+        `).join("");
+
+        return `
+          <section class="category ${isCollapsed ? "collapsed" : ""}" data-category-section="${escapeHtml(category)}">
+            <button class="category-toggle" type="button" data-category-toggle="${escapeHtml(category)}" aria-expanded="${isCollapsed ? "false" : "true"}">
+              <span class="category-toggle-left">
+                <span class="category-caret">⌄</span>
+                <span>${escapeHtml(category)}</span>
+              </span>
+              <span class="category-count">${groups[category].length}</span>
+            </button>
+            <div class="tool-list">
+              ${toolsHtml}
+            </div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function renderSelect() {
+      toolSelect.innerHTML = tools.map(tool => `
+        <option value="${tool.id}">${escapeHtml(tool.label)}</option>
+      `).join("");
+      toolSelect.value = activeToolId;
+    }
+
+    function openTool(toolId, options = {}) {
       const tool = getToolById(toolId);
       if (!tool) return;
 
+      activeToolId = tool.id;
       toolFrame.src = tool.url;
       toolSelect.value = tool.id;
-      compactIcon.textContent = tool.icon;
-      compactCurrentTool.textContent = tool.label;
-      currentToolTitle.innerHTML = `<span>${escapeHtml(tool.icon)}</span><span>${escapeHtml(tool.label)}</span>`;
-      contentHint.textContent = collapseCards
-        ? "Cards recolhidos. Use o menu compacto para alternar a ferramenta."
-        : "Menu de cards carregado. O primeiro item já está pré-carregado.";
+      currentToolIcon.textContent = tool.icon;
+      currentToolTitle.textContent = tool.label;
+      currentToolSubtitle.textContent = tool.description;
 
-      document.querySelectorAll(".tool-card").forEach(card => {
-        card.classList.toggle("active", card.dataset.toolId === tool.id);
-      });
+      renderTools();
 
-      if (collapseCards) {
-        body.classList.add("cards-collapsed");
+      if (options.closeSidebarOnMobile && window.matchMedia("(max-width: 980px)").matches) {
+        body.classList.remove("sidebar-open");
       }
     }
 
-    function showCards() {
-      body.classList.remove("cards-collapsed");
-      contentHint.textContent = "Menu de cards carregado. Selecione uma ferramenta para abrir a área de trabalho.";
+    function reloadTool() {
+      const tool = getToolById(activeToolId);
+      if (!tool) return;
+      toolFrame.src = tool.url;
     }
 
-    function bindEvents() {
-      toolGrid.addEventListener("click", event => {
-        const target = event.target.closest("[data-tool-id]");
-        if (!target) return;
-        openTool(target.dataset.toolId, true);
-      });
+    function toggleSidebar() {
+      if (window.matchMedia("(max-width: 980px)").matches) {
+        body.classList.toggle("sidebar-open");
+        return;
+      }
 
-      toolGrid.addEventListener("keydown", event => {
-        const card = event.target.closest(".tool-card");
-        if (!card) return;
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openTool(card.dataset.toolId, true);
-        }
-      });
-
-      toolSelect.addEventListener("change", event => {
-        openTool(event.target.value, true);
-      });
-
-      showCardsBtn.addEventListener("click", showCards);
-
-      collapseCardsBtn.addEventListener("click", () => {
-        body.classList.add("cards-collapsed");
-        contentHint.textContent = "Cards recolhidos. Use o menu compacto para alternar a ferramenta.";
-      });
+      body.classList.toggle("sidebar-collapsed");
+      const collapsed = body.classList.contains("sidebar-collapsed");
+      sidebarToggleIcon.textContent = collapsed ? "☰" : "◀";
+      sidebarToggleLabel.textContent = collapsed ? "Menu" : "Ocultar";
     }
 
-    /* Tema claro/escuro com persistência */
-    const themeToggle = document.getElementById("themeToggle");
-    const themeIcon = document.getElementById("themeIcon");
-    const themeLabel = document.getElementById("themeLabel");
+    function setWorkspaceExpanded(expanded) {
+      body.classList.toggle("workspace-expanded", expanded);
+      expandWorkspaceBtn.textContent = expanded ? "↙ Reduzir" : "⛶ Expandir";
+      expandWorkspaceBtn.setAttribute("aria-pressed", expanded ? "true" : "false");
+    }
+
+    function toggleWorkspaceExpanded() {
+      setWorkspaceExpanded(!body.classList.contains("workspace-expanded"));
+    }
 
     function applyTheme(theme) {
       body.setAttribute("data-theme", theme);
@@ -925,16 +1041,68 @@
       }
     }
 
-    themeToggle.addEventListener("click", () => {
-      const current = body.getAttribute("data-theme");
-      applyTheme(current === "dark" ? "light" : "dark");
-    });
+    function bindEvents() {
+      sidebarToggle.addEventListener("click", toggleSidebar);
+      reloadToolBtn.addEventListener("click", reloadTool);
+      expandWorkspaceBtn.addEventListener("click", toggleWorkspaceExpanded);
+
+      themeToggle.addEventListener("click", () => {
+        const current = body.getAttribute("data-theme");
+        applyTheme(current === "dark" ? "light" : "dark");
+      });
+
+      toolSearch.addEventListener("input", renderTools);
+
+      toolSelect.addEventListener("change", event => {
+        openTool(event.target.value, { closeSidebarOnMobile: true });
+      });
+
+      sidebarTools.addEventListener("click", event => {
+        const categoryButton = event.target.closest("[data-category-toggle]");
+        if (categoryButton) {
+          const category = categoryButton.dataset.categoryToggle;
+          if (collapsedCategories.has(category)) {
+            collapsedCategories.delete(category);
+          } else {
+            collapsedCategories.add(category);
+          }
+          renderTools();
+          return;
+        }
+
+        const toolButton = event.target.closest("[data-tool-id]");
+        if (toolButton) {
+          openTool(toolButton.dataset.toolId, { closeSidebarOnMobile: true });
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+          if (body.classList.contains("workspace-expanded")) {
+            setWorkspaceExpanded(false);
+          } else if (body.classList.contains("sidebar-open")) {
+            body.classList.remove("sidebar-open");
+          }
+        }
+      });
+
+      document.addEventListener("click", event => {
+        if (!window.matchMedia("(max-width: 980px)").matches) return;
+        if (!body.classList.contains("sidebar-open")) return;
+        const clickedSidebar = event.target.closest(".sidebar");
+        const clickedToggle = event.target.closest("#sidebarToggle");
+        if (!clickedSidebar && !clickedToggle) {
+          body.classList.remove("sidebar-open");
+        }
+      });
+    }
 
     function init() {
+      renderSelect();
       renderTools();
       bindEvents();
       initTheme();
-      openTool(tools[0].id, false);
+      openTool(activeToolId);
     }
 
     init();
