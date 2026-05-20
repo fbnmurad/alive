@@ -34,9 +34,10 @@
     }
 
     main {
+      --left-panel-width: 50%;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      grid-template-columns: minmax(260px, var(--left-panel-width)) 10px minmax(260px, 1fr);
+      gap: 0;
       padding: 16px;
       height: calc(100vh - 82px);
     }
@@ -50,6 +51,51 @@
       border-radius: 14px;
       overflow: hidden;
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .input-panel {
+      margin-right: 8px;
+    }
+
+    .preview-panel {
+      margin-left: 8px;
+    }
+
+    .splitter {
+      position: relative;
+      width: 10px;
+      min-width: 10px;
+      cursor: col-resize;
+      user-select: none;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .splitter::before {
+      content: "";
+      width: 4px;
+      height: 58px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+      transition: background 0.2s, height 0.2s;
+    }
+
+    .splitter:hover::before,
+    body.is-resizing .splitter::before {
+      height: 86px;
+      background: #2563eb;
+    }
+
+    body.is-resizing {
+      cursor: col-resize;
+      user-select: none;
+    }
+
+    body.is-resizing iframe {
+      pointer-events: none;
     }
 
     .panel-header {
@@ -97,6 +143,15 @@
       background: #d1d5db;
     }
 
+    button.success {
+      background: #16a34a;
+      color: white;
+    }
+
+    button.success:hover {
+      background: #15803d;
+    }
+
     textarea {
       flex: 1;
       width: 100%;
@@ -134,7 +189,8 @@
     }
 
     body.preview-expanded header,
-    body.preview-expanded main > .panel:first-child {
+    body.preview-expanded main > .input-panel,
+    body.preview-expanded main > .splitter {
       display: none;
     }
 
@@ -151,6 +207,7 @@
       z-index: 9999;
       width: 100vw;
       height: 100vh;
+      margin: 0;
       border: 0;
       border-radius: 0;
       box-shadow: none;
@@ -166,8 +223,19 @@
 
     @media (max-width: 850px) {
       main {
+        display: grid;
         grid-template-columns: 1fr;
+        gap: 16px;
         height: auto;
+      }
+
+      .input-panel,
+      .preview-panel {
+        margin: 0;
+      }
+
+      .splitter {
+        display: none;
       }
 
       .panel {
@@ -190,8 +258,8 @@
     <p>Cole o código no painel esquerdo e clique em “Exibir” para renderizar o resultado no painel direito.</p>
   </header>
 
-  <main>
-    <section class="panel">
+  <main id="mainLayout">
+    <section class="panel input-panel">
       <div class="panel-header">
         <strong>Código de entrada</strong>
         <div class="actions">
@@ -207,10 +275,20 @@
       </div>
     </section>
 
+    <div
+      id="splitter"
+      class="splitter"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Redimensionar painéis"
+      tabindex="0"
+    ></div>
+
     <section class="panel preview-panel">
       <div class="panel-header">
         <strong>Resultado renderizado</strong>
         <div class="actions">
+          <button id="copyRenderedBtn" class="secondary" type="button">Copiar conteúdo</button>
           <button id="expandBtn" class="secondary" type="button" aria-pressed="false">Expandir</button>
           <button id="clearBtn" class="secondary" type="button">Limpar</button>
         </div>
@@ -222,19 +300,23 @@
         sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin"
       ></iframe>
 
-      <div class="hint">
+      <div class="hint" id="statusHint">
         JavaScript está habilitado na pré-visualização. Use apenas códigos confiáveis.
       </div>
     </section>
   </main>
 
   <script>
+    const mainLayout = document.getElementById('mainLayout');
     const htmlInput = document.getElementById('htmlInput');
     const preview = document.getElementById('preview');
     const renderBtn = document.getElementById('renderBtn');
     const clearBtn = document.getElementById('clearBtn');
     const resetBtn = document.getElementById('resetBtn');
     const expandBtn = document.getElementById('expandBtn');
+    const copyRenderedBtn = document.getElementById('copyRenderedBtn');
+    const splitter = document.getElementById('splitter');
+    const statusHint = document.getElementById('statusHint');
 
     const exampleHTML = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -331,19 +413,26 @@
 </html>`;
     }
 
+    function setStatus(message) {
+      statusHint.textContent = message;
+    }
+
     function renderHTML() {
       const html = htmlInput.value.trim();
 
       if (!html) {
         preview.srcdoc = createEmptyDocument('Nenhum código foi inserido.');
+        setStatus('Nenhum código foi inserido.');
         return;
       }
 
       preview.srcdoc = html;
+      setStatus('HTML renderizado. JavaScript está habilitado na pré-visualização. Use apenas códigos confiáveis.');
     }
 
     function clearPreview() {
       preview.srcdoc = createEmptyDocument('A pré-visualização foi limpa.');
+      setStatus('A pré-visualização foi limpa.');
     }
 
     function resetExample() {
@@ -366,16 +455,120 @@
       setPreviewExpanded(!isExpanded);
     }
 
+    async function copyTextToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+
+      const temporaryTextarea = document.createElement('textarea');
+      temporaryTextarea.value = text;
+      temporaryTextarea.setAttribute('readonly', '');
+      temporaryTextarea.style.position = 'fixed';
+      temporaryTextarea.style.left = '-9999px';
+      document.body.appendChild(temporaryTextarea);
+      temporaryTextarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(temporaryTextarea);
+    }
+
+    async function copyRenderedContent() {
+      try {
+        const doc = preview.contentDocument || preview.contentWindow?.document;
+        const renderedHTML = doc?.documentElement?.outerHTML || preview.srcdoc || htmlInput.value;
+
+        await copyTextToClipboard(renderedHTML);
+        copyRenderedBtn.textContent = 'Copiado!';
+        copyRenderedBtn.classList.add('success');
+        setStatus('Conteúdo renderizado copiado para a área de transferência.');
+
+        window.setTimeout(() => {
+          copyRenderedBtn.textContent = 'Copiar conteúdo';
+          copyRenderedBtn.classList.remove('success');
+        }, 1600);
+      } catch (error) {
+        console.error(error);
+        setStatus('Não foi possível copiar automaticamente. O navegador pode ter bloqueado o acesso ao conteúdo renderizado.');
+      }
+    }
+
+    function setSplitterPositionByClientX(clientX) {
+      if (document.body.classList.contains('preview-expanded')) return;
+
+      const rect = mainLayout.getBoundingClientRect();
+      const minPercent = 22;
+      const maxPercent = 78;
+      const rawPercent = ((clientX - rect.left) / rect.width) * 100;
+      const limitedPercent = Math.max(minPercent, Math.min(maxPercent, rawPercent));
+
+      mainLayout.style.setProperty('--left-panel-width', `${limitedPercent}%`);
+      splitter.setAttribute('aria-valuenow', Math.round(limitedPercent));
+    }
+
+    function startResize(event) {
+      if (window.matchMedia('(max-width: 850px)').matches) return;
+
+      event.preventDefault();
+      document.body.classList.add('is-resizing');
+      splitter.setPointerCapture?.(event.pointerId);
+      setSplitterPositionByClientX(event.clientX);
+    }
+
+    function moveResize(event) {
+      if (!document.body.classList.contains('is-resizing')) return;
+      setSplitterPositionByClientX(event.clientX);
+    }
+
+    function stopResize(event) {
+      if (!document.body.classList.contains('is-resizing')) return;
+      document.body.classList.remove('is-resizing');
+      splitter.releasePointerCapture?.(event.pointerId);
+    }
+
+    function moveSplitterWithKeyboard(event) {
+      const current = Number(splitter.getAttribute('aria-valuenow')) || 50;
+      const step = event.shiftKey ? 10 : 3;
+      let next = current;
+
+      if (event.key === 'ArrowLeft') {
+        next = current - step;
+      } else if (event.key === 'ArrowRight') {
+        next = current + step;
+      } else if (event.key === 'Home') {
+        next = 22;
+      } else if (event.key === 'End') {
+        next = 78;
+      } else {
+        return;
+      }
+
+      event.preventDefault();
+      next = Math.max(22, Math.min(78, next));
+      mainLayout.style.setProperty('--left-panel-width', `${next}%`);
+      splitter.setAttribute('aria-valuenow', Math.round(next));
+    }
+
     renderBtn.addEventListener('click', renderHTML);
     clearBtn.addEventListener('click', clearPreview);
     resetBtn.addEventListener('click', resetExample);
     expandBtn.addEventListener('click', togglePreviewExpanded);
+    copyRenderedBtn.addEventListener('click', copyRenderedContent);
+
+    splitter.addEventListener('pointerdown', startResize);
+    splitter.addEventListener('pointermove', moveResize);
+    splitter.addEventListener('pointerup', stopResize);
+    splitter.addEventListener('pointercancel', stopResize);
+    splitter.addEventListener('keydown', moveSplitterWithKeyboard);
 
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && document.body.classList.contains('preview-expanded')) {
         setPreviewExpanded(false);
       }
     });
+
+    splitter.setAttribute('aria-valuemin', '22');
+    splitter.setAttribute('aria-valuemax', '78');
+    splitter.setAttribute('aria-valuenow', '50');
 
     resetExample();
   </script>
