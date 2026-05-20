@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Renderizador de HTML, CSS e JavaScript</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #222;
+    }
+
+    header {
+      padding: 18px 24px;
+      background: #111827;
+      color: white;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #d1d5db;
+      font-size: 14px;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 16px;
+      height: calc(100vh - 82px);
+    }
+
+    .panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      background: white;
+      border: 1px solid #d9dee7;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #fafafa;
+    }
+
+    .panel-header strong {
+      font-size: 15px;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    button.secondary:hover {
+      background: #d1d5db;
+    }
+
+    textarea {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      resize: none;
+      border: 0;
+      outline: none;
+      padding: 16px;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    iframe {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      border: 0;
+      background: white;
+    }
+
+    .hint {
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #6b7280;
+      border-top: 1px solid #e5e7eb;
+      background: #fafafa;
+    }
+
+    @media (max-width: 850px) {
+      main {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .panel {
+        min-height: 420px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Renderizador de HTML, CSS e JavaScript</h1>
+    <p>Cole o código no painel esquerdo e clique em “Exibir” para renderizar o resultado no painel direito.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="panel-header">
+        <strong>Código de entrada</strong>
+        <div class="actions">
+          <button id="renderBtn" type="button">Exibir</button>
+          <button id="resetBtn" class="secondary" type="button">Exemplo</button>
+        </div>
+      </div>
+
+      <textarea id="htmlInput" spellcheck="false"></textarea>
+
+      <div class="hint">
+        Aceita HTML completo, CSS em &lt;style&gt;, CSS inline e JavaScript em &lt;script&gt; ou eventos como onclick.
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <strong>Resultado renderizado</strong>
+        <button id="clearBtn" class="secondary" type="button">Limpar</button>
+      </div>
+
+      <iframe
+        id="preview"
+        title="Pré-visualização HTML"
+        sandbox="allow-scripts allow-forms allow-modals allow-popups allow-same-origin"
+      ></iframe>
+
+      <div class="hint">
+        JavaScript está habilitado na pré-visualização. Use apenas códigos confiáveis.
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const htmlInput = document.getElementById('htmlInput');
+    const preview = document.getElementById('preview');
+    const renderBtn = document.getElementById('renderBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const exampleHTML = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exemplo</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #dbeafe, #f8fafc);
+    }
+
+    .card {
+      width: min(90%, 420px);
+      padding: 28px;
+      border-radius: 22px;
+      background: white;
+      text-align: center;
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.14);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #2563eb;
+    }
+
+    p {
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    #contador {
+      font-size: 28px;
+      font-weight: bold;
+      color: #111827;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>HTML + CSS + JavaScript</h2>
+    <p>Este conteúdo foi renderizado no painel da direita.</p>
+    <p>Cliques: <span id="contador">0</span></p>
+    <button onclick="somarClique()">Clique aqui</button>
+  </div>
+
+  <script>
+    let cliques = 0;
+
+    function somarClique() {
+      cliques++;
+      document.getElementById('contador').textContent = cliques;
+    }
+  <\/script>
+</body>
+</html>`;
+
+    function createEmptyDocument(message) {
+      return `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <p>${message}</p>
+</body>
+</html>`;
+    }
+
+    function renderHTML() {
+      const html = htmlInput.value.trim();
+
+      if (!html) {
+        preview.srcdoc = createEmptyDocument('Nenhum código foi inserido.');
+        return;
+      }
+
+      preview.srcdoc = html;
+    }
+
+    function clearPreview() {
+      preview.srcdoc = createEmptyDocument('A pré-visualização foi limpa.');
+    }
+
+    function resetExample() {
+      htmlInput.value = exampleHTML;
+      renderHTML();
+    }
+
+    renderBtn.addEventListener('click', renderHTML);
+    clearBtn.addEventListener('click', clearPreview);
+    resetBtn.addEventListener('click', resetExample);
+
+    resetExample();
+  </script>
+</body>
+</html>
