@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Desformatador Jira Wiki Markup → Texto Limpo</title>
+
+<style>
+:root {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --bg-gradient-start: #eef1f7;
+  --bg-gradient-end: #f7f9fc;
+  --primary: #5b6ee1;
+  --primary-hover: #4b5fd1;
+  --primary-active: #3f52b8;
+  --text-title: #1f2a44;
+  --text-default: #3a4563;
+  --text-dark: #111827;
+  --text-muted: #6b7280;
+  --surface: #ffffff;
+  --surface-soft: #f9fafb;
+  --surface-muted: #f1f4f9;
+  --surface-highlight: #e9edff;
+  --border-light: #d6dbea;
+  --success: #16a34a;
+  --error: #dc2626;
+  --neutral: #9ca3af;
+  --neutral-hover: #6b7280;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: linear-gradient(120deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  color: var(--text-default);
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--surface);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 750;
+  color: var(--text-title);
+}
+
+header p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.wrap {
+  height: calc(100vh - 78px);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+.grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(240px, 33.333fr) 10px minmax(240px, 33.333fr) 10px minmax(240px, 33.334fr);
+  gap: 0;
+  align-items: stretch;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(31,42,68,0.08);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.input-card { margin-right: 7px; }
+.output-card { margin-left: 7px; margin-right: 7px; }
+.preview-card { margin-left: 7px; }
+
+.card-header {
+  min-height: 46px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--surface-soft);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-title);
+}
+
+.card .body {
+  padding: 12px 14px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+
+.card-actions,
+.toolbar,
+.footer,
+.output-tools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.toolbar,
+.output-tools { margin-bottom: 8px; }
+
+.footer {
+  margin-top: 10px;
+  position: sticky;
+  bottom: -12px;
+  z-index: 3;
+  padding: 10px 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0), var(--surface) 35%);
+}
+
+.splitter {
+  position: relative;
+  width: 10px;
+  min-width: 10px;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.splitter::before {
+  content: "";
+  width: 4px;
+  height: 72px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+  transition: background 0.2s, height 0.2s, width 0.2s;
+}
+
+.splitter:hover::before,
+body.is-resizing .splitter.active::before {
+  width: 5px;
+  height: 110px;
+  background: var(--primary);
+}
+
+.splitter:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 999px;
+}
+
+body.is-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+body.is-resizing iframe { pointer-events: none; }
+
+label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-title);
+}
+
+input,
+textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  background: var(--surface-muted);
+  color: var(--text-dark);
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 1.45;
+  outline: none;
+}
+
+input[type="file"] {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #fff;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(91,110,225,0.12);
+}
+
+textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+#inputWiki,
+#outputText {
+  flex: 1;
+  min-height: 140px;
+}
+
+button,
+button.secondary,
+button.action {
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+button.secondary {
+  padding: 7px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
+  background: var(--surface-highlight);
+  color: var(--primary);
+  cursor: pointer;
+}
+
+button.secondary:hover {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+button.action {
+  border: none;
+  background: var(--primary);
+  color: #ffffff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button.action:hover { background: var(--primary-hover); }
+button.action:active { background: var(--primary-active); }
+button.danger { background: var(--neutral); }
+button.danger:hover { background: var(--neutral-hover); }
+
+button.success,
+button.success:hover {
+  background: var(--success);
+  border-color: var(--success);
+  color: #ffffff;
+}
+
+.preview-frame {
+  flex: 1;
+  width: 100%;
+  min-height: 260px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.small {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.status {
+  min-height: 18px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--success);
+}
+
+.status.error { color: var(--error); }
+.file-row { margin: 0 0 10px; }
+
+body.card-expanded {
+  overflow: hidden;
+}
+
+body.card-expanded header { display: none; }
+body.card-expanded .wrap { height: 100vh; padding: 0; }
+body.card-expanded .grid { display: block; height: 100vh; }
+body.card-expanded .splitter,
+body.card-expanded .card:not(.expanded-card) { display: none; }
+
+body.card-expanded .expanded-card {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.card-expanded .expanded-card .card-header { border-radius: 0; }
+body.card-expanded .expanded-card textarea,
+body.card-expanded .expanded-card .preview-frame { min-height: 0; }
+
+@media (max-width: 1180px) {
+  body { overflow: auto; }
+  .wrap { height: auto; min-height: calc(100vh - 78px); }
+  .grid { grid-template-columns: 1fr; gap: 14px; }
+  .input-card,
+  .output-card,
+  .preview-card { margin: 0; }
+  .splitter { display: none; }
+  .card { min-height: 420px; }
+  .card-actions,
+  .toolbar,
+  .footer,
+  .output-tools { gap: 6px; }
+  button.action,
+  button.secondary { padding: 7px 9px; font-size: 12px; }
+  body.card-expanded .wrap,
+  body.card-expanded .grid { height: 100vh; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <h1>Desformatador Jira Wiki Markup → Texto Limpo</h1>
+  <p>Cole Wiki Markup do Jira/Confluence para remover painéis, tabelas, listas, negritos e cabeçalhos, retornando um texto editável e legível.</p>
+</header>
+
+<div class="wrap">
+  <div id="gridLayout" class="grid">
+    <section id="inputCard" class="card input-card">
+      <div class="card-header">
+        <h2>Entrada — Jira Wiki Markup</h2>
+        <div class="card-actions">
+          <button class="secondary" type="button" data-copy-target="input">Copiar conteúdo</button>
+          <button class="secondary" type="button" data-expand-target="inputCard" aria-pressed="false">Expandir</button>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="file-row">
+          <label for="fileInput">Upload opcional — TXT, MD ou HTML com Wiki Markup</label>
+          <input id="fileInput" type="file" accept=".txt,.text,.md,.html,text/plain,text/markdown,text/html" />
+          <div class="small">Após selecionar o arquivo, o conteúdo será carregado no campo abaixo. Em seguida, clique em Desfazer formatação.</div>
+        </div>
+
+        <textarea id="inputWiki" spellcheck="false" placeholder="Cole aqui o texto em Jira Wiki Markup. Ex.:&#10;{panel:title=Documento|borderStyle=solid|borderColor=#0052cc|titleBGColor=#deebff}&#10;h3. Objetivo&#10;* Item em negrito: *texto*&#10;||Coluna 1||Coluna 2||&#10;|Valor A|Valor B|&#10;{panel}"></textarea>
+
+        <div class="footer">
+          <button class="action" type="button" id="convertBtn">Desfazer formatação</button>
+          <button class="action" type="button" id="exampleBtn">Exemplo</button>
+          <button class="action danger" type="button" id="clearBtn">Limpar</button>
+        </div>
+
+        <div class="small">
+          Remove estruturas como {panel}, h1./h2./h3., listas com * ou #, tabelas Jira, links, cores, status, code blocks e formatação de negrito/itálico.
+        </div>
+      </div>
+    </section>
+
+    <div
+      id="splitterInputOutput"
+      class="splitter"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Redimensionar Entrada e Saída"
+      aria-valuemin="15"
+      aria-valuemax="70"
+      aria-valuenow="33"
+      tabindex="0"
+      data-splitter-index="0"
+    ></div>
+
+    <section id="outputCard" class="card output-card">
+      <div class="card-header">
+        <h2>Saída — Texto sem Wiki Markup</h2>
+        <div class="card-actions">
+          <button class="secondary" type="button" data-copy-target="output">Copiar conteúdo</button>
+          <button class="secondary" type="button" data-expand-target="outputCard" aria-pressed="false">Expandir</button>
+        </div>
+      </div>
+
+      <div class="body">
+        <div class="output-tools">
+          <button class="secondary" type="button" id="renderPreviewBtn">Atualizar pré-visualização</button>
+          <button class="secondary" type="button" id="restoreWikiBtn">Voltar ao Wiki original</button>
+        </div>
+        <textarea id="outputText" spellcheck="false" placeholder="O texto limpo será gerado aqui. Você pode editar e atualizar a pré-visualização..."></textarea>
+        <div id="status" class="status"></div>
+      </div>
+    </section>
+
+    <div
+      id="splitterOutputPreview"
+      class="splitter"
+      role="separator"
+      aria-orientation="vertical"
+      aria-label="Redimensionar Saída e Pré-visualização"
+      aria-valuemin="15"
+      aria-valuemax="70"
+      aria-valuenow="67"
+      tabindex="0"
+      data-splitter-index="1"
+    ></div>
+
+    <section id="previewCard" class="card preview-card">
+      <div class="card-header">
+        <h2>Pré-visualização</h2>
+        <div class="card-actions">
+          <button class="secondary" type="button" data-copy-target="preview">Copiar HTML</button>
+          <button class="secondary" type="button" data-expand-target="previewCard" aria-pressed="false">Expandir</button>
+        </div>
+      </div>
+
+      <div class="body">
+        <iframe id="previewFrame" class="preview-frame" title="Pré-visualização do texto limpo"></iframe>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+let columnPercents = [33.333, 33.333, 33.334];
+let activeSplitterIndex = null;
+let originalWiki = "";
+let lastPreviewText = "";
+
+const inputWiki = document.getElementById("inputWiki");
+const outputText = document.getElementById("outputText");
+const previewFrame = document.getElementById("previewFrame");
+const statusEl = document.getElementById("status");
+const fileInput = document.getElementById("fileInput");
+
+function cleanJiraWikiMarkup(wiki) {
+  let text = String(wiki || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+
+  text = unwrapNoformatAndCodeBlocks(text);
+  text = convertPanelsToText(text);
+  text = convertJiraTables(text);
+  text = convertHeadings(text);
+  text = convertLists(text);
+  text = convertJiraLinks(text);
+  text = convertInlineMacros(text);
+  text = removeInlineFormatting(text);
+  text = normalizeEscapes(text);
+  text = tidyText(text);
+
+  return text;
+}
+
+function unwrapNoformatAndCodeBlocks(text) {
+  return text
+    .replace(/\{noformat\}/gi, "")
+    .replace(/\{code(?::[^}]*)?\}/gi, "");
+}
+
+function convertPanelsToText(text) {
+  return text
+    .replace(/\{panel:title=([^|}]+)[^}]*\}/gi, (_, title) => `\n\n${cleanInlineText(title)}\n${"=".repeat(Math.min(cleanInlineText(title).length, 80))}\n`)
+    .replace(/\{panel(?::[^}]*)?\}/gi, "\n")
+    .replace(/\{info(?::[^}]*)?\}/gi, "\nInformação\n==========\n")
+    .replace(/\{tip(?::[^}]*)?\}/gi, "\nDica\n====\n")
+    .replace(/\{warning(?::[^}]*)?\}/gi, "\nAtenção\n=======\n")
+    .replace(/\{note(?::[^}]*)?\}/gi, "\nNota\n====\n")
+    .replace(/\{quote\}/gi, "\n");
+}
+
+function convertJiraTables(text) {
+  const lines = text.split("\n");
+  const out = [];
+  let tableBuffer = [];
+
+  function flushTable() {
+    if (!tableBuffer.length) return;
+    const rows = tableBuffer.map(parseJiraTableRow).filter(row => row.length);
+    if (rows.length) out.push(formatPlainTable(rows));
+    tableBuffer = [];
+  }
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (/^\|\|.*\|\|$/.test(trimmed) || /^\|.*\|$/.test(trimmed)) {
+      tableBuffer.push(trimmed);
+    } else {
+      flushTable();
+      out.push(line);
+    }
+  });
+
+  flushTable();
+  return out.join("\n");
+}
+
+function parseJiraTableRow(line) {
+  const isHeader = /^\|\|.*\|\|$/.test(line);
+  const separator = isHeader ? "||" : "|";
+  let value = line;
+
+  if (isHeader) {
+    value = value.replace(/^\|\|/, "").replace(/\|\|$/, "");
+  } else {
+    value = value.replace(/^\|/, "").replace(/\|$/, "");
+  }
+
+  return value
+    .split(separator)
+    .map(cell => cleanInlineText(cell.trim()))
+    .filter((cell, index, cells) => cell !== "" || index < cells.length - 1);
+}
+
+function formatPlainTable(rows) {
+  const width = Math.max(...rows.map(row => row.length));
+  const normalizedRows = rows.map(row => {
+    const copy = row.slice();
+    while (copy.length < width) copy.push("");
+    return copy;
+  });
+
+  const columnWidths = Array.from({ length: width }, (_, col) => {
+    return Math.max(...normalizedRows.map(row => row[col].length), 3);
+  });
+
+  return normalizedRows
+    .map(row => row.map((cell, index) => cell.padEnd(columnWidths[index], " ")).join(" | ").trimEnd())
+    .join("\n");
+}
+
+function convertHeadings(text) {
+  return text.replace(/^h([1-6])\.\s+(.+)$/gim, (_, level, title) => {
+    const cleanTitle = cleanInlineText(title);
+    if (Number(level) <= 2) {
+      return `\n${cleanTitle}\n${"-".repeat(Math.min(cleanTitle.length, 80))}`;
+    }
+    return `\n${cleanTitle}`;
+  });
+}
+
+function convertLists(text) {
+  return text
+    .replace(/^(\*+)\s+(.+)$/gm, (_, stars, item) => `${"  ".repeat(Math.max(0, stars.length - 1))}- ${cleanInlineText(item)}`)
+    .replace(/^(#+)\s+(.+)$/gm, (_, hashes, item) => `${"  ".repeat(Math.max(0, hashes.length - 1))}1. ${cleanInlineText(item)}`);
+}
+
+function convertJiraLinks(text) {
+  return text.replace(/\[([^|\]]+)\|([^\]]+)\]/g, (_, label, url) => {
+    const cleanLabel = cleanInlineText(label);
+    const cleanUrl = cleanInlineText(url);
+    return `${cleanLabel} (${cleanUrl})`;
+  });
+}
+
+function convertInlineMacros(text) {
+  return text
+    .replace(/\{color(?::[^}]*)?\}([\s\S]*?)\{color\}/gi, "$1")
+    .replace(/\{status(?::[^}]*)?title=([^|}]+)[^}]*\}/gi, "$1")
+    .replace(/\{anchor:[^}]+\}/gi, "")
+    .replace(/\{toc(?::[^}]*)?\}/gi, "")
+    .replace(/\{expand(?::title=([^}]+))?\}/gi, (_, title) => title ? `\n${cleanInlineText(title)}\n` : "\n")
+    .replace(/\{expand\}/gi, "\n")
+    .replace(/\{[^}\n]+\}/g, "");
+}
+
+function removeInlineFormatting(text) {
+  return text
+    .replace(/\*([^*\n]+)\*/g, "$1")
+    .replace(/_([^_\n]+)_/g, "$1")
+    .replace(/\+([^+\n]+)\+/g, "$1")
+    .replace(/-([^\-\n]+)-/g, "$1")
+    .replace(/\?([^?\n]+)\?/g, "$1")
+    .replace(/\^([^\^\n]+)\^/g, "$1")
+    .replace(/~([^~\n]+)~/g, "$1")
+    .replace(/\{\{([^}\n]+)\}\}/g, "$1");
+}
+
+function normalizeEscapes(text) {
+  return text
+    .replace(/\\\*/g, "*")
+    .replace(/\\_/g, "_")
+    .replace(/\\\{/g, "{")
+    .replace(/\\\}/g, "}")
+    .replace(/\\\|/g, "|")
+    .replace(/\\\[/g, "[")
+    .replace(/\\\]/g, "]");
+}
+
+function tidyText(text) {
+  return text
+    .split("\n")
+    .map(line => line.replace(/[ \t]+$/g, ""))
+    .join("\n")
+    .replace(/\n{4,}/g, "\n\n\n")
+    .replace(/^\n+|\n+$/g, "");
+}
+
+function cleanInlineText(value) {
+  return removeInlineFormatting(convertJiraLinks(convertInlineMacros(String(value || ""))))
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function convert() {
+  const wiki = inputWiki.value;
+
+  if (!wiki.trim()) {
+    outputText.value = "";
+    setPreviewText("");
+    setStatus("Cole um conteúdo em Jira Wiki Markup para desfazer a formatação.", "error");
+    return;
+  }
+
+  originalWiki = wiki;
+  const cleaned = cleanJiraWikiMarkup(wiki);
+  outputText.value = cleaned;
+  lastPreviewText = cleaned;
+  setPreviewText(cleaned);
+  setStatus("Formatação Wiki Jira desfeita com sucesso.");
+}
+
+function updatePreviewFromOutput() {
+  const value = outputText.value;
+  lastPreviewText = value;
+  setPreviewText(value);
+  setStatus(value.trim() ? "Pré-visualização atualizada." : "Nada para pré-visualizar.", value.trim() ? undefined : "error");
+}
+
+function restoreOriginalWiki() {
+  if (!originalWiki.trim()) {
+    setStatus("Não há Wiki Markup original para restaurar.", "error");
+    return;
+  }
+  inputWiki.value = originalWiki;
+  outputText.value = originalWiki;
+  lastPreviewText = originalWiki;
+  setPreviewRawText(originalWiki, "Wiki Markup original");
+  setStatus("Wiki Markup original restaurado na saída e exibido sem limpeza na pré-visualização.");
+}
+
+function clearAll() {
+  inputWiki.value = "";
+  outputText.value = "";
+  fileInput.value = "";
+  originalWiki = "";
+  lastPreviewText = "";
+  setPreviewText("");
+  setStatus("");
+}
+
+function loadExample() {
+  inputWiki.value = `{panel:title=Documento formatado|borderStyle=solid|borderColor=#0052cc|titleBGColor=#deebff}
+h3. Objetivo
+*COMO* analista de negócio
+*QUERO* desfazer a formatação Wiki Jira
+*PARA* transformar em texto limpo e editável
+
+h3. Regras
+* Remover painéis
+* Remover negrito e itálico
+* Converter listas
+* Converter tabelas
+
+||ID||Descrição||Evidência||
+|CA01|Deve limpar o markup|Texto final sem comandos Jira|
+|CA02|Deve preservar conteúdo|Texto legível na saída|
+
+[Documentação Jira|https://support.atlassian.com]
+{panel}`;
+  convert();
+}
+
+function setPreviewText(text) {
+  previewFrame.srcdoc = renderTextPreviewDocument(text || "");
+}
+
+function setPreviewRawText(text, title) {
+  previewFrame.srcdoc = renderRawPreviewDocument(text || "", title || "Texto cru");
+}
+
+function renderTextPreviewDocument(text) {
+  const content = text.trim()
+    ? text.split(/\n{2,}/).map(block => `<p>${escapeHtml(block).replace(/\n/g, "<br>")}</p>`).join("\n")
+    : `<div class="empty">A pré-visualização aparecerá aqui após desfazer a formatação.</div>`;
+
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 16px;
+  background: #ffffff;
+  color: #1f2a44;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+p {
+  margin: 0 0 14px;
+  white-space: normal;
+}
+.empty {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #d6dbea;
+  border-radius: 14px;
+  color: #6b7280;
+  text-align: center;
+  padding: 24px;
+}
+</style>
+</head>
+<body>
+${content}
+</body>
+</html>`;
+}
+
+function renderRawPreviewDocument(text, title) {
+  const content = text.trim()
+    ? `<h3>${escapeHtml(title)}</h3><pre>${escapeHtml(text)}</pre>`
+    : `<div class="empty">Nenhum conteúdo para exibir.</div>`;
+
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  padding: 16px;
+  background: #ffffff;
+  color: #111827;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+h3 {
+  margin: 0 0 10px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: #1f2a44;
+}
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid #d6dbea;
+  border-radius: 12px;
+  background: #f9fafb;
+  padding: 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.empty {
+  min-height: 180px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #d6dbea;
+  border-radius: 14px;
+  color: #6b7280;
+  text-align: center;
+  padding: 24px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+</style>
+</head>
+<body>
+${content}
+</body>
+</html>`;
+}
+
+function setStatus(message, type) {
+  statusEl.textContent = message || "";
+  statusEl.classList.toggle("error", type === "error");
+}
+
+async function handleFileUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  try {
+    setStatus(`Lendo arquivo: ${file.name}...`);
+    const text = await file.text();
+    inputWiki.value = text;
+    setStatus(`Arquivo carregado: ${file.name}`);
+  } catch (error) {
+    console.error(error);
+    setStatus(`Não foi possível ler o arquivo: ${error.message || error}`, "error");
+  }
+}
+
+async function copyInput() {
+  if (!inputWiki.value.trim()) {
+    setStatus("Nada para copiar na entrada.", "error");
+    return;
+  }
+  await copyTextWithFeedback(inputWiki.value, document.querySelector('[data-copy-target="input"]'), "Entrada copiada.");
+}
+
+async function copyOutput() {
+  if (!outputText.value.trim()) {
+    setStatus("Nada para copiar na saída.", "error");
+    return;
+  }
+  await copyTextWithFeedback(outputText.value, document.querySelector('[data-copy-target="output"]'), "Saída copiada.");
+}
+
+async function copyPreviewHTML() {
+  try {
+    const doc = previewFrame.contentDocument || previewFrame.contentWindow?.document;
+    const html = doc?.documentElement?.outerHTML || "";
+
+    if (!html.trim() || !lastPreviewText.trim()) {
+      setStatus("Nada na pré-visualização para copiar.", "error");
+      return;
+    }
+
+    await copyTextWithFeedback(html, document.querySelector('[data-copy-target="preview"]'), "HTML da pré-visualização copiado.");
+  } catch (error) {
+    console.error(error);
+    setStatus("Não foi possível copiar o HTML da pré-visualização.", "error");
+  }
+}
+
+async function copyTextWithFeedback(value, button, message) {
+  try {
+    await copyTextToClipboard(value);
+    if (button) {
+      const originalText = button.textContent;
+      button.textContent = "Copiado!";
+      button.classList.add("success");
+      window.setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove("success");
+      }, 1500);
+    }
+    setStatus(message || "Conteúdo copiado.");
+  } catch (error) {
+    console.error(error);
+    setStatus("Não foi possível copiar automaticamente.", "error");
+  }
+}
+
+async function copyTextToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const temporaryTextarea = document.createElement("textarea");
+  temporaryTextarea.value = text;
+  temporaryTextarea.setAttribute("readonly", "");
+  temporaryTextarea.style.position = "fixed";
+  temporaryTextarea.style.left = "-9999px";
+  document.body.appendChild(temporaryTextarea);
+  temporaryTextarea.select();
+  document.execCommand("copy");
+  document.body.removeChild(temporaryTextarea);
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function applyColumnLayout() {
+  const grid = document.getElementById("gridLayout");
+  grid.style.gridTemplateColumns = `minmax(240px, ${columnPercents[0]}fr) 10px minmax(240px, ${columnPercents[1]}fr) 10px minmax(240px, ${columnPercents[2]}fr)`;
+
+  const splitters = document.querySelectorAll(".splitter");
+  splitters[0]?.setAttribute("aria-valuenow", Math.round(columnPercents[0]));
+  splitters[1]?.setAttribute("aria-valuenow", Math.round(columnPercents[0] + columnPercents[1]));
+}
+
+function setSplitterPosition(splitterIndex, clientX) {
+  if (document.body.classList.contains("card-expanded")) return;
+  if (window.matchMedia("(max-width: 1180px)").matches) return;
+
+  const grid = document.getElementById("gridLayout");
+  const rect = grid.getBoundingClientRect();
+  const min = 15;
+  const total = 100;
+  const pointerPercent = Math.max(0, Math.min(total, ((clientX - rect.left) / rect.width) * total));
+
+  if (splitterIndex === 0) {
+    const pairTotal = columnPercents[0] + columnPercents[1];
+    const nextFirst = Math.max(min, Math.min(pairTotal - min, pointerPercent));
+    columnPercents[0] = nextFirst;
+    columnPercents[1] = pairTotal - nextFirst;
+  }
+
+  if (splitterIndex === 1) {
+    const pairTotal = columnPercents[1] + columnPercents[2];
+    const rawSecond = pointerPercent - columnPercents[0];
+    const nextSecond = Math.max(min, Math.min(pairTotal - min, rawSecond));
+    columnPercents[1] = nextSecond;
+    columnPercents[2] = pairTotal - nextSecond;
+  }
+
+  applyColumnLayout();
+}
+
+function startResize(event) {
+  if (window.matchMedia("(max-width: 1180px)").matches) return;
+
+  const splitter = event.currentTarget;
+  activeSplitterIndex = Number(splitter.dataset.splitterIndex);
+  document.body.classList.add("is-resizing");
+  splitter.classList.add("active");
+  splitter.setPointerCapture?.(event.pointerId);
+  setSplitterPosition(activeSplitterIndex, event.clientX);
+  event.preventDefault();
+}
+
+function moveResize(event) {
+  if (!document.body.classList.contains("is-resizing")) return;
+  if (activeSplitterIndex === null) return;
+  setSplitterPosition(activeSplitterIndex, event.clientX);
+}
+
+function stopResize(event) {
+  if (!document.body.classList.contains("is-resizing")) return;
+
+  document.body.classList.remove("is-resizing");
+  document.querySelectorAll(".splitter.active").forEach(item => item.classList.remove("active"));
+  event.currentTarget.releasePointerCapture?.(event.pointerId);
+  activeSplitterIndex = null;
+}
+
+function moveSplitterWithKeyboard(event) {
+  const splitterIndex = Number(event.currentTarget.dataset.splitterIndex);
+  const step = event.shiftKey ? 6 : 2;
+  const min = 15;
+
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+  event.preventDefault();
+
+  if (splitterIndex === 0) {
+    const pairTotal = columnPercents[0] + columnPercents[1];
+    if (event.key === "ArrowLeft") columnPercents[0] -= step;
+    if (event.key === "ArrowRight") columnPercents[0] += step;
+    if (event.key === "Home") columnPercents[0] = min;
+    if (event.key === "End") columnPercents[0] = pairTotal - min;
+    columnPercents[0] = Math.max(min, Math.min(pairTotal - min, columnPercents[0]));
+    columnPercents[1] = pairTotal - columnPercents[0];
+  }
+
+  if (splitterIndex === 1) {
+    const pairTotal = columnPercents[1] + columnPercents[2];
+    if (event.key === "ArrowLeft") columnPercents[1] -= step;
+    if (event.key === "ArrowRight") columnPercents[1] += step;
+    if (event.key === "Home") columnPercents[1] = min;
+    if (event.key === "End") columnPercents[1] = pairTotal - min;
+    columnPercents[1] = Math.max(min, Math.min(pairTotal - min, columnPercents[1]));
+    columnPercents[2] = pairTotal - columnPercents[1];
+  }
+
+  applyColumnLayout();
+}
+
+function setExpandedCard(cardId) {
+  const isAlreadyExpanded = document.getElementById(cardId)?.classList.contains("expanded-card");
+
+  document.body.classList.toggle("card-expanded", !isAlreadyExpanded);
+  document.querySelectorAll(".card").forEach(card => card.classList.remove("expanded-card"));
+  document.querySelectorAll("[data-expand-target]").forEach(button => {
+    button.textContent = "Expandir";
+    button.setAttribute("aria-pressed", "false");
+  });
+
+  if (!isAlreadyExpanded) {
+    const card = document.getElementById(cardId);
+    const button = document.querySelector(`[data-expand-target="${cardId}"]`);
+    card?.classList.add("expanded-card");
+    if (button) {
+      button.textContent = "Reduzir";
+      button.setAttribute("aria-pressed", "true");
+    }
+  }
+}
+
+function reduceExpandedCard() {
+  document.body.classList.remove("card-expanded");
+  document.querySelectorAll(".card").forEach(card => card.classList.remove("expanded-card"));
+  document.querySelectorAll("[data-expand-target]").forEach(button => {
+    button.textContent = "Expandir";
+    button.setAttribute("aria-pressed", "false");
+  });
+}
+
+function bindLayoutEvents() {
+  document.querySelectorAll(".splitter").forEach(splitter => {
+    splitter.addEventListener("pointerdown", startResize);
+    splitter.addEventListener("pointermove", moveResize);
+    splitter.addEventListener("pointerup", stopResize);
+    splitter.addEventListener("pointercancel", stopResize);
+    splitter.addEventListener("keydown", moveSplitterWithKeyboard);
+  });
+
+  document.querySelectorAll("[data-expand-target]").forEach(button => {
+    button.addEventListener("click", () => setExpandedCard(button.dataset.expandTarget));
+  });
+
+  document.querySelectorAll("[data-copy-target]").forEach(button => {
+    button.addEventListener("click", () => {
+      if (button.dataset.copyTarget === "input") copyInput();
+      if (button.dataset.copyTarget === "output") copyOutput();
+      if (button.dataset.copyTarget === "preview") copyPreviewHTML();
+    });
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && document.body.classList.contains("card-expanded")) {
+      reduceExpandedCard();
+    }
+  });
+}
+
+document.getElementById("convertBtn").addEventListener("click", convert);
+document.getElementById("exampleBtn").addEventListener("click", loadExample);
+document.getElementById("clearBtn").addEventListener("click", clearAll);
+document.getElementById("renderPreviewBtn").addEventListener("click", updatePreviewFromOutput);
+document.getElementById("restoreWikiBtn").addEventListener("click", restoreOriginalWiki);
+fileInput.addEventListener("change", handleFileUpload);
+
+bindLayoutEvents();
+applyColumnLayout();
+setPreviewText("");
+</script>
+</body>
+</html>
