@@ -1,0 +1,93 @@
+1. História de Usuário / Escopo
+
+COMO [persona / papel funcional],
+QUERO [necessidade, ajuste, criação, integração ou processamento],
+ENTÃO [resultado esperado no sistema ou processo],
+PARA [benefício de negócio, operacional, técnico, financeiro ou regulatório].
+
+2. Fora do Escopo
+[Item que não será entregue nesta US]
+[Integração, relatório, tela, processo, regra ou sistema não contemplado]
+[Alterações relacionadas que pertencem a outra US, se aplicável]
+3. Pré-condições, Premissas e Restrições
+3.1 Pré-condições
+[Condição que deve existir antes da execução da US]
+[Sistema, API, objeto, tabela, relatório ou processo que deve estar disponível]
+3.2 Premissas
+PREMISSA: [Informação assumida como verdadeira para esta US]
+PREMISSA: [Dependência funcional assumida, se aplicável]
+3.3 Restrições
+[Limitação funcional, técnica, operacional ou de escopo]
+[Comportamento que não pode ser alterado]
+[Compatibilidade, versão, formato, domínio ou regra obrigatória]
+3.4 Pendências
+PENDÊNCIA: [Informação ainda não confirmada, mas que não impede a escrita da US]
+PENDÊNCIA: [Decisão pendente de negócio, técnica ou integração]
+4. Fluxo de Negócio
+4.1 Fluxo Principal
+[Sistema/usuário/processo] executa [ação inicial].
+[Sistema origem] recebe ou identifica [dados/campos/evento].
+[Sistema/processo] aplica [validação/regra/transformação].
+[Sistema/processo] grava, envia, consulta ou disponibiliza [resultado].
+[Sistema destino/usuário] recebe ou visualiza [resultado esperado].
+4.2 Fluxos Alternativos
+FA01: Quando [condição alternativa válida], o sistema deverá [comportamento esperado].
+FA02: Quando [campo opcional não informado / regra alternativa / fallback], o sistema deverá [comportamento AS IS ou alternativo].
+4.3 Fluxos de Exceção
+FE01: Quando [erro, falha, inconsistência ou condição inválida], o sistema deverá [comportamento esperado, bloqueio, rejeição ou retorno de erro].
+FE02: Quando [regra obrigatória não for atendida], o sistema deverá [ação esperada].
+5. Sistemas Impactados
+Sistema/Artefato	Tipo de Impacto	Descrição do Impacto
+[Sistema / API / relatório / objeto / tabela]	[Consulta / Persistência / Integração / Exibição / Validação / Extração]	[Descrição objetiva do impacto]
+[Sistema / Artefato]	[Tipo]	[Descrição]
+6. Detalhamento da História / Requisito
+6.1 Objetivo
+
+[Descrever de forma direta o objetivo funcional da US.]
+
+6.2 Escopo Detalhado
+
+[Descrever o que será entregue, quais sistemas, campos, regras, fluxos, integrações e comportamentos fazem parte da US.]
+
+6.3 Fora do Escopo Detalhado
+
+[Reforçar itens excluídos quando houver risco de confusão com o escopo.]
+
+6.4 Campos / Elementos
+Campo/Elemento	Tipo	Domínio / Valores	Obrigatório	Regra de Validação / Derivação	Destino
+[CAMPO_1]	[string / number / boolean / date / objeto]	[valores permitidos / tamanho / formato]	[Sim / Não / Condicional]	[Regra aplicável]	[Sistema, tabela, objeto, relatório ou API]
+[CAMPO_2]	[tipo]	[domínio]	[Sim/Não]	[regra]	[destino]
+6.5 Requisitos Funcionais (RF)
+RF01: [Descrever requisito funcional específico, verificável e rastreável.]
+RF02: [Descrever outro requisito funcional, evitando duplicidade com RF01.]
+RF03: [Descrever requisito funcional complementar, se aplicável.]
+6.6 Regras de Negócio (RN)
+RN01: Quando [condição], o sistema deverá [comportamento esperado], resultando em [consequência funcional].
+RN02: Quando [condição alternativa ou regra de exceção], o sistema deverá [comportamento esperado].
+RN03: [Regra de validação, obrigatoriedade, fallback, compatibilidade ou manutenção do AS IS.]
+6.7 Requisitos Não Funcionais (RNF)
+RNF01: [Requisito de desempenho, segurança, compatibilidade, disponibilidade, auditoria ou rastreabilidade, se aplicável.]
+
+Caso não haja RNF:
+
+Não foram identificados requisitos não funcionais específicos para esta US.
+6.8 Notas Técnicas
+[Informação técnica relevante: API, opcode, tabela, objeto, job, view, query, layout, versão, endpoint etc.]
+[Observação sobre compatibilidade, persistência, integração ou validação técnica.]
+6.9 Dependências
+DEP01: [Dependência funcional, técnica, operacional ou de outra US.]
+DEP02: [Dependência de refinamento, sistema, área de negócio ou ambiente.]
+7. Critérios de Aceite (CA)
+ID	Critério de Aceite	Rastreabilidade	Evidência
+CA01	DADO que [contexto inicial]
+QUANDO [ação, evento ou execução]
+ENTÃO [resultado esperado]
+E [complemento, se aplicável]	RF01, RN01	1. [Evidência objetiva]
+2. [Print, log, payload, banco, relatório ou validação funcional]
+CA02	DADO que [contexto alternativo ou exceção]
+QUANDO [ação ou evento]
+ENTÃO [resultado esperado]	RF02, RN02	1. [Evidência objetiva]
+2. [Validação esperada]
+CA03	DADO que [contexto de manutenção do AS IS, erro ou regra complementar]
+QUANDO [ação]
+ENTÃO [resultado]	RF03, RN03	1. [Evidência]
