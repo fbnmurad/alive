@@ -1454,9 +1454,337 @@ thead th {
   height: 20px;
 }
 
+.search-actions {
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  align-self: end;
+  margin-top: -2px;
+}
+
+#resultsTable tbody td {
+  user-select: none;
+}
+
+#resultsTable tbody tr {
+  cursor: default;
+}
+
+#resultsTable tbody tr.result-row {
+  cursor: pointer;
+}
+
+#resultsTable tbody tr.result-row.selected td {
+  background: #fbf7ff;
+  box-shadow: inset 0 1px 0 rgba(102, 0, 153, 0.08), inset 0 -1px 0 rgba(102, 0, 153, 0.08);
+}
+
+#resultsTable tbody tr.result-row.selected td:first-child {
+  box-shadow: inset 3px 0 0 var(--brand), inset 0 1px 0 rgba(102, 0, 153, 0.08), inset 0 -1px 0 rgba(102, 0, 153, 0.08);
+}
+
+body.mode-billnow #resultsTable tbody tr.result-row.selected td {
+  background: #f3fbfb;
+}
+
+.selected-record-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #f3e5f9;
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+body.mode-billnow .selected-record-chip {
+  background: #e7fbfb;
+}
+
+body.mode-billnow .caret {
+  background: #e7fbfb;
+  color: var(--brand);
+}
+
+body.mode-billnow .macro summary:hover {
+  background: #f2fbfb;
+}
+
+body.mode-billnow .field-chip:focus-within,
+body.mode-billnow .field-chip:hover {
+  border-color: rgba(0, 124, 137, 0.35);
+}
+
+body.mode-billnow .lov-field.open .lov-trigger {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(0, 124, 137, 0.12);
+}
+
+body.mode-billnow .lov-option:hover {
+  background: #f2fbfb;
+}
+
+.field-value input[readonly] {
+  cursor: default;
+  caret-color: transparent;
+  color: var(--text);
+  font-weight: 650;
+}
+
+body.mode-billnow {
+  --brand: #007c89;
+  --brand2: #004b5a;
+  --brand-mid: #00a6a6;
+  --accent: #0088ff;
+  --gradient-main: linear-gradient(90deg, #003c55, #007c89, #00a6a6, #0088ff);
+  --gradient-button: linear-gradient(90deg, #007c89, #00a6a6);
+  --shadow-topbar: 0 2px 8px rgba(0, 76, 90, 0.24);
+  background:
+    radial-gradient(circle at top right, rgba(0, 166, 166, 0.08), transparent 24%),
+    radial-gradient(circle at left bottom, rgba(0, 136, 255, 0.08), transparent 28%),
+    var(--bg);
+}
+
+body.mode-billnow input:focus,
+body.mode-billnow select:focus {
+  box-shadow: 0 0 0 3px rgba(0, 124, 137, 0.14);
+}
+
+.search-card {
+  overflow: visible;
+}
+
+.view-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 10px 12px 0;
+  background: var(--gradient-section);
+}
+
+.view-tab {
+  min-height: 36px;
+  padding: 8px 18px;
+  border-radius: 8px 8px 0 0;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+}
+
+.view-tab:hover {
+  color: var(--brand);
+  background: rgba(255, 255, 255, 0.62);
+  transform: none;
+}
+
+.view-tab.active {
+  color: var(--brand);
+  background: #ffffff;
+  border-color: var(--line);
+  box-shadow: 0 -1px 0 #ffffff inset;
+}
+
+.view-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #f3e5f9;
+  color: var(--brand);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+body.mode-billnow .view-chip {
+  background: #e7fbfb;
+}
+
+.kpi-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  justify-content: stretch;
+  gap: 12px;
+}
+
+.kpi {
+  min-height: 92px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  justify-content: flex-start;
+  text-align: left;
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 72%, #f7faff 100%);
+  box-shadow: 0 1px 2px rgba(35, 35, 35, 0.04), 0 8px 18px rgba(35, 35, 35, 0.045);
+}
+
+.kpi-accent {
+  display: inline-flex;
+  width: 9px;
+  height: 9px;
+  margin-top: 7px;
+  border-radius: 999px;
+  background: var(--brand);
+  box-shadow: 0 0 0 5px rgba(102, 0, 153, 0.08);
+  flex: 0 0 auto;
+}
+
+body.mode-billnow .kpi-accent {
+  box-shadow: 0 0 0 5px rgba(0, 124, 137, 0.09);
+}
+
+.kpi-copy {
+  display: grid;
+  justify-items: start;
+  gap: 5px;
+  max-width: none;
+}
+
+.kpi small {
+  color: #7f8897;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+}
+
+.kpi strong {
+  color: #303846;
+  font-size: 26px;
+  line-height: 1.05;
+  font-weight: 850;
+}
+
+.kpi span {
+  color: #5a6474;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.kpi-summary {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.82fr) minmax(0, 2.4fr);
+  align-items: stretch;
+  gap: 0;
+  min-height: 104px;
+  padding: 16px 18px 16px 20px;
+  border: 1px solid #dfe4ed;
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #ffffff 76%, #f7faff 100%);
+  box-shadow: 0 1px 2px rgba(35, 35, 35, 0.04), 0 10px 22px rgba(35, 35, 35, 0.055);
+  overflow: hidden;
+}
+
+.kpi-summary::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--gradient-button);
+}
+
+.summary-copy {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 4px 20px 4px 2px;
+  border-right: 1px solid var(--line2);
+}
+
+.summary-eyebrow,
+.summary-metric small {
+  color: #7f8897;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.summary-copy strong {
+  color: #303846;
+  font-size: 18px;
+  line-height: 1.15;
+  font-weight: 850;
+}
+
+.summary-copy span:last-child,
+.summary-metric span:last-child {
+  color: #5a6474;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.summary-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  min-width: 0;
+}
+
+.summary-metric {
+  position: relative;
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  min-width: 0;
+  padding: 6px 16px 6px 22px;
+}
+
+.summary-metric + .summary-metric {
+  border-left: 1px solid var(--line2);
+}
+
+.metric-dot {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--brand);
+  box-shadow: 0 0 0 5px rgba(102, 0, 153, 0.08);
+  transform: translateY(-50%);
+}
+
+body.mode-billnow .metric-dot {
+  box-shadow: 0 0 0 5px rgba(0, 124, 137, 0.09);
+}
+
+.summary-metric strong {
+  color: #303846;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
 @media (max-width: 1260px) {
   .search-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .kpi-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-copy {
+    padding: 0 0 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line2);
+  }
+
+  .summary-metrics {
+    padding-top: 10px;
   }
 }
 
@@ -1464,6 +1792,15 @@ thead th {
   .search-grid,
   .kpi-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .summary-metrics {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 10px;
+  }
+
+  .summary-metric:nth-child(3) {
+    border-left: 0;
   }
 
   .field-chip {
@@ -1486,13 +1823,30 @@ thead th {
     grid-template-columns: 1fr;
   }
 
+  .kpi-summary {
+    padding: 14px;
+  }
+
+  .summary-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-metric,
+  .summary-metric:nth-child(3) {
+    border-left: 0;
+  }
+
+  .summary-metric + .summary-metric {
+    border-top: 1px solid var(--line2);
+  }
+
   .field:has(.field-inline),
   .search-actions {
     grid-column: auto;
   }
 
   .search-actions {
-    justify-content: flex-start;
+    justify-content: flex-end;
     flex-wrap: wrap;
   }
 
@@ -1516,7 +1870,7 @@ thead th {
 }
 </style>
 </head>
-<body>
+<body class="mode-trial">
 <svg class="icon-sprite" aria-hidden="true">
   <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></symbol>
   <symbol id="icon-eraser" viewBox="0 0 24 24"><path d="m7 21-4-4 10-10 6 6-8 8Z"></path><path d="m16 5 3-3 3 3-3 3"></path><path d="M7 21h15"></path></symbol>
@@ -1542,7 +1896,7 @@ thead th {
         <span class="header-mark"><svg class="icon"><use href="#icon-wallet"></use></svg></span>
         <h1>Faturamento On Demand</h1>
       </div>
-      <p>Cockpit operacional para pesquisar faturas, revisar campos por domínio e conduzir ações de trial billing.</p>
+      <p id="headerSubtitle">Cockpit operacional para pesquisar faturas, revisar campos por domínio e conduzir ações de trial billing.</p>
     </div>
     <div class="header-badges">
       <span class="header-badge"><svg class="icon"><use href="#icon-filter"></use></svg>Filtros ativos</span>
@@ -1551,7 +1905,7 @@ thead th {
   </div>
 </header>
 <main class="page">
-<section class="card"><div class="card-h"><h2 class="card-title"><svg class="icon"><use href="#icon-search"></use></svg>Pesquisa</h2></div><div class="card-b"><div class="search-grid">
+<section class="card search-card"><div class="view-tabs" role="tablist" aria-label="Modo de faturamento"><button id="tabTrial" class="view-tab active" type="button" role="tab" aria-selected="true" onclick="setAppView('trial')">Trial</button><button id="tabBillnow" class="view-tab" type="button" role="tab" aria-selected="false" onclick="setAppView('billnow')">Billnow</button></div><div class="card-h"><h2 class="card-title"><svg class="icon"><use href="#icon-search"></use></svg>Pesquisa</h2><span class="view-chip" id="viewChip">Trial</span></div><div class="card-b"><div class="search-grid">
 <div class="field"><label>Cliente</label><input id="fCliente" placeholder="Ex.: Grupo Exemplo Telecom" oninput="applySearch()"></div>
 <div class="field"><label>CNPJ cliente</label><input id="fCnpj" placeholder="00.000.000/0000-00" oninput="applySearch()"></div>
 <div class="field"><label>Período de Referência</label><div class="field-inline"><input id="fPeriodoInicio" type="date" value="2026-05-01" onchange="applySearch()"><input id="fPeriodoFim" type="date" value="2026-05-31" onchange="applySearch()"></div></div>
@@ -1565,7 +1919,7 @@ thead th {
 <div class="field"><label>E-mail solicitante</label><input id="fEmailSolicitante" placeholder="Ex.: mariana.costa@empresa.com.br" oninput="applySearch()"></div>
 <div class="search-actions"><button class="primary" onclick="applySearch()"><svg class="icon"><use href="#icon-search"></use></svg>Pesquisar</button><button class="secondary" onclick="clearSearch()"><svg class="icon"><use href="#icon-eraser"></use></svg>Limpar</button></div>
 </div></div></section>
-<section class="kpi-grid"><div class="kpi"><div class="kpi-copy"><small>Registros no Período</small><strong id="kpiRegistros">0</strong><span>Registros retornados do relatório Billnow no recorte aplicado.</span></div></div><div class="kpi"><div class="kpi-copy"><small>Valor Bruto do Billnow</small><strong id="kpiBruto">R$ 0,00</strong><span>Somatório real do valor bruto dos registros filtrados.</span></div></div><div class="kpi"><div class="kpi-copy"><small>Valor Líquido do Billnow</small><strong id="kpiLiquido">R$ 0,00</strong><span>Valor líquido estimado após abatimento de impostos e retenções.</span></div></div></section>
+<section class="kpi-summary" aria-live="polite"><div class="summary-copy"><span class="summary-eyebrow" id="kpiContextLabel">Trial Billing Summary</span><strong id="kpiSummaryTitle">Resumo do recorte</strong><span id="kpiSummaryHint">Métricas dos registros filtrados.</span></div><div class="summary-metrics"><div class="summary-metric"><span class="metric-dot"></span><small id="kpiRegistrosLabel">Registros</small><strong id="kpiRegistros">0</strong><span id="kpiRegistrosHint">No período</span></div><div class="summary-metric"><span class="metric-dot"></span><small id="kpiBrutoLabel">Valor bruto</small><strong id="kpiBruto">R$ 0,00</strong><span id="kpiBrutoHint">Somatório bruto</span></div><div class="summary-metric"><span class="metric-dot"></span><small id="kpiLiquidoLabel">Valor líquido</small><strong id="kpiLiquido">R$ 0,00</strong><span id="kpiLiquidoHint">Após impostos e retenções</span></div><div class="summary-metric"><span class="metric-dot"></span><small id="kpiRetencaoLabel">Retenção estimada</small><strong id="kpiRetencao">R$ 0,00</strong><span id="kpiRetencaoHint">Bruto - líquido</span></div></div></section>
 <section class="card"><div class="card-h"><h2 class="card-title"><svg class="icon"><use href="#icon-table"></use></svg>Resultados</h2><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="totalizador" id="totalizadorRegistros">0 registro(s) encontrado(s)</span></div></div><div class="table-wrap"><table id="resultsTable"><thead><tr>
 <th>Ações</th>
 <th class="sortable" data-col="status" data-type="select"><div class="headcell">Status <span class="sort-indicator">↕</span></div></th>
@@ -1584,7 +1938,7 @@ thead th {
 <th class="sortable align-right" data-col="valorBruto" data-type="money"><div class="headcell">Valor Bruto <span class="sort-indicator">↕</span></div></th>
 <th class="sortable align-right" data-col="valorLiquido" data-type="money"><div class="headcell">Valor Líquido <span class="sort-indicator">↕</span></div></th>
 </tr></thead><tbody id="resultsBody"></tbody></table></div><div class="pagination"><div class="pagination-info" id="paginationInfo">Exibindo 0 de 0</div><div class="pagination-actions"><button class="secondary" onclick="previousPage()"><svg class="icon"><use href="#icon-chevron-left"></use></svg>Anterior</button><span class="pill info" id="pageInfo">Página 1 de 1</span><button class="secondary" onclick="nextPage()">Próxima<svg class="icon"><use href="#icon-chevron-right"></use></svg></button></div></div></section>
-<section class="card"><div class="card-h actions-row"><div><h2 class="card-title"><svg class="icon"><use href="#icon-layers"></use></svg>Campos por grupo</h2><div class="field-toolbar"><div class="lov-field" id="domainLov"><label>Domínio</label><button type="button" class="lov-trigger" onclick="toggleLov('domain')"><span id="domainLovSummary">Todos</span><svg class="icon"><use href="#icon-chevron-right"></use></svg></button><div class="lov-menu" id="domainLovMenu"></div></div><div class="lov-field" id="macroLov"><label>Macro grupo</label><button type="button" class="lov-trigger" onclick="toggleLov('macro')"><span id="macroLovSummary">Todos</span><svg class="icon"><use href="#icon-chevron-right"></use></svg></button><div class="lov-menu" id="macroLovMenu"></div></div><div class="lov-field" id="groupLov"><label>Grupo</label><button type="button" class="lov-trigger" onclick="toggleLov('group')"><span id="groupLovSummary">Todos</span><svg class="icon"><use href="#icon-chevron-right"></use></svg></button><div class="lov-menu" id="groupLovMenu"></div></div></div></div><div class="actions"><button id="toggleAllButton" class="secondary" onclick="toggleAllFields()"><svg class="icon"><use href="#icon-expand"></use></svg>Expandir todos</button></div></div><div class="macro-area" id="macroList"></div></section>
+<section class="card"><div class="card-h actions-row"><div><h2 class="card-title"><svg class="icon"><use href="#icon-layers"></use></svg>Campos por grupo <span class="selected-record-chip" id="selectedRecordInfo">Nenhum registro</span></h2><div class="field-toolbar"><div class="lov-field" id="domainLov"><label>Domínio</label><button type="button" class="lov-trigger" onclick="toggleLov('domain')"><span id="domainLovSummary">Todos</span><svg class="icon"><use href="#icon-chevron-right"></use></svg></button><div class="lov-menu" id="domainLovMenu"></div></div><div class="lov-field" id="macroLov"><label>Macro grupo</label><button type="button" class="lov-trigger" onclick="toggleLov('macro')"><span id="macroLovSummary">Todos</span><svg class="icon"><use href="#icon-chevron-right"></use></svg></button><div class="lov-menu" id="macroLovMenu"></div></div><div class="lov-field" id="groupLov"><label>Grupo</label><button type="button" class="lov-trigger" onclick="toggleLov('group')"><span id="groupLovSummary">Todos</span><svg class="icon"><use href="#icon-chevron-right"></use></svg></button><div class="lov-menu" id="groupLovMenu"></div></div></div></div><div class="actions"><button id="toggleAllButton" class="secondary" onclick="toggleAllFields()"><svg class="icon"><use href="#icon-expand"></use></svg>Expandir todos</button></div></div><div class="macro-area" id="macroList"></div></section>
 </main><div id="filterPanel" class="filter-panel"></div>
 <script>
 const rows = [
@@ -2359,9 +2713,9 @@ const rows = [
     "observacao": "Metadados/comunicação de documento; solicitante tende a exigir extensão/customização sobre invoice."
   }
 ].map((r,i)=>({...r,id:i+1,valor:r.exemplo||""}));
-const pageSize=5;let currentPage=1;let fieldSelections={domain:[],macro:[],group:[]};let openLovKey=null;let allFieldsOpen=false;let sortState={col:null,dir:"asc"};let columnFilters={};
+const pageSize=5;let currentPage=1;let appView="trial";let selectedRecordId=null;let fieldSelections={domain:[],macro:[],group:[]};let openLovKey=null;let allFieldsOpen=false;let sortState={col:null,dir:"asc"};let columnFilters={};
 function iconSvg(name){return `<svg class="icon" aria-hidden="true"><use href="#icon-${name}"></use></svg>`}
-function fieldWidthStyle(r){const label=String(r.campo||"");const value=String(r.valor||"");const longest=Math.max(label.length,value.length);const ch=Math.min(30,Math.max(8,longest+2));return `style="--field-width: calc(${ch}ch + 28px)"`}
+function fieldWidthStyle(r){const label=String(r.campo||"");const value=String(fieldDisplayValue(r)||"");const longest=Math.max(label.length,value.length);const ch=Math.min(26,Math.max(8,longest+2));return `style="--field-width: clamp(124px, calc(${ch}ch + 22px), 320px)"`}
 const dataset=[
 {cliente:"Grupo Exemplo Telecom",cnpj:"12.345.678/0001-90",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0001",nfcon:"NFCom Trial 000362046",produto:"Link Dedicado 500 Mbps",familia:"Conectividade Empresarial",mesAno:"2026-05",contaBilling:"2201487635",solicitante:"Mariana Alves Costa",emailSolicitante:"mariana.costa@grupoexemplo.com.br",valorBruto:5612.95,valorLiquido:5486.07,status:"Pendente de execução"},
 {cliente:"Grupo Exemplo Telecom",cnpj:"12.345.678/0001-90",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0002",nfcon:"NFCom Trial 000362047",produto:"IP Connect 1 Gbps",familia:"Conectividade Empresarial",mesAno:"2026-05",contaBilling:"2201487636",solicitante:"Rafael Santos Lima",emailSolicitante:"rafael.lima@grupoexemplo.com.br",valorBruto:8940.20,valorLiquido:8741.12,status:"Em execução"},
@@ -2371,16 +2725,31 @@ const dataset=[
 {cliente:"Delta Cloud Solutions",cnpj:"51.987.654/0001-77",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0006",nfcon:"NFCom Trial 000362051",produto:"Link Redundante 300 Mbps",familia:"Conectividade Empresarial",mesAno:"2026-05",contaBilling:"2201487640",solicitante:"Eduardo Ferreira",emailSolicitante:"eduardo.ferreira@deltacloud.com.br",valorBruto:6780.40,valorLiquido:6613.25,status:"Em execução"},
 {cliente:"Omega Indústria e Comércio",cnpj:"78.123.456/0001-88",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0007",nfcon:"NFCom Trial 000362052",produto:"Link Dedicado 500 Mbps",familia:"Conectividade Empresarial",mesAno:"2026-05",contaBilling:"2201487641",solicitante:"Fernanda Moraes",emailSolicitante:"fernanda.moraes@omega.com.br",valorBruto:5612.95,valorLiquido:5486.07,status:"Concluído"}
 ];
+dataset.forEach((r,i)=>{r.id=i+1});
 function money(v){return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(v||0))}function textOf(v){return String(v??"").toLowerCase()}function isFilled(r){return String(r.valor||"").trim().length>0&&r.valor!=="A informar"}
-function statusClass(status){if(status==="Concluído")return"status-concluido";if(status==="Em execução")return"status-execucao";return"status-pendente"}
+function normalizedText(value){return String(value??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()}
+function statusClass(status){const normalized=normalizedText(status);if(normalized==="concluido"||normalized==="sucesso")return"status-concluido";if(normalized==="em execucao")return"status-execucao";return"status-pendente"}
+function isBilled(r){return normalizedText(r.status)==="concluido"}
+function displayStatus(r){return appView==="billnow"&&isBilled(r)?"Sucesso":r.status}
+function selectedRecord(){return dataset.find(r=>r.id===selectedRecordId)||null}
+function syncSelectedRecord(data){if(!data.length){selectedRecordId=null;return}if(!data.some(r=>r.id===selectedRecordId))selectedRecordId=data[0].id}
+function selectResultRow(id){selectedRecordId=Number(id);renderResults();renderMacros()}
+function toggleResultDetails(id){selectedRecordId=Number(id);allFieldsOpen=!allFieldsOpen;renderResults();renderMacros()}
+function parsePtNumber(value){const clean=String(value??"").replace(/[^\d,.-]/g,"").replace(/\./g,"").replace(",",".");const number=Number(clean);return Number.isFinite(number)?number:null}
+function scaledMoney(value,record){const parsed=parsePtNumber(value);if(parsed===null)return value||"";const factor=Number(record.valorBruto||0)/5612.95;return money(parsed*factor)}
+function monthLabel(value){const parts=String(value||"").split("-");return parts.length===2?`${parts[1]}/${parts[0]}`:String(value||"")}
+function productCode(record){return String(record.produto||"ITEM").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Z0-9]/g,"").slice(0,22)||"ITEM"}
+function fieldDisplayValue(field){const record=selectedRecord();const original=field.valor||field.exemplo||"";if(!record)return original;const name=normalizedText(field.campo);if(name.includes("email")||name.includes("e-mail"))return record.emailSolicitante;if(name.includes("nome solicitante"))return record.solicitante;if(name.includes("telefone"))return`11 3254-${String(7800+record.id).slice(-4)}`;if(name.includes("endereco"))return`${record.cliente} - endereco de cobranca`;if(name.includes("numero da conta"))return record.contaBilling;if(name.includes("numero da invoice"))return record.fatura;if(name.includes("numero do contrato"))return`17769342${String(record.id).padStart(2,"0")}`;if(name.includes("mes/ano"))return monthLabel(record.mesAno);if(name.includes("periodo de apuracao"))return`${record.periodoInicio} a ${record.periodoFim}`;if(name.includes("data de vencimento"))return"19/06/2026";if(name.includes("codigo de barras"))return`847000000${String(record.id).padStart(3,"0")}00000000000000000000000000`;if(name.includes("codigo do item"))return productCode(record);if(name.includes("descricao comercial")||name.includes("conceito faturavel"))return record.produto;if(name.includes("familia de produtos"))return record.familia;if(name.includes("quantidade faturada"))return"1";if(name.includes("total a pagar"))return money(record.valorLiquido);if(name.includes("preco unitario")||name.includes("valor total do item"))return money(record.valorBruto);if(name.includes("mensagem importante"))return`${record.cliente} - ${appView==="billnow"?"Billnow concluido.":"Trial em acompanhamento."}`;if(String(original).trim().startsWith("R$"))return scaledMoney(original,record);return original}
 function getSearchFilters(){return{cliente:document.getElementById("fCliente").value.trim().toLowerCase(),cnpj:document.getElementById("fCnpj").value.trim().toLowerCase(),periodoInicio:document.getElementById("fPeriodoInicio").value,periodoFim:document.getElementById("fPeriodoFim").value,fatura:document.getElementById("fFatura").value.trim().toLowerCase(),nfcon:document.getElementById("fNfcon").value.trim().toLowerCase(),produto:document.getElementById("fProduto").value.trim().toLowerCase(),familia:document.getElementById("fFamilia").value,mesAno:document.getElementById("fMesAno").value,contaBilling:document.getElementById("fContaBilling").value.trim().toLowerCase(),solicitante:document.getElementById("fSolicitante").value.trim().toLowerCase(),emailSolicitante:document.getElementById("fEmailSolicitante").value.trim().toLowerCase()}}
 function rowMatchesSearch(r){const f=getSearchFilters();const periodOk=(!f.periodoInicio||r.periodoInicio>=f.periodoInicio)&&(!f.periodoFim||r.periodoFim<=f.periodoFim);return(!f.cliente||textOf(r.cliente).includes(f.cliente))&&(!f.cnpj||textOf(r.cnpj).includes(f.cnpj))&&periodOk&&(!f.fatura||textOf(r.fatura).includes(f.fatura))&&(!f.nfcon||textOf(r.nfcon).includes(f.nfcon))&&(!f.produto||textOf(r.produto).includes(f.produto))&&(!f.familia||r.familia===f.familia)&&(!f.mesAno||r.mesAno===f.mesAno)&&(!f.contaBilling||textOf(r.contaBilling).includes(f.contaBilling))&&(!f.solicitante||textOf(r.solicitante).includes(f.solicitante))&&(!f.emailSolicitante||textOf(r.emailSolicitante).includes(f.emailSolicitante))}
-function rowMatchesColumnFilters(r){return Object.entries(columnFilters).every(([col,val])=>{if(!val)return true;if(col==="periodoInicio"||col==="periodoFim"||col==="mesAno")return r[col]===val;if(col==="familia"||col==="status")return r[col]===val;if(col==="valorBruto"||col==="valorLiquido")return Number(r[col])>=Number(val);return textOf(r[col]).includes(String(val).toLowerCase())})}
-function filteredDataset(){let data=dataset.filter(rowMatchesSearch).filter(rowMatchesColumnFilters);if(sortState.col){data.sort((a,b)=>{let av=a[sortState.col],bv=b[sortState.col];if(sortState.col==="valorBruto"||sortState.col==="valorLiquido"){av=Number(av);bv=Number(bv)}else{av=String(av??"").toLowerCase();bv=String(bv??"").toLowerCase()}if(av<bv)return sortState.dir==="asc"?-1:1;if(av>bv)return sortState.dir==="asc"?1:-1;return 0})}return data}
-function renderKPIs(data){document.getElementById("kpiRegistros").textContent=data.length;document.getElementById("kpiBruto").textContent=money(data.reduce((a,r)=>a+Number(r.valorBruto||0),0));document.getElementById("kpiLiquido").textContent=money(data.reduce((a,r)=>a+Number(r.valorLiquido||0),0))}
-function renderResults(){const data=filteredDataset();renderKPIs(data);const totalPages=Math.max(1,Math.ceil(data.length/pageSize));if(currentPage>totalPages)currentPage=totalPages;const start=(currentPage-1)*pageSize;const pageRows=data.slice(start,start+pageSize);document.getElementById("totalizadorRegistros").textContent=`${data.length} registro(s) encontrado(s)`;document.getElementById("pageInfo").textContent=`Página ${currentPage} de ${totalPages}`;document.getElementById("paginationInfo").textContent=data.length?`Exibindo ${start+1}-${start+pageRows.length} de ${data.length}`:"Exibindo 0 de 0";document.getElementById("resultsBody").innerHTML=pageRows.length?pageRows.map(r=>`<tr><td><div class="action-cell"><button class="icon-btn gear" title="Reprocessar Trial" aria-label="Reprocessar Trial" onclick="rowAction('Reprocessar Trial','${r.fatura}')">${iconSvg("refresh")}</button><button class="icon-btn cancel" title="Cancelar Trial" aria-label="Cancelar Trial" onclick="rowAction('Cancelar Trial','${r.fatura}')">${iconSvg("x")}</button><button class="icon-btn ok" title="Faturar Billnow" aria-label="Faturar Billnow" onclick="rowAction('Faturar Billnow','${r.fatura}')">${iconSvg("check")}</button></div></td><td><span class="status-pill ${statusClass(r.status)}">${r.status}</span></td><td>${r.cliente}</td><td>${r.cnpj}</td><td>${r.periodoInicio}</td><td>${r.periodoFim}</td><td>${r.fatura}</td><td>${r.nfcon}</td><td>${r.produto}</td><td>${r.familia}</td><td>${r.mesAno}</td><td>${r.contaBilling}</td><td>${r.solicitante}</td><td>${r.emailSolicitante}</td><td class="align-right">${money(r.valorBruto)}</td><td class="align-right">${money(r.valorLiquido)}</td></tr>`).join(""):`<tr><td colspan="16" class="empty">Nenhum resultado encontrado.</td></tr>`;updateSortIndicators()}
+function rowMatchesColumnFilters(r){return Object.entries(columnFilters).every(([col,val])=>{if(!val)return true;if(col==="periodoInicio"||col==="periodoFim"||col==="mesAno")return r[col]===val;if(col==="status")return displayStatus(r)===val;if(col==="familia")return r[col]===val;if(col==="valorBruto"||col==="valorLiquido")return Number(r[col])>=Number(val);return textOf(r[col]).includes(String(val).toLowerCase())})}
+function datasetForView(){return appView==="billnow"?dataset.filter(isBilled):dataset}
+function filteredDataset(){let data=datasetForView().filter(rowMatchesSearch).filter(rowMatchesColumnFilters);if(sortState.col){data.sort((a,b)=>{let av=a[sortState.col],bv=b[sortState.col];if(sortState.col==="valorBruto"||sortState.col==="valorLiquido"){av=Number(av);bv=Number(bv)}else{av=String(av??"").toLowerCase();bv=String(bv??"").toLowerCase()}if(av<bv)return sortState.dir==="asc"?-1:1;if(av>bv)return sortState.dir==="asc"?1:-1;return 0})}return data}
+function updateViewChrome(){const billnow=appView==="billnow";document.body.classList.toggle("mode-billnow",billnow);document.body.classList.toggle("mode-trial",!billnow);document.getElementById("tabTrial").classList.toggle("active",!billnow);document.getElementById("tabBillnow").classList.toggle("active",billnow);document.getElementById("tabTrial").setAttribute("aria-selected",String(!billnow));document.getElementById("tabBillnow").setAttribute("aria-selected",String(billnow));document.getElementById("viewChip").textContent=billnow?"Billnow":"Trial";document.getElementById("headerSubtitle").textContent=billnow?"Cockpit operacional para consultar faturas efetivadas no Billnow com os filtros informados.":"Cockpit operacional para pesquisar faturas, revisar campos por domínio e conduzir ações de trial billing.";document.title=billnow?"FlexBill | Billnow Cockpit":"FlexBill | Trial Billing Cockpit"}
+function setAppView(view){if(appView===view)return;appView=view;currentPage=1;columnFilters={};updateViewChrome();renderResults()}
+function renderKPIs(data){const billnow=appView==="billnow";const bruto=data.reduce((a,r)=>a+Number(r.valorBruto||0),0);const liquido=data.reduce((a,r)=>a+Number(r.valorLiquido||0),0);const retencao=Math.max(0,bruto-liquido);document.getElementById("kpiContextLabel").textContent=billnow?"Billnow Summary":"Trial Billing Summary";document.getElementById("kpiSummaryTitle").textContent=billnow?"Faturamento concluído":"Resumo do recorte";document.getElementById("kpiSummaryHint").textContent=billnow?"Métricas dos registros faturados no recorte atual.":"Métricas dos registros de trial filtrados.";document.getElementById("kpiRegistrosLabel").textContent="Registros";document.getElementById("kpiRegistrosHint").textContent=billnow?"Faturados":"No período";document.getElementById("kpiBrutoLabel").textContent="Valor bruto";document.getElementById("kpiBrutoHint").textContent=billnow?"Billnow efetivado":"Somatório filtrado";document.getElementById("kpiLiquidoLabel").textContent="Valor líquido";document.getElementById("kpiLiquidoHint").textContent=billnow?"Billnow efetivado":"Após impostos e retenções";document.getElementById("kpiRetencaoLabel").textContent="Retenção estimada";document.getElementById("kpiRetencaoHint").textContent="Bruto - líquido";document.getElementById("kpiRegistros").textContent=data.length;document.getElementById("kpiBruto").textContent=money(bruto);document.getElementById("kpiLiquido").textContent=money(liquido);document.getElementById("kpiRetencao").textContent=money(retencao)}
 function updateSortIndicators(){document.querySelectorAll("th.sortable").forEach(th=>{const indicator=th.querySelector(".sort-indicator");if(!indicator)return;indicator.textContent=sortState.col===th.dataset.col?(sortState.dir==="asc"?"▲":"▼"):"↕"})}function applySearch(){currentPage=1;renderResults()}function clearSearch(){["fCliente","fCnpj","fFatura","fNfcon","fProduto","fContaBilling","fSolicitante","fEmailSolicitante"].forEach(id=>document.getElementById(id).value="");document.getElementById("fPeriodoInicio").value="";document.getElementById("fPeriodoFim").value="";document.getElementById("fFamilia").value="";document.getElementById("fMesAno").value="";columnFilters={};currentPage=1;renderResults()}function nextPage(){const totalPages=Math.max(1,Math.ceil(filteredDataset().length/pageSize));if(currentPage<totalPages){currentPage++;renderResults()}}function previousPage(){if(currentPage>1){currentPage--;renderResults()}}function rowAction(action,fatura){alert(`${action}: ${fatura}`)}
-function openColumnFilter(th){const panel=document.getElementById("filterPanel");const col=th.dataset.col,type=th.dataset.type,label=th.innerText.replace("↕","").replace("▲","").replace("▼","").trim();const current=columnFilters[col]||"";let control="";if(type==="date")control=`<input id="columnFilterValue" type="date" value="${current}">`;else if(type==="month")control=`<input id="columnFilterValue" type="month" value="${current}">`;else if(type==="select"){const values=[...new Set(dataset.map(r=>r[col]).filter(Boolean))].sort();control=`<select id="columnFilterValue"><option value="">Todos</option>${values.map(v=>`<option ${v===current?"selected":""}>${v}</option>`).join("")}</select>`}else if(type==="money")control=`<input id="columnFilterValue" type="number" min="0" step="0.01" placeholder="Valor mínimo" value="${current}">`;else control=`<input id="columnFilterValue" placeholder="Filtrar ${label}" value="${current}">`;panel.innerHTML=`<label>${label}</label>${control}<div class="filter-actions"><button class="secondary" onclick="clearColumnFilter('${col}')">${iconSvg("eraser")}Limpar</button><button class="primary" onclick="applyColumnFilter('${col}')">${iconSvg("filter")}Aplicar</button></div>`;const rect=th.getBoundingClientRect();panel.style.left=Math.min(rect.left,window.innerWidth-250)+"px";panel.style.top=(rect.bottom+window.scrollY+4)+"px";panel.classList.add("open")}
+function openColumnFilter(th){const panel=document.getElementById("filterPanel");const col=th.dataset.col,type=th.dataset.type,label=th.innerText.replace("↕","").replace("▲","").replace("▼","").trim();const current=columnFilters[col]||"";let control="";if(type==="date")control=`<input id="columnFilterValue" type="date" value="${current}">`;else if(type==="month")control=`<input id="columnFilterValue" type="month" value="${current}">`;else if(type==="select"){const values=[...new Set(datasetForView().map(r=>col==="status"?displayStatus(r):r[col]).filter(Boolean))].sort();control=`<select id="columnFilterValue"><option value="">Todos</option>${values.map(v=>`<option ${v===current?"selected":""}>${v}</option>`).join("")}</select>`}else if(type==="money")control=`<input id="columnFilterValue" type="number" min="0" step="0.01" placeholder="Valor mínimo" value="${current}">`;else control=`<input id="columnFilterValue" placeholder="Filtrar ${label}" value="${current}">`;panel.innerHTML=`<label>${label}</label>${control}<div class="filter-actions"><button class="secondary" onclick="clearColumnFilter('${col}')">${iconSvg("eraser")}Limpar</button><button class="primary" onclick="applyColumnFilter('${col}')">${iconSvg("filter")}Aplicar</button></div>`;const rect=th.getBoundingClientRect();panel.style.left=Math.min(rect.left,window.innerWidth-250)+"px";panel.style.top=(rect.bottom+window.scrollY+4)+"px";panel.classList.add("open")}
 function applyColumnFilter(col){columnFilters[col]=document.getElementById("columnFilterValue").value;document.getElementById("filterPanel").classList.remove("open");currentPage=1;renderResults()}function clearColumnFilter(col){delete columnFilters[col];document.getElementById("filterPanel").classList.remove("open");currentPage=1;renderResults()}
 document.addEventListener("click",event=>{const panel=document.getElementById("filterPanel");const th=event.target.closest("th.sortable");if(th){const col=th.dataset.col;if(sortState.col===col){sortState.dir=sortState.dir==="asc"?"desc":"asc"}else{sortState={col,dir:"asc"}}openColumnFilter(th);renderResults();event.stopPropagation();return}if(!event.target.closest("#filterPanel")){panel.classList.remove("open")}});
 function escapeHtml(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;")}
@@ -2406,10 +2775,11 @@ function currentFieldRows(){return rows.filter(r=>selectedLovSet("domain").has(r
 function initializeFieldFilters(){syncLovSelection("domain",true);syncLovSelection("macro",true);syncLovSelection("group",true);renderAllLovs()}
 function updateToggleAllButton(){const button=document.getElementById("toggleAllButton");if(!button)return;button.innerHTML=allFieldsOpen?`${iconSvg("collapse")}Recolher todos`:`${iconSvg("expand")}Expandir todos`}
 function toggleAllFields(){allFieldsOpen=!allFieldsOpen;document.querySelectorAll(".macro").forEach(item=>item.open=allFieldsOpen);updateToggleAllButton()}
-function renderMacros(){const domainRows=currentFieldRows();const byGroup={};domainRows.forEach(r=>{const group=r.grupo||"Sem grupo";if(!byGroup[group])byGroup[group]=[];byGroup[group].push(r)});const groupNames=Object.keys(byGroup);document.getElementById("macroList").innerHTML=groupNames.length?groupNames.map(group=>{const items=byGroup[group];const openAttr=allFieldsOpen?" open":"";return`<details class="macro"${openAttr}><summary><div class="macro-left"><div class="caret">${iconSvg("chevron-right")}</div><div class="macro-title"><b>${escapeHtml(group)}</b><span>${items.length} campo(s)</span></div></div></summary><div class="macro-groups"><div class="group"><div class="field-list">${items.map(r=>`<div class="field-chip" ${fieldWidthStyle(r)}><div class="field-name">${escapeHtml(r.campo)}</div><div class="field-value"><input value="${escapeHtml(r.valor)}" onchange="updateValue(${r.id}, this.value)"></div></div>`).join("")}</div></div></div></details>`}).join(""):`<div class="empty">Nenhum campo encontrado.</div>`;updateToggleAllButton()}
+function renderResults(){const data=filteredDataset();syncSelectedRecord(data);renderKPIs(data);const totalPages=Math.max(1,Math.ceil(data.length/pageSize));if(currentPage>totalPages)currentPage=totalPages;const start=(currentPage-1)*pageSize;const pageRows=data.slice(start,start+pageSize);document.getElementById("totalizadorRegistros").textContent=appView==="billnow"?`${data.length} registro(s) faturado(s) encontrado(s)`:`${data.length} registro(s) encontrado(s)`;document.getElementById("pageInfo").textContent=`Página ${currentPage} de ${totalPages}`;document.getElementById("paginationInfo").textContent=data.length?`Exibindo ${start+1}-${start+pageRows.length} de ${data.length}`:"Exibindo 0 de 0";document.getElementById("resultsBody").innerHTML=pageRows.length?pageRows.map(r=>`<tr class="result-row ${r.id===selectedRecordId?"selected":""}" onclick="selectResultRow(${r.id})" ondblclick="toggleResultDetails(${r.id})"><td><div class="action-cell"><button class="icon-btn gear" title="Reprocessar Trial" aria-label="Reprocessar Trial" onclick="event.stopPropagation();rowAction('Reprocessar Trial','${r.fatura}')">${iconSvg("refresh")}</button><button class="icon-btn cancel" title="Cancelar Trial" aria-label="Cancelar Trial" onclick="event.stopPropagation();rowAction('Cancelar Trial','${r.fatura}')">${iconSvg("x")}</button><button class="icon-btn ok" title="Faturar Billnow" aria-label="Faturar Billnow" onclick="event.stopPropagation();rowAction('Faturar Billnow','${r.fatura}')">${iconSvg("check")}</button></div></td><td><span class="status-pill ${statusClass(displayStatus(r))}">${displayStatus(r)}</span></td><td>${r.cliente}</td><td>${r.cnpj}</td><td>${r.periodoInicio}</td><td>${r.periodoFim}</td><td>${r.fatura}</td><td>${r.nfcon}</td><td>${r.produto}</td><td>${r.familia}</td><td>${r.mesAno}</td><td>${r.contaBilling}</td><td>${r.solicitante}</td><td>${r.emailSolicitante}</td><td class="align-right">${money(r.valorBruto)}</td><td class="align-right">${money(r.valorLiquido)}</td></tr>`).join(""):`<tr><td colspan="16" class="empty">Nenhum resultado encontrado.</td></tr>`;updateSortIndicators();if(fieldSelections.domain.length)renderMacros()}
+function renderMacros(){const selected=selectedRecord();const selectedInfo=document.getElementById("selectedRecordInfo");if(selectedInfo)selectedInfo.textContent=selected?`${selected.fatura} - ${selected.cliente}`:"Nenhum registro";const domainRows=currentFieldRows();const byGroup={};domainRows.forEach(r=>{const group=r.grupo||"Sem grupo";if(!byGroup[group])byGroup[group]=[];byGroup[group].push(r)});const groupNames=Object.keys(byGroup);document.getElementById("macroList").innerHTML=groupNames.length?groupNames.map(group=>{const items=byGroup[group];const openAttr=allFieldsOpen?" open":"";return`<details class="macro"${openAttr}><summary><div class="macro-left"><div class="caret">${iconSvg("chevron-right")}</div><div class="macro-title"><b>${escapeHtml(group)}</b><span>${items.length} campo(s)</span></div></div></summary><div class="macro-groups"><div class="group"><div class="field-list">${items.map(r=>`<div class="field-chip" ${fieldWidthStyle(r)}><div class="field-name">${escapeHtml(r.campo)}</div><div class="field-value"><input value="${escapeHtml(fieldDisplayValue(r))}" readonly aria-readonly="true" tabindex="-1"></div></div>`).join("")}</div></div></div></details>`}).join(""):`<div class="empty">Nenhum campo encontrado.</div>`;updateToggleAllButton()}
 function updateValue(id,value){const row=rows.find(r=>r.id===id);if(row)row.valor=value}
 document.addEventListener("click",event=>{if(!event.target.closest(".lov-field"))closeLov()});
-renderResults();initializeFieldFilters();renderMacros();
+updateViewChrome();renderResults();initializeFieldFilters();renderMacros();
 </script>
 </body>
 </html>
