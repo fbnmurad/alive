@@ -1,0 +1,719 @@
+```html id="codigo-completo-flexbill"
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flex Bill - Fênix</title>
+
+  <style>
+    :root {
+      --vivo-roxo: #660099;
+      --vivo-roxo-escuro: #3d005c;
+      --vivo-roxo-medio: #8a00e6;
+      --vivo-roxo-claro: #f3e5f9;
+      --vivo-azul: #006cff;
+      --vivo-azul-claro: #e6f0ff;
+      --vivo-magenta: #e6007e;
+
+      --branco: #ffffff;
+      --cinza-fundo: #f7f7fa;
+      --cinza-texto: #3f4650;
+      --cinza-suave: #f3f4f7;
+      --borda: #e4d8ec;
+      --erro: #b42318;
+      --sucesso: #15803d;
+
+      --sombra-topbar: 0 2px 8px rgba(61, 0, 92, 0.22);
+      --sombra-card: 0 4px 14px rgba(61, 0, 92, 0.10);
+      --sombra-frame: 0 6px 20px rgba(61, 0, 92, 0.12);
+      --sombra-footer: 0 -2px 8px rgba(61, 0, 92, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--cinza-fundo);
+      color: var(--cinza-texto);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =========================
+       Barra superior
+    ========================= */
+    .topbar {
+      width: 100%;
+      min-height: 58px;
+      background: linear-gradient(
+        90deg,
+        var(--vivo-roxo),
+        var(--vivo-roxo-medio),
+        var(--vivo-azul)
+      );
+      color: var(--branco);
+      display: grid;
+      grid-template-columns: auto auto auto 1fr auto;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 18px;
+      box-shadow: var(--sombra-topbar);
+      z-index: 2;
+    }
+
+    .menu-button {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      background: transparent;
+      color: var(--branco);
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 700;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+    }
+
+    .menu-button:hover,
+    .menu-button:focus-visible {
+      background: rgba(255, 255, 255, 0.14);
+      outline: 2px solid rgba(255, 255, 255, 0.45);
+      outline-offset: 2px;
+    }
+
+    .brand-area {
+      height: 38px;
+      min-width: 150px;
+      padding: 5px 14px;
+      background: var(--branco);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+    }
+
+    .brand-logo {
+      height: 24px;
+      max-width: 130px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .company-name {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .app-title {
+      text-align: center;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .user-area {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .last-access {
+      color: rgba(255, 255, 255, 0.92);
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .icon-button {
+      width: 34px;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--branco);
+      border-radius: 999px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .icon-button:hover,
+    .icon-button:focus-visible {
+      background: rgba(255, 255, 255, 0.22);
+      outline: 2px solid rgba(255, 255, 255, 0.45);
+      outline-offset: 2px;
+    }
+
+    .user-pill {
+      min-height: 34px;
+      max-width: 280px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: var(--branco);
+      color: var(--vivo-roxo);
+      font-size: 12px;
+      font-weight: 800;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* =========================
+       Área central
+    ========================= */
+    .page-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 34px 24px;
+      background:
+        radial-gradient(circle at top left, rgba(243, 229, 249, 0.95), transparent 34%),
+        var(--cinza-fundo);
+    }
+
+    .central-frame {
+      width: min(1120px, 100%);
+      background: var(--branco);
+      border: 1px solid var(--borda);
+      border-radius: 18px;
+      box-shadow: var(--sombra-frame);
+      padding: 34px;
+    }
+
+    .frame-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .frame-header h1 {
+      margin: 0 0 8px;
+      color: var(--vivo-roxo);
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .frame-header p {
+      margin: 0;
+      color: #606875;
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .action-card {
+      min-height: 308px;
+      background: var(--branco);
+      border: 1px solid var(--borda);
+      border-radius: 18px;
+      box-shadow: var(--sombra-card);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card-visual {
+      width: 100%;
+      min-height: 104px;
+      border-radius: 14px;
+      background: var(--vivo-roxo-claro);
+      border: 1px solid #ead2f3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      margin-bottom: 18px;
+    }
+
+    .card-image {
+      width: 100%;
+      max-width: 230px;
+      height: 96px;
+      display: block;
+    }
+
+    .card-title {
+      margin: 0 0 6px;
+      color: var(--vivo-roxo);
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .card-context {
+      margin: 0 0 12px;
+      color: #29313d;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .card-description {
+      margin: 0;
+      color: #606875;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      min-height: 38px;
+      border-radius: 999px;
+      padding: 9px 17px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-1px);
+      outline: 2px solid rgba(0, 108, 255, 0.28);
+      outline-offset: 2px;
+    }
+
+    .button-primary {
+      border: 0;
+      background: linear-gradient(
+        90deg,
+        var(--vivo-roxo),
+        var(--vivo-magenta),
+        var(--vivo-azul)
+      );
+      color: var(--branco);
+      box-shadow: 0 3px 9px rgba(102, 0, 153, 0.18);
+    }
+
+    .button-secondary {
+      background: var(--branco);
+      color: var(--vivo-roxo);
+      border: 1px solid var(--borda);
+    }
+
+    /* =========================
+       Padrão de campos
+    ========================= */
+    label {
+      display: inline-block;
+      color: var(--vivo-roxo);
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .required {
+      color: var(--vivo-magenta);
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid #d8c4e4;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      color: var(--cinza-texto);
+      background: var(--branco);
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--vivo-azul);
+      outline: 3px solid var(--vivo-azul-claro);
+    }
+
+    input:disabled,
+    select:disabled,
+    textarea:disabled {
+      background: var(--vivo-roxo-claro);
+      color: #747985;
+      cursor: not-allowed;
+    }
+
+    .message-error {
+      color: var(--erro);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .message-success {
+      color: var(--sucesso);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* =========================
+       Barra inferior
+    ========================= */
+    .footer-bar {
+      width: 100%;
+      min-height: 56px;
+      background: var(--branco);
+      border-top: 1px solid var(--borda);
+      box-shadow: var(--sombra-footer);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 24px;
+      padding: 8px 24px;
+      z-index: 2;
+    }
+
+    .footer-logo-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      height: 38px;
+    }
+
+    .footer-logo {
+      max-height: 32px;
+      max-width: 170px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .footer-app-name {
+      text-align: center;
+      color: var(--vivo-roxo);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* =========================
+       Responsivo
+    ========================= */
+    @media (max-width: 1080px) {
+      .topbar {
+        grid-template-columns: auto auto auto 1fr;
+      }
+
+      .user-area {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+      }
+
+      .cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .topbar {
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+      }
+
+      .brand-area {
+        min-width: 132px;
+      }
+
+      .company-name,
+      .last-access {
+        display: none;
+      }
+
+      .app-title {
+        font-size: 14px;
+        text-align: right;
+      }
+
+      .user-area {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+      }
+
+      .page-content {
+        padding: 20px 14px;
+      }
+
+      .central-frame {
+        border-radius: 14px;
+        padding: 24px 18px;
+      }
+
+      .frame-header h1 {
+        font-size: 23px;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer-bar {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px 16px;
+      }
+
+      .footer-logo-box {
+        min-width: 0;
+        height: auto;
+      }
+
+      .footer-logo {
+        max-height: 28px;
+      }
+
+      .footer-app-name {
+        white-space: normal;
+        font-size: 13px;
+        line-height: 1.3;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .brand-area {
+        min-width: 118px;
+        padding: 5px 10px;
+      }
+
+      .brand-logo {
+        max-width: 105px;
+        height: 21px;
+      }
+
+      .user-pill {
+        max-width: 210px;
+      }
+
+      .card-actions {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <button class="menu-button" type="button" aria-label="Abrir menu">
+      ☰
+    </button>
+
+    <div class="brand-area" aria-label="Marca do sistema">
+      <img
+        class="brand-logo"
+        src="https://www.vivoplataformadigital.com.br/cms/themes/jcdefault/images/new_logo_vivo_emp.png"
+        alt="Vivo Empresas"
+      />
+    </div>
+
+    <div class="company-name">
+     
+    </div>
+
+    <div class="app-title">
+      Flex Bill - Fênix
+    </div>
+
+    <div class="user-area" aria-label="Área do usuário">
+      <span class="last-access">Último acesso: 29/04/2026 09:42</span>
+
+      <button class="icon-button" type="button" aria-label="Notificações">
+        !
+      </button>
+
+      <button class="icon-button" type="button" aria-label="Configurações">
+        ⚙
+      </button>
+
+      <div class="user-pill" title="JULIO CESAR FERREIRA DOS SANTOS">
+        JULIO CESAR FERREIRA DOS SANTOS
+      </div>
+
+      <button class="icon-button" type="button" aria-label="Sair">
+        ↗
+      </button>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <section class="central-frame" aria-label="Frame central">
+     <div class="cards-grid" id="cardsGrid"></div>
+    </section>
+  </main>
+
+  <footer class="footer-bar" aria-label="Barra inferior do sistema">
+    <div class="footer-logo-box">
+      <img
+        class="footer-logo"
+        src="https://www.vivoplataformadigital.com.br/cms/themes/jcdefault/images/footer/telefonica_2021_logo.png"
+        alt="Telefônica"
+      />
+    </div>
+
+    <div class="footer-app-name">
+      Billing Care - Ciclo de Receita - Fênix
+    </div>
+
+    <div class="footer-logo-box">
+      <img
+        class="footer-logo"
+        src="https://www.vivoplataformadigital.com.br/cms/themes/jcdefault/images/footer/5G_fibra.png"
+        alt="5G e Fibra"
+      />
+    </div>
+  </footer>
+
+  <script>
+    const actions = [
+      {
+        title: "Criar / Consultar",
+        context: "Cliente B2B",
+        description: "Cadastre cliente, altere ou consulte",
+        primary: "Novo",
+        secondary: "Consultar",
+        visual: "cliente"
+      },
+      {
+        title: "Criar / Consultar",
+        context: "Serviço/Produto",
+        description: "Cadastre, altere ou consulte produtos ou serviços",
+        primary: "Novo",
+        secondary: "Consultar",
+        visual: "produto"
+      },
+      {
+        title: "Gerar / Consultar",
+        context: "Faturamento",
+        description: "Execute faturamento Trial ou gere Billnow",
+        primary: "Trial",
+        secondary: "Billnow",
+        visual: "faturamento"
+      },
+      {
+        title: "Consultar Ativos",
+        context: "Faturamento",
+        description: "Tela de consulta de ativos/faturas/notas",
+        primary: "Consultar",
+        secondary: "",
+        visual: "consulta"
+      }
+    ];
+
+    const visuals = {
+      cliente: `
+        <svg class="card-image" viewBox="0 0 260 120" role="img" aria-label="Cliente B2B">
+          <rect x="18" y="20" width="224" height="80" rx="20" fill="#f3e5f9"/>
+          <circle cx="82" cy="50" r="18" fill="#660099"/>
+          <path d="M52 90c5-18 18-28 30-28s25 10 30 28" fill="#8a00e6"/>
+          <rect x="128" y="34" width="78" height="12" rx="6" fill="#660099"/>
+          <rect x="128" y="56" width="96" height="9" rx="5" fill="#006cff"/>
+          <rect x="128" y="76" width="66" height="9" rx="5" fill="#e6007e"/>
+          <circle cx="215" cy="82" r="12" fill="#ffffff" stroke="#006cff" stroke-width="4"/>
+          <path d="M210 82l4 4 8-9" fill="none" stroke="#660099" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `,
+
+      produto: `
+        <svg class="card-image" viewBox="0 0 260 120" role="img" aria-label="Serviço ou Produto">
+          <rect x="18" y="20" width="224" height="80" rx="20" fill="#f3e5f9"/>
+          <path d="M82 38l48-20 48 20-48 20z" fill="#660099"/>
+          <path d="M82 38v42l48 22V58z" fill="#8a00e6"/>
+          <path d="M178 38v42l-48 22V58z" fill="#006cff"/>
+          <path d="M102 76h24" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="192" cy="78" r="11" fill="#e6007e"/>
+          <path d="M187 78h10M192 73v10" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      `,
+
+      faturamento: `
+        <svg class="card-image" viewBox="0 0 260 120" role="img" aria-label="Faturamento">
+          <rect x="18" y="20" width="224" height="80" rx="20" fill="#f3e5f9"/>
+          <rect x="72" y="28" width="88" height="72" rx="10" fill="#ffffff" stroke="#660099" stroke-width="4"/>
+          <path d="M92 48h50M92 63h42M92 78h34" stroke="#8a00e6" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="181" cy="70" r="25" fill="#006cff"/>
+          <text x="181" y="79" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="800" fill="#ffffff">$</text>
+          <path d="M196 42l13-13 13 13" fill="none" stroke="#e6007e" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `,
+
+      consulta: `
+        <svg class="card-image" viewBox="0 0 260 120" role="img" aria-label="Consulta de ativos">
+          <rect x="18" y="20" width="224" height="80" rx="20" fill="#f3e5f9"/>
+          <rect x="60" y="34" width="88" height="58" rx="10" fill="#ffffff" stroke="#660099" stroke-width="4"/>
+          <path d="M78 52h48M78 66h38M78 80h28" stroke="#8a00e6" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="170" cy="61" r="22" fill="none" stroke="#006cff" stroke-width="7"/>
+          <path d="M186 77l25 25" stroke="#e6007e" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="170" cy="61" r="8" fill="#660099"/>
+        </svg>
+      `
+    };
+
+    const cardsGrid = document.getElementById("cardsGrid");
+
+    actions.forEach((action) => {
+      const card = document.createElement("article");
+      card.className = "action-card";
+
+      const secondaryButton = action.secondary
+        ? `<button class="button button-secondary" type="button">${action.secondary}</button>`
+        : "";
+
+      card.innerHTML = `
+        <div>
+          <div class="card-visual">
+            ${visuals[action.visual]}
+          </div>
+
+          <h2 class="card-title">${action.title}</h2>
+          <p class="card-context">${action.context}</p>
+          <p class="card-description">${action.description}</p>
+        </div>
+
+        <div class="card-actions">
+          <button class="button button-primary" type="button">${action.primary}</button>
+          ${secondaryButton}
+        </div>
+      `;
+
+      cardsGrid.appendChild(card);
+    });
+  </script>
+</body>
+</html>
+```

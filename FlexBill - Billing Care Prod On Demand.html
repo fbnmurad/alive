@@ -1,0 +1,2147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Billing Care | Controle de Billnow On Demand</title>
+  <style>
+    :root {
+      --vivo-roxo: #660099;
+      --vivo-roxo-escuro: #3d005c;
+      --vivo-roxo-medio: #8a00e6;
+      --vivo-roxo-claro: #f3e5f9;
+      --vivo-azul: #006cff;
+      --vivo-azul-claro: #e6f0ff;
+      --vivo-magenta: #e6007e;
+      --branco: #ffffff;
+      --fundo: #f3f4f7;
+      --card: #ffffff;
+      --borda: #dfe3e8;
+      --borda-card: #e1e4e8;
+      --borda-campo: #d8dde3;
+      --texto: #56606b;
+      --texto-escuro: #3f4650;
+      --texto-suave: #8a93a0;
+      --placeholder: #a0a7b0;
+      --erro: #a94442;
+      --erro-bg: #fff1f0;
+      --sucesso: #14855f;
+      --sucesso-bg: #ecf9f4;
+      --alerta: #9a6a00;
+      --alerta-bg: #fff6e7;
+      --info: #2057a7;
+      --info-bg: #edf4ff;
+      --sombra-topbar: 0 2px 8px rgba(61, 0, 92, 0.28);
+      --sombra-card: 0 12px 24px rgba(35, 35, 35, 0.08);
+      --sombra-footer: 0 -2px 8px rgba(61, 0, 92, 0.16);
+      --gradiente-principal: linear-gradient(90deg, #3d005c, #660099, #8a00e6, #006cff);
+      --gradiente-botao: linear-gradient(90deg, #660099, #8a00e6);
+      --gradiente-secao: linear-gradient(90deg, #eff2f6, #f8fbfd);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(138, 0, 230, 0.07), transparent 24%),
+        radial-gradient(circle at left bottom, rgba(0, 108, 255, 0.08), transparent 28%),
+        var(--fundo);
+      color: var(--texto);
+      display: flex;
+      flex-direction: column;
+    }
+
+    button,
+    input,
+    select {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .topbar {
+      width: 100%;
+      min-height: 50px;
+      background: var(--gradiente-principal);
+      color: var(--branco);
+      display: grid;
+      grid-template-columns: auto auto 1fr auto auto;
+      align-items: center;
+      gap: 16px;
+      padding: 6px 16px;
+      box-shadow: var(--sombra-topbar);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .menu-button {
+      width: 34px;
+      height: 34px;
+      border: 0;
+      background: transparent;
+      color: var(--branco);
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 700;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      border-radius: 6px;
+    }
+
+    .menu-button:hover,
+    .menu-button:focus-visible,
+    .button:hover,
+    .button:focus-visible,
+    .table-action:hover,
+    .table-action:focus-visible {
+      transform: translateY(-1px);
+      outline: 2px solid rgba(102, 0, 153, 0.18);
+      outline-offset: 2px;
+    }
+
+    .logo-box {
+      height: 36px;
+      min-width: 168px;
+      padding: 4px 12px;
+      background: #ffffff;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.16);
+    }
+
+    .brand-logo {
+      height: 24px;
+      max-width: 145px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .app-name {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .user-info {
+      min-height: 32px;
+      max-width: 320px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #ffffff;
+      color: var(--vivo-roxo);
+      font-size: 12px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .logout-button,
+    .button,
+    .table-action {
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+      font-weight: 700;
+    }
+
+    .logout-button {
+      min-height: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+      padding: 6px 14px;
+      font-size: 13px;
+    }
+
+    .page {
+      width: min(1500px, calc(100% - 40px));
+      margin: 22px auto 28px;
+      display: grid;
+      gap: 18px;
+      flex: 1;
+    }
+
+    .hero,
+    .surface,
+    .kpi-card,
+    .map-card,
+    .detail-card {
+      background: var(--card);
+      border: 1px solid var(--borda-card);
+      border-radius: 22px;
+      box-shadow: var(--sombra-card);
+    }
+
+    .hero {
+      padding: 22px 24px 18px;
+      display: grid;
+      gap: 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      top: -50px;
+      width: 240px;
+      height: 240px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(138, 0, 230, 0.12), transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .breadcrumbs {
+      margin: 0 0 8px;
+      color: var(--texto-suave);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: 28px;
+      color: var(--texto-escuro);
+      line-height: 1.1;
+    }
+
+    .hero p {
+      margin: 8px 0 0;
+      max-width: 920px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .hero-actions,
+    .filter-actions,
+    .table-actions,
+    .detail-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .button {
+      min-height: 38px;
+      padding: 0 16px;
+      border: 1px solid transparent;
+      font-size: 12px;
+      letter-spacing: 0.2px;
+    }
+
+    .button.primary {
+      background: var(--gradiente-botao);
+      color: var(--branco);
+      box-shadow: 0 10px 20px rgba(102, 0, 153, 0.18);
+    }
+
+    .button.secondary {
+      background: #ffffff;
+      color: var(--vivo-roxo);
+      border-color: #ccb6dc;
+    }
+
+    .button.ghost {
+      background: #f8fafc;
+      color: var(--texto-escuro);
+      border-color: var(--borda-campo);
+    }
+
+    .button.danger {
+      background: var(--erro-bg);
+      color: var(--erro);
+      border-color: #efb9b9;
+    }
+
+    .button.disabled {
+      background: #edf0f5;
+      color: #8a94a0;
+      border-color: #dce2ea;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .journey {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .journey-step {
+      border: 1px solid var(--borda);
+      background: linear-gradient(180deg, #ffffff, #fafbfe);
+      border-radius: 18px;
+      padding: 12px 12px 10px;
+      min-height: 94px;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+
+    .journey-step strong {
+      color: var(--texto-escuro);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .journey-step span {
+      color: var(--texto-suave);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .journey-step.highlight {
+      border-color: #d7c1eb;
+      background: linear-gradient(180deg, #fcf9ff, #f4ecfd);
+    }
+
+    .surface-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--borda);
+      background: var(--gradiente-secao);
+      border-radius: 22px 22px 0 0;
+      flex-wrap: wrap;
+    }
+
+    .surface-header h2,
+    .detail-card h2,
+    .map-card h2 {
+      margin: 0;
+      color: var(--texto-escuro);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .surface-body {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .field.span-2 {
+      grid-column: span 2;
+    }
+
+    .field label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      color: var(--texto-escuro);
+    }
+
+    .field input,
+    .field select {
+      min-height: 40px;
+      border: 1px solid var(--borda-campo);
+      border-radius: 14px;
+      background: #ffffff;
+      color: var(--texto-escuro);
+      padding: 0 12px;
+      font-size: 13px;
+    }
+
+    .field input::placeholder {
+      color: var(--placeholder);
+    }
+
+    .hint-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--texto-suave);
+      font-size: 11px;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(260px, 320px));
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .kpi-card {
+      padding: 16px 16px 14px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .kpi-card::after {
+      content: "";
+      position: absolute;
+      width: 82px;
+      height: 82px;
+      right: -20px;
+      bottom: -18px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(0, 108, 255, 0.13), transparent 68%);
+    }
+
+    .kpi-card span {
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .kpi-card .label {
+      color: var(--texto-suave);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      margin-bottom: 10px;
+    }
+
+    .kpi-card .value {
+      color: var(--texto-escuro);
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .kpi-card .support {
+      color: var(--texto);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .map-grid,
+    .workspace {
+      display: grid;
+      gap: 16px;
+    }
+
+    .map-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .map-card {
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .map-card p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .tag-list,
+    .artifact-list,
+    .timeline-list {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag,
+    .artifact,
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15px;
+    }
+
+    .tag {
+      background: #f6f7fb;
+      border: 1px solid #e1e6ef;
+      color: var(--texto-escuro);
+    }
+
+    .badge.info {
+      background: var(--info-bg);
+      color: var(--info);
+    }
+
+    .badge.success {
+      background: var(--sucesso-bg);
+      color: var(--sucesso);
+    }
+
+    .badge.alert {
+      background: var(--alerta-bg);
+      color: var(--alerta);
+    }
+
+    .badge.error {
+      background: var(--erro-bg);
+      color: var(--erro);
+    }
+
+    .workspace {
+      grid-template-columns: minmax(0, 1.7fr) minmax(380px, 0.95fr);
+      align-items: start;
+    }
+
+    body.grid-expanded {
+      overflow: hidden;
+    }
+
+    .grid-surface .table-wrap {
+      max-height: 520px;
+    }
+
+    .grid-surface.expanded {
+      position: fixed;
+      inset: 18px;
+      z-index: 50;
+      margin: 0;
+      border-radius: 24px;
+      box-shadow: 0 24px 48px rgba(35, 35, 35, 0.22);
+    }
+
+    .grid-surface.expanded .table-wrap {
+      max-height: calc(100vh - 170px);
+    }
+
+    .grid-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px 18px;
+      flex-wrap: wrap;
+      padding: 0 18px 14px;
+    }
+
+    .grid-toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--texto-escuro);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .grid-toolbar-group.pagination-group {
+      margin-left: auto;
+      justify-content: flex-end;
+    }
+
+    .grid-toolbar select {
+      min-height: 34px;
+      border: 1px solid var(--borda-campo);
+      border-radius: 999px;
+      padding: 0 12px;
+      background: #ffffff;
+      color: var(--texto-escuro);
+    }
+
+    .page-info {
+      color: var(--texto-suave);
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .table-wrap {
+      overflow: auto;
+      border-radius: 0 0 22px 22px;
+      position: relative;
+    }
+
+    table {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      background: linear-gradient(180deg, #fefefe 0%, #f1f4f8 100%);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      font-size: 11px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: var(--texto-escuro);
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--borda);
+      white-space: nowrap;
+    }
+
+    th.filterable-column {
+      cursor: pointer;
+    }
+
+    th.filterable-column.active-filter {
+      background: linear-gradient(180deg, #f9f3ff 0%, #f2e8fd 100%);
+    }
+
+    .header-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .header-filter-indicator {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid #ddd2ec;
+      background: #ffffff;
+      color: var(--texto-suave);
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    th.filterable-column.has-filter .header-filter-indicator,
+    th.filterable-column.active-filter .header-filter-indicator {
+      border-color: #c7a3ec;
+      background: #f3e5f9;
+      color: var(--vivo-roxo);
+    }
+
+    .sort-button {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: inherit;
+      cursor: pointer;
+      font: inherit;
+      text-transform: inherit;
+      letter-spacing: inherit;
+    }
+
+    .column-filter-popover {
+      position: fixed;
+      z-index: 30;
+      width: min(240px, calc(100vw - 24px));
+      padding: 10px;
+      border: 1px solid var(--borda-campo);
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: 0 12px 28px rgba(35, 35, 35, 0.16);
+      display: grid;
+      gap: 8px;
+    }
+
+    .column-filter-popover[hidden] {
+      display: none;
+    }
+
+    .column-filter-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--texto-escuro);
+      text-transform: uppercase;
+      letter-spacing: 0.25px;
+    }
+
+    .column-filter {
+      width: 100%;
+      min-height: 32px;
+      border: 1px solid var(--borda-campo);
+      border-radius: 10px;
+      padding: 0 10px;
+      font-size: 12px;
+      color: var(--texto-escuro);
+      background: #ffffff;
+    }
+
+    .column-filter-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .column-filter-clear {
+      border: 0;
+      background: transparent;
+      color: var(--texto-suave);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    tbody td {
+      padding: 11px 12px;
+      border-bottom: 1px solid #edf0f4;
+      vertical-align: top;
+      font-size: 12px;
+      color: var(--texto-escuro);
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    tbody tr {
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    tbody tr:hover {
+      background: #faf7ff;
+    }
+
+    tbody tr.selected {
+      background: #f4effd;
+      box-shadow: inset 4px 0 0 var(--vivo-roxo);
+    }
+
+    .main-line,
+    .sub-line {
+      display: block;
+      line-height: 1.35;
+    }
+
+    .main-line {
+      font-weight: 700;
+      color: var(--texto-escuro);
+    }
+
+    .sub-line {
+      color: var(--texto-suave);
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.25px;
+    }
+
+    .status.aprovado {
+      background: var(--sucesso-bg);
+      color: var(--sucesso);
+    }
+
+    .status.reprocesso {
+      background: var(--alerta-bg);
+      color: var(--alerta);
+    }
+
+    .status.cancelado {
+      background: var(--erro-bg);
+      color: var(--erro);
+    }
+
+    .status.validacao {
+      background: var(--info-bg);
+      color: var(--info);
+    }
+
+    .status.concluido {
+      background: var(--sucesso-bg);
+      color: var(--sucesso);
+    }
+
+    .status.execucao {
+      background: var(--alerta-bg);
+      color: var(--alerta);
+    }
+
+    .status.pendente {
+      background: var(--erro-bg);
+      color: var(--erro);
+    }
+
+    .table-actions {
+      gap: 6px;
+    }
+
+    .icon-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .table-action {
+      min-height: 34px;
+      min-width: 34px;
+      padding: 0 14px;
+      font-size: 12px;
+      border: 1px solid var(--borda-campo);
+      background: #ffffff;
+      color: var(--texto-escuro);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .icon-actions .table-action {
+      min-height: 28px;
+      min-width: 28px;
+      width: 28px;
+      padding: 0;
+      font-size: 11px;
+    }
+
+    .table-action.generate {
+      color: var(--alerta);
+      border-color: #eed7a0;
+      background: var(--alerta-bg);
+    }
+
+    .table-action.cancel {
+      color: var(--erro);
+      border-color: #efb9b9;
+      background: var(--erro-bg);
+    }
+
+    .table-action.release {
+      color: var(--sucesso);
+      border-color: #b7e5cb;
+      background: var(--sucesso-bg);
+    }
+
+    .detail-card {
+      overflow: hidden;
+    }
+
+    .detail-body {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .detail-status-wrap {
+      padding: 14px 18px 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .detail-header {
+      padding: 16px;
+      border: 1px solid #e4d8f2;
+      border-radius: 18px;
+      background: linear-gradient(90deg, #fcf9ff, #ffffff);
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .detail-header h3 {
+      margin: 0;
+      font-size: 20px;
+      color: var(--texto-escuro);
+    }
+
+    .detail-header p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 12px;
+    }
+
+    .detail-point {
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      background: #ffffff;
+      padding: 10px 12px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .detail-point label {
+      color: var(--texto-suave);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      font-weight: 700;
+    }
+
+    .detail-point strong,
+    .detail-point span {
+      color: var(--texto-escuro);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .artifact-stack,
+    .timeline-stack {
+      display: grid;
+      gap: 10px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .artifact {
+      justify-content: space-between;
+      border: 1px solid var(--borda);
+      background: #ffffff;
+      padding: 10px 12px;
+      min-height: 42px;
+      border-radius: 14px;
+      width: 100%;
+      color: var(--texto-escuro);
+    }
+
+    .artifact small {
+      color: var(--texto-suave);
+      font-size: 11px;
+      font-weight: 400;
+      margin-left: 8px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .timeline-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      margin-top: 5px;
+      background: var(--vivo-roxo);
+      box-shadow: 0 0 0 4px rgba(102, 0, 153, 0.13);
+    }
+
+    .timeline-text strong {
+      display: block;
+      color: var(--texto-escuro);
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .timeline-text span {
+      color: var(--texto-suave);
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .footer-bar {
+      width: 100%;
+      min-height: 56px;
+      background: #ffffff;
+      border-top: 1px solid var(--borda);
+      box-shadow: var(--sombra-footer);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 24px;
+      padding: 8px 24px;
+    }
+
+    .footer-logo-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 120px;
+      height: 38px;
+    }
+
+    .footer-logo {
+      max-height: 32px;
+      max-width: 170px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .footer-app-name {
+      text-align: center;
+      color: var(--vivo-roxo);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1380px) {
+      .journey {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .filters,
+      .map-grid,
+      .workspace {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .kpis {
+        grid-template-columns: repeat(2, minmax(260px, 320px));
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .page {
+        width: min(100%, calc(100% - 24px));
+        margin: 12px auto 22px;
+      }
+
+      .topbar {
+        grid-template-columns: auto auto 1fr auto;
+        gap: 10px;
+      }
+
+      .user-info {
+        display: none;
+      }
+
+      .filters,
+      .map-grid,
+      .detail-grid,
+      .journey {
+        grid-template-columns: 1fr;
+      }
+
+      .kpis {
+        grid-template-columns: minmax(0, 320px);
+      }
+
+      .field.span-2 {
+        grid-column: span 1;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        grid-template-columns: auto 1fr auto;
+      }
+
+      .logo-box {
+        min-width: 130px;
+      }
+
+      .brand-logo {
+        height: 21px;
+        max-width: 110px;
+      }
+
+      .app-name {
+        display: none;
+      }
+
+      .surface-header,
+      .hero-top {
+        align-items: stretch;
+      }
+
+      .footer-bar {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px 16px;
+      }
+
+      .footer-app-name {
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <button class="menu-button" type="button" aria-label="Abrir menu">☰</button>
+    <div class="logo-box">
+      <img class="brand-logo" src="https://www.vivoplataformadigital.com.br/cms/themes/jcdefault/images/new_logo_vivo_emp.png" alt="Vivo Empresas" />
+    </div>
+    <div class="app-name">Flex Bill - Fênix</div>
+    <div class="user-info" title="JULIO CESAR FERREIRA DOS SANTOS">JULIO CESAR FERREIRA DOS SANTOS</div>
+    <button class="logout-button" type="button" aria-label="Sair do sistema">Sair</button>
+  </header>
+
+  <main class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <p class="breadcrumbs">Operações de Faturamento - On Demand</p>
+          <h1>Billnow</h1>
+                  </div>
+        <div class="hero-actions">
+         <button class="button ghost" id="actionGenerateArtifacts" type="button">Gerar artefatos</button>
+          <button class="button danger" id="actionCancelBillnow" type="button">Cancelar Billnow</button>
+          <button class="button primary" id="actionReleaseArtifacts" type="button">Liberar artefatos</button>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="surface">
+      <div class="surface-header">
+        <h2>Filtros de consulta</h2>
+        <div class="filter-actions">
+          <button class="button primary" id="searchButton" type="button">Pesquisar</button>
+          <button class="button ghost" id="clearButton" type="button">Limpar</button>
+        </div>
+      </div>
+      <div class="surface-body">
+        <div class="filters">
+          <div class="field span-2"><label for="cliente">Cliente</label><input id="cliente" type="text" placeholder="Razão social, nome fantasia ou grupo empresarial" /></div>
+          <div class="field"><label for="documento">Documento</label><input id="documento" type="text" placeholder="Documento do cliente" /></div>
+          <div class="field"><label for="periodo">Período de referência</label><input id="periodo" type="month" value="2026-04" /></div>
+          <div class="field"><label for="fatura">Fatura</label><input id="fatura" type="text" placeholder="Número da fatura" /></div>
+          <div class="field span-2"><label for="produto">Produto</label><input id="produto" type="text" placeholder="Internet Patrocinada, VPN, Smart Empresas, M2M, Fibra..." /></div>
+          <div class="field"><label for="familia">Família</label><select id="familia"><option value="">Todas</option><option>INTERNET</option><option>ACESSO</option><option>DADOS</option><option>VOZ</option><option>DADOS + VOZ</option><option>SERVIÇOS</option></select></div>
+          <div class="field"><label for="contaBilling">Conta billing</label><input id="contaBilling" type="text" placeholder="Conta de cobrança" /></div>
+          <div class="field"><label for="nfcomFilter">NFCOM</label><input id="nfcomFilter" type="text" placeholder="Número da NFCom" /></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="kpis">
+      <article class="kpi-card"><span class="label">Registros no período</span><span class="value" id="kpiCountValue">140</span><span class="support" id="kpiCountSupport">Linhas retornadas do relatório Billnow em análise.</span></article>
+      <article class="kpi-card"><span class="label">Valor bruto do Billnow</span><span class="value" id="kpiGrossValue">R$ 0,00</span><span class="support" id="kpiGrossSupport">Somatório real do valor faturado bruto no recorte aplicado.</span></article>
+	  <article class="kpi-card"><span class="label">Valor líquido do Billnow</span><span class="value" id="kpiNetValue">R$ 0,00</span><span class="support" id="kpiNetSupport">Valor bruto menos impostos e retenções do recorte aplicado.</span></article>
+          </section>
+
+    <section class="map-grid">
+      
+      </article>
+    </section>
+
+    <section class="workspace">
+      <article class="surface grid-surface" id="gridSurface">
+        <div class="surface-header">
+          <h2>Grid Faturado Billnow</h2>
+          <div class="table-actions">
+            <button class="table-action" type="button" id="toggleGridExpand">Expandir</button>
+            <button class="table-action" type="button" id="exportGridButton">Exportar</button>
+          </div>
+        </div>
+        <div class="grid-toolbar">
+          <div class="grid-toolbar-group">
+            <label for="rowsPerPage">Linhas por página</label>
+            <select id="rowsPerPage">
+              <option value="10" selected>10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+          <div class="grid-toolbar-group pagination-group">
+            <button class="table-action" type="button" id="prevPage">Página anterior</button>
+            <span class="page-info" id="pageInfo">Página 1 de 1</span>
+            <button class="table-action" type="button" id="nextPage">Próxima página</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table aria-label="Faturamento Billnow por cliente e produto">
+            <thead>
+              <tr id="gridHeaderRow"></tr>
+            </thead>
+            <tbody id="trialRows"></tbody>
+          </table>
+        </div>
+      </article>
+
+      <aside class="detail-card">
+        <div class="surface-header">
+          <h2>Resumo operacional do cliente selecionado</h2>
+        </div>
+        <div class="detail-status-wrap">
+          <span class="status concluido" id="selectionStatus">Concluído</span>
+        </div>
+        <div class="detail-body">
+          <section class="detail-header">
+            <h3 id="detailClient">Serviços Digitais</h3>
+            <p id="detailCaption">CNPJ 12.345.678/0001-90</p>
+          </section>
+
+          <section class="detail-grid">
+            <div class="detail-point"><label>Produto</label><strong id="detailProduct">VPN - ID1438916</strong></div>
+            <div class="detail-point"><label>Família</label><strong id="detailFamily">ACESSO</strong></div>
+            <div class="detail-point"><label>Conta billing</label><strong id="detailBilling">20199871</strong></div>
+            <div class="detail-point"><label>Conta service</label><strong id="detailServiceAccount">20199871</strong></div>
+            <div class="detail-point"><label>Início</label><strong id="detailStart">01/03/2026</strong></div>
+			<div class="detail-point"><label>Fim</label><strong id="detailEnd">30/03/2026</strong></div>
+            <div class="detail-point"><label>Fatura</label><strong id="detailInvoice">202605-00081</strong></div>
+            <div class="detail-point"><label>Valor fatura </label><strong id="detailValue">R$ 18.920,43</strong></div>
+            <div class="detail-point"><label>Item BRM</label><strong id="detailItem">/item/cycle_forward</strong></div>
+            <div class="detail-point"><label>Serviço</label><strong id="detailService">/service/telco/ipvpn</strong></div>
+            <div class="detail-point"><label>Criação</label><span id="detailCreated">26/05/2026 09:54</span></div>
+            <div class="detail-point"><label>Atualização</label><span id="detailUpdated">26/05/2026 10:42</span></div>
+            <div class="detail-point"><label>Tributação</label><span id="detailTaxes">ICMS 18% | PIS 1,65% | COFINS 7,60% | FUST 1% | FUNTTEL 0,5%</span></div>
+            <div class="detail-point"><label>NFCom</label><strong id="detailNfcom">4905820347</strong></div>
+          </section>
+
+          <section class="artifact-stack">
+            <h2>Validação de artefatos do Billnow</h2>
+            <div class="detail-actions">
+              <button class="button secondary" type="button">Abrir JSON</button>
+              <button class="button secondary" type="button">Abrir Relatório Billnow</button>
+              <button class="button secondary" type="button">Abrir NFCom</button>
+              <button class="button secondary" type="button">Interfaces contábeis</button>
+            </div>
+          </section>
+
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="footer-bar" aria-label="Barra inferior do sistema">
+    <div class="footer-logo-box"><img class="footer-logo" src="https://www.vivoplataformadigital.com.br/cms/themes/jcdefault/images/footer/telefonica_2021_logo.png" alt="Telefônica" /></div>
+    <div class="footer-app-name">Billing Care - Ciclo de Receita - Fênix</div>
+    <div class="footer-logo-box"><img class="footer-logo" src="https://www.vivoplataformadigital.com.br/cms/themes/jcdefault/images/footer/5G_fibra.png" alt="5G e Fibra" /></div>
+  </footer>
+
+  <div class="column-filter-popover" id="columnFilterPopover" hidden>
+    <div class="column-filter-label" id="columnFilterLabel">Filtrar coluna</div>
+    <input class="column-filter" id="columnFilterInput" type="text" placeholder="Digite para filtrar" />
+    <div class="column-filter-actions">
+      <button class="column-filter-clear" id="columnFilterClear" type="button">Limpar filtro</button>
+    </div>
+  </div>
+
+  <script src="prod-excel-data.js"></script>
+  <script>
+    (function () {
+      const excelColumns = [
+        'DOCUMENTO', 'RAZAO_SOCIAL', 'GRUPO_ECONOMICO', 'ENDERECO_INSTALACAO', 'UF_INSTALACAO', 'ENDERECO_COBRANCA', 'UF_COBRANCA', 'SEGMENTO', 'SUBSEGMENTO', 'CONTA_SERVICO', 'CONTA_PAGADORA', 'STATUS_CONTA', 'APURACAO_DATA_INICIO', 'APURACAO_DATA_FIM', 'EMAIL_CONTA', 'NUMERO_CONTRATO', 'COD_PRODUTO', 'DESCRICAO_PRODUTO', 'VALOR_BRUTO_CATALOGO', 'FAMILIA_PRODUTO', 'CONTRATO_DATA_INICIO', 'CONTRATO_DATA_FIM', 'CONTRATO_RENOVACAO_DT', 'STATUS_PRODUTO', 'TERMINAL_PRINCIPAL', 'BASE_REAJUSTE', 'RAZAO_SOCIAL_FILIAL', 'CODIGO_FILIAL', 'END_FILIAL', 'CNPJ_FILIAL', 'DESC_ITEM_FATURADO', 'COD_ITEM', 'INTERVALO_DIAS', 'VALOR_FATURADO_BRUTO', 'QUANTIDADE_PRODUTO', 'CONCEITO_FATURAVEL', 'TERMINAL_A', 'TERMINAL_B', 'TERMINAL_FATURAMENTO', 'TIPO_CHAMADA', 'INICIO_CHAMADA', 'DURACAO_CHAMADA_REAL', 'DURACAO_CHAMADA_TARIFADA', 'ALIQUOTA_ICMS', 'ALIQUOTA_ISS', 'ALIQUOTA_COFINS', 'ALIQUOTA_PIS', 'ALIQUOTA_FCP', 'ALIQUOTA_FUNTTEL', 'ALIQUOTA_FUST', 'ICMS_BASE', 'ISS_BASE', 'COFINS_BASE', 'PIS_BASE', 'FCP_BASE', 'FUNTTEL_BASE', 'FUST_BASE', 'ICMS_VALOR', 'ISS_VALOR', 'COFINS_VALOR', 'PIS_VALOR', 'FCP_VALOR', 'FUNTTEL_VALOR', 'FUST_VALOR', 'ESPECIFICIDADE_TRIB', 'RET_IMPOSTO_NV_CLIENT', 'RET_IMPOSTO_NV_PROD', 'VALOR_RETENCAO', 'NUMERO_NF', 'SERIE', 'SUBSERIE', 'UF_FISCAL', 'MODELO_NF', 'COBILLING_CHAMADAS', 'COBILLING_DADOS_NF_NO', 'COBILLING_DADOS_NF_SERIE', 'COBILLING_DADOS_NF_SUBSERIE', 'COBILLING_DADOS_NF_UF', 'ICMS_COBILLING', 'COFINS_COBILLING', 'PIS_COBILLING', 'BASE_ICMS_COBILLING', 'BASE_COFINS_COBILLING', 'BASE_PIS_COBILLING', 'VALOR_ICMS_COBILLING', 'VALOR_COFINS_COBILLING', 'VALOR_PIS_COBILLING', 'COBILLING_OPERADORA', 'CICLO', 'DATA_VENCIMENTO', 'TIPO_PRORROGACAO_VENCIMENTO', 'USUARIO_PRORROGACAO_VENCIMENTO', 'DATA_PRORROGACAO_VENCIMENTO', 'QTD_PRORROGACAO_VENCIMENTO', 'DATA_EMISSAO_NF', 'PERIODO_REF', 'CODIGO_BARRAS', 'ATIVIDADE', 'NUMERO_FATURA', 'CONDICAO_COMERCIAL', 'INI_CONDICAO_COMERCIAL', 'FIM_CONDICAO_COMERCIAL', 'IVA_CST', 'IVA_CCLASS', 'IVA_BC', 'IBSUF_PERCENT', 'IBSUF_TAX', 'IBSUF_RED_PERC', 'IBSUF_PERCENT_ORIGINAL', 'IBSUF_TAX_ORIGINAL', 'IBSUF_DIF_PERC', 'IBSUF_DIF_AMT', 'IBSUF_DEV_AMT', 'IBSMUN_PERCENT', 'IBSMUN_TAX', 'IBSMUN_RED_PERC', 'IBSMUN_PERCENT_ORIGINAL', 'IBSMUN_TAX_ORIGINAL', 'IBSMUN_DIF_PERC', 'IBSMUN_DIF_AMT', 'IBSMUN_DEV_AMT', 'CBS_PERCENT', 'CBS_TAX', 'CBS_RED_PERC', 'CBS_PERCENT_ORIGINAL', 'CBS_TAX_ORIGINAL', 'CBS_DIF_PERC', 'CBS_DIF_AMT', 'CBS_DEV_AMT', 'TRIBREGULAR_CST', 'TRIBREGULAR_CCLASSTRIB', 'TRIBREGULAR_ALIQEFET_IBSUF', 'TRIBREGULAR_VTRIB_IBSUF', 'TRIBREGULAR_ALIQEFET_IBSMUN', 'TRIBREGULAR_VTRIB_IBSMUN', 'TRIBREGULAR_ALIQEFET_CBS', 'TRIBREGULAR_VTRIB_CBS', 'METODO_DE_COBRANCA', 'FORMA_DE_PAGAMENTO', 'DATA_DE_ATIVACAO', 'HORA_DE_ATIVACAO', 'DIA_DO_CICLO', 'PERIODICIDADE', 'BILLINFO_PAGADORA', 'BILLINFO_SERVICO', 'NUMERO_DE_PARCELAS'
+      ];
+
+      const gridColumns = ['Ações'].concat(excelColumns);
+
+      let sourceRows = [
+        {
+          id: 'trial-1',
+          client: 'Global One Serviços Digitais',
+          document: '12.345.678/0001-90',
+          product: 'VPN - ID1438916',
+          family: 'ACESSO',
+          payer: '20013456',
+          billing: '20199871',
+          serviceaccount: '20199871',
+          billinfo: 'Filha 5301982 / Pai 5301900',
+          period: '202605',
+          invoice: 'TRIAL-202605-00081',
+          arbill: '940177332',
+          session: 'TRIAL-SEQ-20260526-001',
+          value: 'R$ 18.920,43',
+          created: '26/05/2026 09:54',
+          updated: '26/05/2026 10:42',
+          item: '/item/cycle_forward',
+          service: '/service/telco/ipvpn',
+          nfcom: '4905820347',
+          taxes: 'ICMS 18% | PIS 1,65% | COFINS 7,60% | FUST 1% | FUNTTEL 0,5%',
+          start: '01/03/2026',
+          end: '30/03/2026',
+          executionStatus: 'Em execução'
+        },
+        {
+          id: 'trial-2',
+          client: 'Aliança Corporativa Telecom',
+          document: '98.765.432/0001-55',
+          product: 'Serviço de Internet Corporativa',
+          family: 'ACESSO',
+          payer: '20017789',
+          billing: '20277810',
+          serviceaccount: '20277810',
+          billinfo: 'Filha 5302441 / Pai 5302400',
+          period: '202605',
+          invoice: 'TRIAL-202605-00077',
+          arbill: '940177218',
+          session: 'TRIAL-SEQ-20260526-004',
+          value: 'R$ 7.483,12',
+          created: '26/05/2026 08:41',
+          updated: '26/05/2026 09:18',
+          item: '/item/usage_data',
+          service: '/service/telco/internet_dedicada',
+          nfcom: '',
+          taxes: 'ISS 5% | PIS 1,65% | COFINS 7,60%',
+          start: '',
+          end: '',
+          executionStatus: 'Pendente de execução'
+        },
+        {
+          id: 'trial-3',
+          client: 'Nova Rede Empresarial SA',
+          document: '44.111.222/0001-09',
+          product: 'SMART EMPRESAS',
+          family: 'DADOS + VOZ',
+          payer: '20022001',
+          billing: '20310044',
+          serviceaccount: '20310044',
+          billinfo: 'Filha 5303009 / Pai 5303000',
+          period: '202605',
+          invoice: 'TRIAL-202605-00070',
+          arbill: '940176992',
+          session: 'TRIAL-SEQ-20260525-011',
+          value: 'R$ 29.776,90',
+          created: '25/05/2026 17:36',
+          updated: '25/05/2026 18:55',
+          item: '/item/cycle_arrear',
+          service: '/service/telco/smart_empresas',
+          nfcom: 'Concluído',
+          taxes: 'ICMS 18% | PIS 1,65% | COFINS 7,60% | FUST 1% | FUNTTEL 0,5%',
+          start: '',
+          end: '',
+          executionStatus: 'Concluído'
+        },
+        {
+          id: 'trial-4',
+          client: 'Horizonte M2M Brasil',
+          document: '55.210.334/0001-64',
+          product: 'M2M',
+          family: 'DADOS',
+          payer: '20033008',
+          billing: '20488911',
+          serviceaccount: '20488911',
+          billinfo: 'Filha 5304101 / Pai 5304100',
+          period: '202605',
+          invoice: 'TRIAL-202605-00088',
+          arbill: '940177441',
+          session: 'TRIAL-SEQ-20260526-019',
+          value: 'R$ 3.122,60',
+          created: '26/05/2026 11:12',
+          updated: '26/05/2026 11:28',
+          item: '/item/cycle_forward',
+          service: '/service/telco/m2m',
+          nfcom: 'Concluído',
+          taxes: 'ICMS 18% | PIS 1,65% | COFINS 7,60%',
+          start: '',
+          end: '',
+          executionStatus: 'Em execução'
+        },
+        {
+          id: 'trial-5',
+          client: 'Fibra Max Empresas Paulista',
+          document: '21.450.887/0001-18',
+          product: 'Vivo Fibra 600 Mega Empresas',
+          family: 'INTERNET',
+          payer: '20041190',
+          billing: '20530277',
+          serviceaccount: '20530277',
+          billinfo: 'Filha 5305011 / Pai 5305000',
+          period: '202605',
+          invoice: 'TRIAL-202605-00073',
+          arbill: '940177040',
+          session: 'TRIAL-SEQ-20260525-021',
+          value: 'R$ 11.804,21',
+          created: '25/05/2026 18:10',
+          updated: '26/05/2026 08:06',
+          item: '/item/usage_data',
+          service: '/service/telco/fibra',
+          nfcom: '',
+          taxes: 'ICMS 18% | PIS 1,65% | COFINS 7,60%',
+          start: '',
+          end: '',
+          executionStatus: 'Concluído'
+        },
+        {
+          id: 'trial-6',
+          client: 'Conecta Cloud B2B',
+          document: '61.233.441/0001-72',
+          product: 'Cloud Connect Secure',
+          family: 'SERVIÇOS',
+          payer: '20051210',
+          billing: '20599812',
+          serviceaccount: '20599812',
+          billinfo: 'Filha 5306120 / Pai 5306100',
+          period: '202605',
+          invoice: 'TRIAL-202605-00095',
+          arbill: '940177590',
+          session: 'TRIAL-SEQ-20260526-026',
+          value: 'R$ 12.114,33',
+          created: '26/05/2026 12:04',
+          updated: '26/05/2026 12:21',
+          item: '/item/cycle_forward',
+          service: '/service/telco/cloud_connect',
+          nfcom: '4905820391',
+          taxes: 'ISS 5% | PIS 1,65% | COFINS 7,60%',
+          start: '01/05/2026',
+          end: '31/05/2026',
+          executionStatus: 'Em execução'
+        },
+        {
+          id: 'trial-7',
+          client: 'Grupo Atlas Digital',
+          document: '73.844.210/0001-05',
+          product: 'Link Dedicado Premium',
+          family: 'INTERNET',
+          payer: '20061290',
+          billing: '20644580',
+          serviceaccount: '20644580',
+          billinfo: 'Filha 5307108 / Pai 5307100',
+          period: '202605',
+          invoice: 'TRIAL-202605-00096',
+          arbill: '940177604',
+          session: 'TRIAL-SEQ-20260526-029',
+          value: 'R$ 21.448,10',
+          created: '26/05/2026 12:32',
+          updated: '26/05/2026 12:48',
+          item: '/item/usage_data',
+          service: '/service/telco/link_dedicado',
+          nfcom: '',
+          taxes: 'ICMS 18% | PIS 1,65% | COFINS 7,60%',
+          start: '01/05/2026',
+          end: '31/05/2026',
+          executionStatus: 'Pendente de execução'
+        },
+        {
+          id: 'trial-8',
+          client: 'Operadora Sul Corporativa',
+          document: '18.902.771/0001-46',
+          product: 'Voz SIP Tronco Digital',
+          family: 'VOZ',
+          payer: '20070133',
+          billing: '20711009',
+          serviceaccount: '20711009',
+          billinfo: 'Filha 5308032 / Pai 5308000',
+          period: '202605',
+          invoice: 'TRIAL-202605-00102',
+          arbill: '940177660',
+          session: 'TRIAL-SEQ-20260526-034',
+          value: 'R$ 9.870,54',
+          created: '26/05/2026 13:17',
+          updated: '26/05/2026 13:34',
+          item: '/item/cycle_arrear',
+          service: '/service/telco/sip_trunk',
+          nfcom: '4905820418',
+          taxes: 'ICMS 18% | PIS 1,65% | COFINS 7,60% | FUST 1%',
+          start: '01/05/2026',
+          end: '31/05/2026',
+          executionStatus: 'Concluído'
+        },
+        {
+          id: 'trial-9',
+          client: 'Logística Prime Solutions',
+          document: '32.550.908/0001-84',
+          product: 'IoT Tracking M2M',
+          family: 'DADOS',
+          payer: '20081144',
+          billing: '20788761',
+          serviceaccount: '20788761',
+          billinfo: 'Filha 5309055 / Pai 5309000',
+          period: '202605',
+          invoice: 'TRIAL-202605-00108',
+          arbill: '940177718',
+          session: 'TRIAL-SEQ-20260526-041',
+          value: 'R$ 6.214,88',
+          created: '26/05/2026 14:02',
+          updated: '26/05/2026 14:19',
+          item: '/item/cycle_forward',
+          service: '/service/telco/iot_tracking',
+          nfcom: '',
+          taxes: 'ICMS 18% | PIS 1,65% | COFINS 7,60%',
+          start: '01/05/2026',
+          end: '31/05/2026',
+          executionStatus: 'Em execução'
+        },
+        {
+          id: 'trial-10',
+          client: 'Banco Horizonte Empresas',
+          document: '07.664.112/0001-38',
+          product: 'SD-WAN Agências',
+          family: 'DADOS + VOZ',
+          payer: '20092315',
+          billing: '20855432',
+          serviceaccount: '20855432',
+          billinfo: 'Filha 5310020 / Pai 5310000',
+          period: '202605',
+          invoice: 'TRIAL-202605-00115',
+          arbill: '940177801',
+          session: 'TRIAL-SEQ-20260526-047',
+          value: 'R$ 31.905,77',
+          created: '26/05/2026 14:51',
+          updated: '26/05/2026 15:06',
+          item: '/item/usage_data',
+          service: '/service/telco/sdwan',
+          nfcom: '4905820450',
+          taxes: 'ICMS 18% | PIS 1,65% | COFINS 7,60% | FUNTTEL 0,5%',
+          start: '01/05/2026',
+          end: '31/05/2026',
+          executionStatus: 'Pendente de execução'
+        }
+      ];
+
+      const rawExcelRows = Array.isArray(window.prodExcelRows) ? window.prodExcelRows : [];
+      const executionStatusCycle = ['Em execução', 'Pendente de execução', 'Concluído'];
+
+      function formatDocument(value) {
+        const digits = String(value || '').replace(/\D/g, '');
+        if (digits.length === 14) {
+          return digits.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+        }
+        if (digits.length === 11) {
+          return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        }
+        return String(value || '-');
+      }
+
+      function formatCurrency(value) {
+        const normalized = String(value || '').trim();
+        if (!normalized) return '-';
+        if (/^r\$/i.test(normalized)) return normalized;
+        return 'R$ ' + normalized;
+      }
+
+      function buildTaxesSummary(values) {
+        const taxes = [
+          ['ICMS', values.ALIQUOTA_ICMS],
+          ['ISS', values.ALIQUOTA_ISS],
+          ['PIS', values.ALIQUOTA_PIS],
+          ['COFINS', values.ALIQUOTA_COFINS],
+          ['FUST', values.ALIQUOTA_FUST],
+          ['FUNTTEL', values.ALIQUOTA_FUNTTEL]
+        ].filter((entry) => entry[1]);
+
+        if (!taxes.length) return '-';
+        return taxes.map((entry) => entry[0] + ' ' + entry[1]).join(' | ');
+      }
+
+      function mapExcelEntryToSourceRow(entry, index) {
+        const values = Object.assign({}, entry.values || {});
+        const executionStatus = executionStatusCycle[index % executionStatusCycle.length];
+        const period = normalizePeriod(values.PERIODO_REF || values.CICLO || '202604') || '202604';
+
+        return {
+          id: entry.id || ('trial-excel-' + (index + 1)),
+          values,
+          client: values.RAZAO_SOCIAL || '-',
+          document: formatDocument(values.DOCUMENTO),
+          product: values.DESCRICAO_PRODUTO || values.COD_PRODUTO || '-',
+          family: values.FAMILIA_PRODUTO || '-',
+          payer: values.CONTA_PAGADORA || '-',
+          billing: values.BILLINFO_PAGADORA || values.CONTA_PAGADORA || '-',
+          serviceaccount: values.CONTA_SERVICO || values.BILLINFO_SERVICO || '-',
+          billinfo: values.BILLINFO_PAGADORA || values.BILLINFO_SERVICO || '-',
+          period,
+          invoice: values.NUMERO_FATURA || '-',
+          arbill: values.NUMERO_NF || '-',
+          session: 'BILLNOW-EXCEL-' + String(index + 1).padStart(4, '0'),
+          value: formatCurrency(values.VALOR_FATURADO_BRUTO || values.VALOR_BRUTO_CATALOGO),
+          created: '-',
+          updated: '-',
+          item: values.DESC_ITEM_FATURADO || values.ATIVIDADE || '-',
+          service: values.CONDICAO_COMERCIAL || values.METODO_DE_COBRANCA || '-',
+          nfcom: values.NUMERO_NF || values.DATA_EMISSAO_NF || '-',
+          taxes: buildTaxesSummary(values),
+          start: values.APURACAO_DATA_INICIO || values.CONTRATO_DATA_INICIO || '-',
+          end: values.APURACAO_DATA_FIM || values.CONTRATO_DATA_FIM || '-',
+          executionStatus
+        };
+      }
+
+      if (rawExcelRows.length) {
+        sourceRows = rawExcelRows.map(mapExcelEntryToSourceRow);
+      }
+
+      const headerRow = document.getElementById('gridHeaderRow');
+      const body = document.getElementById('trialRows');
+      const searchButton = document.getElementById('searchButton');
+      const clearButton = document.getElementById('clearButton');
+      const gridSurface = document.getElementById('gridSurface');
+      const toggleGridExpand = document.getElementById('toggleGridExpand');
+      const exportGridButton = document.getElementById('exportGridButton');
+      const tableWrap = document.querySelector('.table-wrap');
+      const rowsPerPage = document.getElementById('rowsPerPage');
+      const prevPage = document.getElementById('prevPage');
+      const nextPage = document.getElementById('nextPage');
+      const pageInfo = document.getElementById('pageInfo');
+      const columnFilterPopover = document.getElementById('columnFilterPopover');
+      const columnFilterLabel = document.getElementById('columnFilterLabel');
+      const columnFilterInput = document.getElementById('columnFilterInput');
+      const columnFilterClear = document.getElementById('columnFilterClear');
+      const searchFields = {
+        client: document.getElementById('cliente'),
+        document: document.getElementById('documento'),
+        product: document.getElementById('produto'),
+        family: document.getElementById('familia'),
+        period: document.getElementById('periodo'),
+        invoice: document.getElementById('fatura'),
+        billing: document.getElementById('contaBilling'),
+        nfcom: document.getElementById('nfcomFilter')
+      };
+      const kpiRefs = {
+        countValue: document.getElementById('kpiCountValue'),
+        countSupport: document.getElementById('kpiCountSupport'),
+        grossValue: document.getElementById('kpiGrossValue'),
+        grossSupport: document.getElementById('kpiGrossSupport'),
+        netValue: document.getElementById('kpiNetValue'),
+        netSupport: document.getElementById('kpiNetSupport')
+      };
+      const refs = {
+        selectionStatus: document.getElementById('selectionStatus'),
+        client: document.getElementById('detailClient'),
+        caption: document.getElementById('detailCaption'),
+        product: document.getElementById('detailProduct'),
+        family: document.getElementById('detailFamily'),
+        billing: document.getElementById('detailBilling'),
+        serviceAccount: document.getElementById('detailServiceAccount'),
+        start: document.getElementById('detailStart'),
+        end: document.getElementById('detailEnd'),
+        invoice: document.getElementById('detailInvoice'),
+        value: document.getElementById('detailValue'),
+        item: document.getElementById('detailItem'),
+        service: document.getElementById('detailService'),
+        created: document.getElementById('detailCreated'),
+        updated: document.getElementById('detailUpdated'),
+        taxes: document.getElementById('detailTaxes'),
+        nfcom: document.getElementById('detailNfcom')
+      };
+
+      const state = {
+        filters: {},
+        searchCriteria: {
+          client: '',
+          document: '',
+          product: '',
+          family: '',
+          period: '202604',
+          invoice: '',
+          billing: '',
+          nfcom: ''
+        },
+        sortKey: '',
+        sortDirection: 'asc',
+        currentPage: 1,
+        rowsPerPage: 10,
+        selectedId: sourceRows.length ? sourceRows[0].id : '',
+        activeFilterColumn: ''
+      };
+
+      function normalizeText(value) {
+        return String(value || '').trim().toLowerCase();
+      }
+
+      function normalizePeriod(value) {
+        return String(value || '').replace(/\D/g, '');
+      }
+
+      function parseLocaleNumber(value) {
+        const normalized = String(value || '').trim().replace(/\./g, '').replace(',', '.').replace(/[^0-9.-]/g, '');
+        const parsed = Number(normalized);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+
+      function formatCurrencyNumber(value) {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+      }
+
+      function getRowGrossValue(row) {
+        return parseLocaleNumber(row.values.VALOR_FATURADO_BRUTO || row.values.VALOR_BRUTO_CATALOGO);
+      }
+
+      function getRowTaxValue(row) {
+        return [
+          'ICMS_VALOR',
+          'ISS_VALOR',
+          'COFINS_VALOR',
+          'PIS_VALOR',
+          'FCP_VALOR',
+          'FUNTTEL_VALOR',
+          'FUST_VALOR',
+          'VALOR_RETENCAO'
+        ].reduce((total, key) => total + parseLocaleNumber(row.values[key]), 0);
+      }
+
+      function updateKpis(filtered) {
+        const recordCount = filtered.length;
+        const grossTotal = filtered.reduce((total, row) => total + getRowGrossValue(row), 0);
+        const netTotal = filtered.reduce((total, row) => total + Math.max(0, getRowGrossValue(row) - getRowTaxValue(row)), 0);
+
+        kpiRefs.countValue.textContent = recordCount.toLocaleString('pt-BR');
+        kpiRefs.countSupport.textContent = recordCount === 1
+          ? '1 registro retornado do relatório Billnow no recorte aplicado.'
+          : recordCount.toLocaleString('pt-BR') + ' registros retornados do relatório Billnow no recorte aplicado.';
+        kpiRefs.grossValue.textContent = formatCurrencyNumber(grossTotal);
+        kpiRefs.grossSupport.textContent = 'Somatório real do valor bruto dos registros filtrados.';
+        kpiRefs.netValue.textContent = formatCurrencyNumber(netTotal);
+        kpiRefs.netSupport.textContent = 'Valor líquido estimado após abatimento de impostos e retenções.';
+      }
+
+      function exportCurrentGrid() {
+        const rows = getFilteredData();
+        const exportColumns = gridColumns.filter((column) => column !== 'Ações');
+        const lines = [exportColumns.join(';')].concat(rows.map((row) => exportColumns.map((column) => {
+          const rawValue = row.values[column] == null ? '' : String(row.values[column]);
+          return '"' + rawValue.replace(/"/g, '""') + '"';
+        }).join(';')));
+
+        const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'flexbill-billnow-grid.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      }
+
+      function applyNavigationPayload() {
+        const rawPayload = sessionStorage.getItem('flexbillNavigationPayload');
+        if (!rawPayload) return;
+
+        try {
+          const payload = JSON.parse(rawPayload);
+          if (payload.period) {
+            searchFields.period.value = payload.period.slice(0, 4) + '-' + payload.period.slice(4, 6);
+          }
+          if (payload.document) searchFields.document.value = payload.document;
+          if (payload.client) searchFields.client.value = payload.client;
+          if (payload.product) searchFields.product.value = payload.product;
+          if (payload.family) searchFields.family.value = payload.family;
+          if (payload.billing) searchFields.billing.value = payload.billing;
+          if (payload.invoice && searchFields.invoice) searchFields.invoice.value = payload.invoice;
+          if (payload.nfcom) searchFields.nfcom.value = payload.nfcom;
+
+          updateSearchCriteria();
+
+          const matchedRow = sourceRows.find((row) =>
+            (payload.invoice && String(row.invoice) === String(payload.invoice)) ||
+            (payload.document && String(row.document) === String(payload.document))
+          );
+
+          if (matchedRow) {
+            state.selectedId = matchedRow.id;
+            const filtered = getFilteredData();
+            const rowIndex = filtered.findIndex((row) => row.source.id === matchedRow.id);
+            if (rowIndex >= 0) {
+              state.currentPage = Math.floor(rowIndex / state.rowsPerPage) + 1;
+            }
+          }
+        } catch (error) {
+          console.error('Falha ao aplicar contexto de navegacao.', error);
+        }
+
+        sessionStorage.removeItem('flexbillNavigationPayload');
+      }
+
+      function updateSearchCriteria() {
+        state.searchCriteria = {
+          client: normalizeText(searchFields.client.value),
+          document: normalizeText(searchFields.document.value),
+          product: normalizeText(searchFields.product.value),
+          family: normalizeText(searchFields.family.value),
+          period: normalizePeriod(searchFields.period.value),
+          invoice: normalizeText(searchFields.invoice.value),
+          billing: normalizeText(searchFields.billing.value),
+          nfcom: normalizeText(searchFields.nfcom.value)
+        };
+      }
+
+      function clearSearchCriteria() {
+        searchFields.client.value = '';
+        searchFields.document.value = '';
+        searchFields.product.value = '';
+        searchFields.family.value = '';
+        searchFields.period.value = '2026-04';
+        searchFields.invoice.value = '';
+        searchFields.billing.value = '';
+        searchFields.nfcom.value = '';
+        updateSearchCriteria();
+      }
+
+      function formatStatusClass(status) {
+        if (status === 'Concluído') return 'status concluido';
+        if (status === 'Em execução') return 'status execucao';
+        return 'status pendente';
+      }
+
+      function createGridRow(row) {
+        const gridRow = {};
+        excelColumns.forEach((column) => {
+          gridRow[column] = row.values ? row.values[column] || '' : '';
+        });
+
+        gridRow.DOCUMENTO = row.document;
+        gridRow.RAZAO_SOCIAL = row.client;
+        gridRow.CONTA_SERVICO = row.serviceaccount;
+        gridRow.CONTA_PAGADORA = row.payer;
+        gridRow.APURACAO_DATA_INICIO = row.start;
+        gridRow.APURACAO_DATA_FIM = row.end;
+        gridRow.DESCRICAO_PRODUTO = row.product;
+        gridRow.FAMILIA_PRODUTO = row.family;
+        gridRow.VALOR_FATURADO_BRUTO = row.value;
+        gridRow.CICLO = row.values && row.values.CICLO ? row.values.CICLO : row.period;
+        gridRow.PERIODO_REF = row.period;
+        gridRow.NUMERO_FATURA = row.invoice;
+        gridRow.BILLINFO_PAGADORA = row.billing;
+        gridRow.BILLINFO_SERVICO = row.serviceaccount;
+        gridRow.NUMERO_NF = row.nfcom;
+        gridRow.STATUS_CONTA = row.executionStatus;
+        gridRow.ATIVIDADE = row.item;
+        gridRow.CONDICAO_COMERCIAL = row.service;
+        gridRow.Ações = '';
+
+        return gridRow;
+      }
+
+      const gridData = sourceRows.map((row) => ({
+        source: row,
+        values: createGridRow(row)
+      }));
+
+      function buildHeader() {
+        headerRow.innerHTML = '';
+
+        gridColumns.forEach((column) => {
+          const th = document.createElement('th');
+          if (column === 'Ações') {
+            th.textContent = column;
+          } else {
+            th.className = 'filterable-column';
+            if (state.filters[column]) {
+              th.classList.add('has-filter');
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'header-cell';
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'sort-button';
+            button.textContent = column;
+            button.title = 'Ordenar coluna';
+            button.addEventListener('click', (event) => {
+              event.stopPropagation();
+              toggleSort(column);
+            });
+
+            const indicator = document.createElement('span');
+            indicator.className = 'header-filter-indicator';
+            indicator.textContent = 'f';
+            indicator.setAttribute('aria-hidden', 'true');
+
+            wrapper.appendChild(button);
+            wrapper.appendChild(indicator);
+            th.appendChild(wrapper);
+            th.addEventListener('click', () => openColumnFilter(column, th));
+          }
+          headerRow.appendChild(th);
+        });
+
+        syncActiveFilterHeader();
+      }
+
+      function syncActiveFilterHeader() {
+        headerRow.querySelectorAll('th.filterable-column').forEach((th) => {
+          const sortButton = th.querySelector('.sort-button');
+          const column = sortButton ? sortButton.textContent : '';
+          th.classList.toggle('active-filter', column === state.activeFilterColumn);
+          th.classList.toggle('has-filter', !!state.filters[column]);
+        });
+      }
+
+      function closeColumnFilter() {
+        state.activeFilterColumn = '';
+        columnFilterPopover.hidden = true;
+        syncActiveFilterHeader();
+      }
+
+      function openColumnFilter(column, th) {
+        const isSameColumn = state.activeFilterColumn === column && !columnFilterPopover.hidden;
+        if (isSameColumn) {
+          closeColumnFilter();
+          return;
+        }
+
+        state.activeFilterColumn = column;
+        columnFilterLabel.textContent = 'Filtrar: ' + column;
+        columnFilterInput.value = state.filters[column] || '';
+        columnFilterInput.placeholder = 'Digite para filtrar';
+
+        const rect = th.getBoundingClientRect();
+        const left = Math.min(rect.left, window.innerWidth - 260);
+        columnFilterPopover.style.top = Math.min(rect.bottom + 6, window.innerHeight - 120) + 'px';
+        columnFilterPopover.style.left = Math.max(12, left) + 'px';
+        columnFilterPopover.hidden = false;
+        syncActiveFilterHeader();
+        columnFilterInput.focus();
+        columnFilterInput.select();
+      }
+
+      function toggleSort(column) {
+        if (state.sortKey === column) {
+          state.sortDirection = state.sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+          state.sortKey = column;
+          state.sortDirection = 'asc';
+        }
+        renderTable();
+      }
+
+      function getFilteredData() {
+        let data = gridData.filter((row) => {
+          const criteria = state.searchCriteria;
+          const matchesTopFilters =
+            (!criteria.client || normalizeText(row.source.client).includes(criteria.client)) &&
+            (!criteria.document || normalizeText(row.source.document).includes(criteria.document)) &&
+            (!criteria.product || normalizeText(row.source.product).includes(criteria.product)) &&
+            (!criteria.family || normalizeText(row.source.family) === criteria.family) &&
+            (!criteria.period || normalizePeriod(row.source.period) === criteria.period) &&
+            (!criteria.invoice || normalizeText(row.source.invoice).includes(criteria.invoice)) &&
+            (!criteria.billing || normalizeText(row.source.billing).includes(criteria.billing)) &&
+            (!criteria.nfcom || normalizeText(row.source.nfcom).includes(criteria.nfcom));
+
+          if (!matchesTopFilters) {
+            return false;
+          }
+
+          return gridColumns.every((column) => {
+            const filter = state.filters[column];
+            if (!filter) return true;
+            const value = row.values[column] == null ? '' : String(row.values[column]).toLowerCase();
+            return value.includes(filter);
+          });
+        });
+
+        if (state.sortKey) {
+          const key = state.sortKey;
+          const direction = state.sortDirection === 'asc' ? 1 : -1;
+          data = data.slice().sort((a, b) => {
+            const valueA = a.values[key] == null ? '' : String(a.values[key]).toLowerCase();
+            const valueB = b.values[key] == null ? '' : String(b.values[key]).toLowerCase();
+            return valueA.localeCompare(valueB, 'pt-BR', { numeric: true }) * direction;
+          });
+        }
+
+        return data;
+      }
+
+      function renderActionsCell() {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'icon-actions';
+
+        [
+          { label: 'Gerar artefatos', icon: '⚙', className: 'generate' },
+          { label: 'Cancelar Billnow', icon: '✕', className: 'cancel' },
+          { label: 'Liberar artefatos', icon: '✓', className: 'release' }
+        ].forEach((action) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'table-action ' + action.className;
+          button.title = action.label;
+          button.setAttribute('aria-label', action.label);
+          button.textContent = action.icon;
+          wrapper.appendChild(button);
+        });
+
+        return wrapper;
+      }
+
+      function renderTable() {
+        const filtered = getFilteredData();
+        const totalPages = Math.max(1, Math.ceil(filtered.length / state.rowsPerPage));
+        if (state.currentPage > totalPages) {
+          state.currentPage = totalPages;
+        }
+
+        const startIndex = (state.currentPage - 1) * state.rowsPerPage;
+        const pageRows = filtered.slice(startIndex, startIndex + state.rowsPerPage);
+        body.innerHTML = '';
+
+        pageRows.forEach((row) => {
+          const tr = document.createElement('tr');
+          if (row.source.id === state.selectedId) {
+            tr.classList.add('selected');
+          }
+          tr.addEventListener('click', () => {
+            state.selectedId = row.source.id;
+            fillDetails(row.source);
+            renderTable();
+          });
+
+          gridColumns.forEach((column) => {
+            const td = document.createElement('td');
+            if (column === 'Ações') {
+              const actions = renderActionsCell();
+              actions.addEventListener('click', (event) => event.stopPropagation());
+              td.appendChild(actions);
+            } else {
+              td.textContent = row.values[column];
+            }
+            tr.appendChild(td);
+          });
+
+          body.appendChild(tr);
+        });
+
+        pageInfo.textContent = 'Página ' + state.currentPage + ' de ' + totalPages + ' | ' + filtered.length + ' registros';
+        prevPage.disabled = state.currentPage === 1;
+        nextPage.disabled = state.currentPage === totalPages;
+        updateKpis(filtered);
+        syncActiveFilterHeader();
+      }
+
+      function fillDetails(row) {
+        refs.client.textContent = row.client || '-';
+        refs.caption.textContent = 'CNPJ ' + row.document;
+        refs.product.textContent = row.product;
+        refs.family.textContent = row.family;
+        refs.billing.textContent = row.billing;
+        refs.serviceAccount.textContent = row.serviceaccount;
+        refs.start.textContent = row.start || '-';
+        refs.end.textContent = row.end || '-';
+        refs.invoice.textContent = row.invoice;
+        refs.value.textContent = row.value;
+        refs.item.textContent = row.item;
+        refs.service.textContent = row.service;
+        refs.created.textContent = row.created;
+        refs.updated.textContent = row.updated;
+        refs.taxes.textContent = row.taxes;
+        refs.nfcom.textContent = row.nfcom || '-';
+        refs.selectionStatus.textContent = row.executionStatus;
+        refs.selectionStatus.className = formatStatusClass(row.executionStatus);
+      }
+
+      rowsPerPage.addEventListener('change', () => {
+        state.rowsPerPage = Number(rowsPerPage.value);
+        state.currentPage = 1;
+        renderTable();
+      });
+
+      searchButton.addEventListener('click', () => {
+        updateSearchCriteria();
+        state.currentPage = 1;
+        renderTable();
+      });
+
+      clearButton.addEventListener('click', () => {
+        clearSearchCriteria();
+        state.currentPage = 1;
+        renderTable();
+      });
+
+      exportGridButton.addEventListener('click', () => {
+        exportCurrentGrid();
+      });
+
+      columnFilterInput.addEventListener('input', (event) => {
+        if (!state.activeFilterColumn) return;
+        state.filters[state.activeFilterColumn] = event.target.value.trim().toLowerCase();
+        state.currentPage = 1;
+        renderTable();
+      });
+
+      columnFilterClear.addEventListener('click', () => {
+        if (!state.activeFilterColumn) return;
+        delete state.filters[state.activeFilterColumn];
+        columnFilterInput.value = '';
+        state.currentPage = 1;
+        renderTable();
+      });
+
+      document.addEventListener('click', (event) => {
+        const clickedHeader = event.target.closest('th.filterable-column');
+        const clickedPopover = event.target.closest('#columnFilterPopover');
+        if (!clickedHeader && !clickedPopover) {
+          closeColumnFilter();
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeColumnFilter();
+        }
+      });
+
+      tableWrap.addEventListener('scroll', () => {
+        if (!columnFilterPopover.hidden) {
+          closeColumnFilter();
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        if (!columnFilterPopover.hidden) {
+          closeColumnFilter();
+        }
+      });
+
+      prevPage.addEventListener('click', () => {
+        if (state.currentPage > 1) {
+          state.currentPage -= 1;
+          renderTable();
+        }
+      });
+
+      nextPage.addEventListener('click', () => {
+        const totalPages = Math.max(1, Math.ceil(getFilteredData().length / state.rowsPerPage));
+        if (state.currentPage < totalPages) {
+          state.currentPage += 1;
+          renderTable();
+        }
+      });
+
+      toggleGridExpand.addEventListener('click', () => {
+        const expanded = gridSurface.classList.toggle('expanded');
+        document.body.classList.toggle('grid-expanded', expanded);
+        toggleGridExpand.textContent = expanded ? 'Recolher' : 'Expandir';
+        closeColumnFilter();
+      });
+
+      updateSearchCriteria();
+      applyNavigationPayload();
+      buildHeader();
+      if (sourceRows.length) {
+        const selectedRow = sourceRows.find((row) => row.id === state.selectedId) || sourceRows[0];
+        fillDetails(selectedRow);
+      }
+      renderTable();
+    }());
+  </script>
+</body>
+</html>

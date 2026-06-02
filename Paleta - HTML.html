@@ -1,0 +1,106 @@
+Com base no HTML enviado, use esta paleta pronta para copiar e aplicar: 
+
+```html
+<style>
+  :root {
+    /* Cores principais Vivo */
+    --vivo-roxo: #660099;
+    --vivo-roxo-escuro: #3d005c;
+    --vivo-roxo-medio: #8a00e6;
+    --vivo-roxo-claro: #f3e5f9;
+    --vivo-azul: #006cff;
+    --vivo-azul-claro: #e6f0ff;
+    --vivo-magenta: #e6007e;
+
+    /* Cores base */
+    --branco: #ffffff;
+    --fundo: #f3f4f7;
+    --card: #ffffff;
+
+    /* Bordas */
+    --borda: #dfe3e8;
+    --borda-card: #e1e4e8;
+    --borda-campo: #d8dde3;
+
+    /* Textos */
+    --texto: #56606b;
+    --texto-escuro: #3f4650;
+    --texto-suave: #8a93a0;
+    --placeholder: #a0a7b0;
+
+    /* Estados */
+    --erro: #a94442;
+    --sucesso: #14855f;
+    --disabled: #e9edf2;
+    --texto-disabled: #8b94a1;
+
+    /* Sombras */
+    --sombra-topbar: 0 2px 8px rgba(61, 0, 92, 0.28);
+    --sombra-card: 0 2px 5px rgba(35, 35, 35, 0.20);
+    --sombra-footer: 0 -2px 8px rgba(61, 0, 92, 0.16);
+
+    /* Gradientes */
+    --gradiente-principal: linear-gradient(
+      90deg,
+      #3d005c,
+      #660099,
+      #8a00e6,
+      #006cff
+    );
+
+    --gradiente-botao: linear-gradient(
+      90deg,
+      #660099,
+      #8a00e6
+    );
+
+    --gradiente-secao: linear-gradient(
+      90deg,
+      #e8edf2,
+      #eef1f5
+    );
+  }
+</style>
+```
+
+Exemplo rápido de aplicação:
+
+```html
+<style>
+  body {
+    background: var(--fundo);
+    color: var(--texto);
+  }
+
+  .topbar {
+    background: var(--gradiente-principal);
+    color: var(--branco);
+    box-shadow: var(--sombra-topbar);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--borda-card);
+    box-shadow: var(--sombra-card);
+  }
+
+  .botao-principal {
+    background: var(--gradiente-botao);
+    color: var(--branco);
+  }
+
+  input,
+  select {
+    border: 1px solid var(--borda-campo);
+    color: var(--texto-escuro);
+  }
+
+  .erro {
+    color: var(--erro);
+  }
+
+  .sucesso {
+    color: var(--sucesso);
+  }
+</style>
+```
