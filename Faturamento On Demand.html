@@ -1,0 +1,2415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlexBill | Trial Billing Cockpit</title>
+<style>
+:root {
+  --bg: #f3f4f7;
+  --surface: #ffffff;
+  --surface2: #f8fbfd;
+  --line: #dfe3e8;
+  --line2: #e1e4e8;
+  --field-line: #d8dde3;
+  --text: #3f4650;
+  --muted: #8a93a0;
+  --placeholder: #a0a7b0;
+  --brand: #660099;
+  --brand2: #3d005c;
+  --brand-mid: #8a00e6;
+  --accent: #006cff;
+  --magenta: #e6007e;
+  --error: #a94442;
+  --errorbg: #fff1f0;
+  --ok: #14855f;
+  --warn: #9a6a00;
+  --info: #2057a7;
+  --okbg: #ecf9f4;
+  --warnbg: #fff6e7;
+  --infobg: #edf4ff;
+  --gradient-main: linear-gradient(90deg, #3d005c, #660099, #8a00e6, #006cff);
+  --gradient-button: linear-gradient(90deg, #660099, #8a00e6);
+  --gradient-section: linear-gradient(90deg, #eff2f6, #f8fbfd);
+  --shadow-topbar: 0 2px 8px rgba(61, 0, 92, 0.28);
+  --shadow: 0 12px 24px rgba(35, 35, 35, 0.08);
+  --shadow-panel: 0 16px 32px rgba(35, 35, 35, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.icon-sprite {
+  display: none;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top right, rgba(138, 0, 230, 0.07), transparent 24%),
+    radial-gradient(circle at left bottom, rgba(0, 108, 255, 0.08), transparent 28%),
+    var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+  font-size: 14px;
+}
+
+.header {
+  background: var(--gradient-main);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.26);
+  box-shadow: var(--shadow-topbar);
+  color: #ffffff;
+  padding: 20px 24px 16px;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+.header p {
+  margin: 6px 0 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 13px;
+}
+
+.page {
+  max-width: 1580px;
+  margin: 0 auto;
+  padding: 18px 24px 34px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line2);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.card-h {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--gradient-section);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.card-h h2 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.card-b {
+  padding: 16px;
+}
+
+.search-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.field-inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+input,
+select {
+  width: 100%;
+  border: 1px solid var(--field-line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  outline: none;
+  background: #ffffff;
+  color: var(--text);
+}
+
+input::placeholder {
+  color: var(--placeholder);
+}
+
+input:focus,
+select:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(102, 0, 153, 0.13);
+}
+
+.search-actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+button {
+  font: inherit;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--gradient-button);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(102, 0, 153, 0.18);
+}
+
+.primary:hover {
+  background: linear-gradient(90deg, var(--brand2), var(--brand-mid));
+}
+
+.secondary {
+  background: #ffffff;
+  border-color: var(--field-line);
+  color: var(--text);
+}
+
+.secondary:hover {
+  background: #f8fafc;
+}
+
+.pill {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 850;
+  background: #f3e5f9;
+  color: var(--brand);
+  white-space: nowrap;
+}
+
+.pill.info {
+  background: var(--infobg);
+  color: var(--info);
+}
+
+.pill.ok {
+  background: var(--okbg);
+  color: var(--ok);
+}
+
+.pill.warn {
+  background: var(--warnbg);
+  color: var(--warn);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.kpi {
+  background: #ffffff;
+  border: 1px solid var(--line2);
+  border-radius: 14px;
+  padding: 15px 16px;
+  box-shadow: var(--shadow);
+}
+
+.kpi small {
+  display: block;
+  color: var(--muted);
+  font-weight: 750;
+  margin-bottom: 6px;
+}
+
+.kpi strong {
+  font-size: 22px;
+  color: var(--text);
+}
+
+.kpi span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.table-wrap {
+  overflow: auto;
+  max-height: 420px;
+  border-bottom: 1px solid var(--line2);
+}
+
+table {
+  width: 100%;
+  min-width: 1420px;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid var(--line2);
+  text-align: left;
+  vertical-align: middle;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #f8fafc;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 850;
+  border-bottom: 1px solid var(--line);
+  user-select: none;
+}
+
+th.sortable {
+  cursor: pointer;
+}
+
+th.sortable:hover {
+  background: #f4effd;
+}
+
+th .headcell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sort-indicator {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.filter-panel {
+  display: none;
+  position: absolute;
+  z-index: 30;
+  min-width: 230px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-panel);
+  border-radius: 10px;
+  padding: 10px;
+  color: var(--text);
+}
+
+.filter-panel.open {
+  display: block;
+}
+
+.filter-panel label {
+  display: block;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.filter-panel .filter-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+
+.filter-panel button {
+  padding: 7px 9px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+tr:hover td {
+  background: #faf7ff;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.action-cell {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  color: #ffffff;
+  padding: 0;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.icon-btn.gear {
+  background: var(--magenta);
+}
+
+.icon-btn.cancel {
+  background: var(--error);
+}
+
+.icon-btn.ok {
+  background: var(--ok);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  background: #ffffff;
+}
+
+.pagination-info {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-actions button {
+  padding: 7px 10px;
+  border-radius: 8px;
+}
+
+.totalizador {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 750;
+}
+
+.domain-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.domain-tab {
+  background: #ffffff;
+  border: 1px solid var(--field-line);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 9px 13px;
+}
+
+.domain-tab.active {
+  background: var(--gradient-button);
+  border-color: var(--brand);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(102, 0, 153, 0.14);
+}
+
+.actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actions-row > div:first-child {
+  flex: 1 1 520px;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.field-toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.lov-field {
+  position: relative;
+  flex: 0 1 240px;
+  min-width: 190px;
+}
+
+.lov-field label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.lov-trigger {
+  width: 100%;
+  min-height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--field-line);
+  background: #ffffff;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+  justify-content: space-between;
+  padding: 8px 10px;
+}
+
+.lov-field.open .lov-trigger {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(102, 0, 153, 0.11);
+}
+
+.lov-trigger .icon {
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  transform: rotate(90deg);
+}
+
+.lov-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 40;
+  width: min(320px, 90vw);
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: var(--shadow-panel);
+}
+
+.lov-field.open .lov-menu {
+  display: block;
+}
+
+.lov-search {
+  min-height: 32px;
+  margin-bottom: 6px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.lov-options {
+  max-height: 190px;
+  overflow: auto;
+  padding: 2px 0;
+}
+
+.lov-option {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 28px;
+  margin: 0;
+  padding: 5px 6px;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.lov-option:hover {
+  background: #faf7ff;
+}
+
+.lov-option input {
+  width: 14px;
+  height: 14px;
+  min-height: 14px;
+  padding: 0;
+  accent-color: var(--brand);
+}
+
+.lov-all {
+  border-bottom: 1px solid var(--line2);
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 4px;
+}
+
+.lov-empty {
+  padding: 10px 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.lov-menu-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line2);
+}
+
+.lov-menu-actions button {
+  min-height: 30px;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+#toggleAllButton {
+  min-width: 150px;
+}
+
+.macro-area {
+  padding: 12px 16px 16px;
+  width: 100%;
+  max-width: none;
+}
+
+.macro {
+  border: 1px solid var(--line2);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 10px;
+  background: #ffffff;
+}
+
+.macro summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 13px;
+  cursor: pointer;
+  background: #fbfcfe;
+}
+
+.macro summary::-webkit-details-marker {
+  display: none;
+}
+
+.macro-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.caret {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #f3e5f9;
+  display: grid;
+  place-items: center;
+  color: var(--brand);
+  flex: 0 0 auto;
+  font-size: 12px;
+}
+
+.macro[open] .caret {
+  transform: rotate(90deg);
+}
+
+.macro-title b {
+  display: block;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.macro-title span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.macro-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.group {
+  border-top: 1px solid var(--line2);
+  padding: 10px 12px 12px;
+}
+
+.group + .group {
+  border-top: 1px solid var(--line2);
+}
+
+.group-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.group-h strong {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.field-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 10px;
+}
+
+.field-chip {
+  border: 1px solid var(--line2);
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 10px 11px;
+  display: block;
+  min-height: 92px;
+}
+
+.field-name {
+  font-weight: 800;
+  color: var(--text);
+  min-width: 0;
+  font-size: 13px;
+  margin-bottom: 8px;
+  line-height: 1.25;
+}
+
+.field-value {
+  color: var(--text);
+  background: #f8fafc;
+  border: 1px solid var(--line2);
+  border-radius: 8px;
+  padding: 7px 8px;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.field-value input {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.field-value input:focus {
+  box-shadow: none;
+  border: 0;
+}
+
+.empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* UX polish: restrained controls, dense grids, and clearer scan hierarchy. */
+body {
+  min-height: 100vh;
+}
+
+.header {
+  padding: 0;
+}
+
+.header-shell {
+  max-width: 1580px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  color: #ffffff;
+}
+
+.header p {
+  max-width: 780px;
+}
+
+.header-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.page {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  border-radius: 8px;
+  margin-bottom: 0;
+}
+
+.card-h {
+  min-height: 56px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.card-title .icon {
+  color: var(--brand);
+}
+
+.search-grid {
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  align-items: end;
+}
+
+.field {
+  min-width: 0;
+}
+
+.field:has(.field-inline) {
+  grid-column: span 2;
+}
+
+.field label {
+  color: var(--text);
+}
+
+.field:focus-within label {
+  color: var(--brand);
+}
+
+input,
+select {
+  min-height: 40px;
+  border-radius: 8px;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 17px,
+    calc(100% - 13px) 17px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 34px;
+}
+
+.search-actions {
+  align-self: end;
+  grid-column: span 2;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
+button {
+  min-height: 40px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 2px solid rgba(102, 0, 153, 0.22);
+  outline-offset: 2px;
+}
+
+.primary {
+  border-color: rgba(102, 0, 153, 0.18);
+}
+
+.secondary {
+  box-shadow: 0 1px 2px rgba(35, 35, 35, 0.04);
+}
+
+.secondary:hover {
+  border-color: #ccb6dc;
+  color: var(--brand);
+}
+
+.pill {
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  border-radius: 999px;
+}
+
+.kpi-grid {
+  margin-bottom: 0;
+}
+
+.kpi {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.kpi::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--gradient-button);
+}
+
+.kpi-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--brand);
+  background: #f3e5f9;
+  flex: 0 0 auto;
+}
+
+.kpi-copy {
+  min-width: 0;
+}
+
+.kpi small {
+  margin-bottom: 4px;
+}
+
+.kpi strong {
+  line-height: 1.12;
+}
+
+thead th {
+  background: #fbfcfe;
+}
+
+tbody tr {
+  transition: background 140ms ease;
+}
+
+.filter-panel {
+  border-radius: 8px;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(35, 35, 35, 0.12);
+}
+
+.icon-btn:hover {
+  box-shadow: 0 8px 16px rgba(35, 35, 35, 0.14);
+}
+
+.domain-tab {
+  min-height: 38px;
+}
+
+.macro {
+  border-radius: 8px;
+}
+
+.macro summary:hover {
+  background: #faf7ff;
+}
+
+.field-chip {
+  border-radius: 8px;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.field-chip:focus-within,
+.field-chip:hover {
+  border-color: #d7c1eb;
+  box-shadow: 0 8px 18px rgba(35, 35, 35, 0.07);
+}
+
+.field-value {
+  border-radius: 8px;
+}
+
+.empty {
+  background: #fbfcfe;
+}
+
+/* Refined compact UI: lighter surfaces, narrower controls, and delicate row actions. */
+:root {
+  --shadow: 0 6px 16px rgba(35, 35, 35, 0.06);
+  --shadow-panel: 0 14px 30px rgba(35, 35, 35, 0.12);
+}
+
+.header-shell,
+.page {
+  max-width: 1360px;
+}
+
+.header-shell {
+  padding: 14px 22px;
+}
+
+.header-mark {
+  width: 32px;
+  height: 32px;
+}
+
+.header h1 {
+  font-size: 21px;
+}
+
+.header p {
+  font-size: 12px;
+}
+
+.header-badge {
+  min-height: 28px;
+  padding: 5px 9px;
+  font-size: 11px;
+}
+
+.page {
+  gap: 14px;
+  padding: 16px 22px 30px;
+}
+
+.card {
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(35, 35, 35, 0.04), 0 8px 18px rgba(35, 35, 35, 0.04);
+}
+
+.card-h {
+  min-height: 48px;
+  padding: 11px 14px;
+}
+
+.card-h h2 {
+  font-size: 16px;
+}
+
+.card-b {
+  padding: 14px 16px;
+}
+
+.search-grid {
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 10px 12px;
+}
+
+.field label {
+  margin-bottom: 5px;
+  font-size: 11px;
+}
+
+input,
+select {
+  min-height: 36px;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+select {
+  background-position:
+    calc(100% - 17px) 15px,
+    calc(100% - 12px) 15px;
+}
+
+button {
+  min-height: 36px;
+  border-radius: 6px;
+  padding: 8px 11px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.primary {
+  box-shadow: 0 6px 14px rgba(102, 0, 153, 0.14);
+}
+
+.secondary {
+  background: #ffffff;
+}
+
+.pill {
+  min-height: 22px;
+  padding: 3px 8px;
+  font-size: 10.5px;
+}
+
+.kpi-grid {
+  grid-template-columns: repeat(3, minmax(0, 400px));
+  justify-content: center;
+  gap: 18px;
+}
+
+.kpi {
+  min-height: 118px;
+  padding: 16px 22px 15px;
+  border-radius: 22px;
+  border-color: #dfe4ed;
+  background: linear-gradient(135deg, #ffffff 0%, #ffffff 74%, #f3f8ff 100%);
+  box-shadow: 0 10px 22px rgba(35, 35, 35, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.kpi::before,
+.kpi-icon {
+  display: none;
+}
+
+.kpi-copy {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  max-width: 330px;
+}
+
+.kpi small {
+  margin: 0;
+  color: #7b8494;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.kpi strong {
+  color: #303846;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.kpi span {
+  margin: 0;
+  color: #2f3d56;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.table-wrap {
+  max-height: 400px;
+}
+
+table {
+  min-width: 1320px;
+}
+
+th,
+td {
+  padding: 8px 10px;
+  font-size: 12.5px;
+}
+
+thead th {
+  font-size: 11.5px;
+}
+
+.action-cell {
+  gap: 4px;
+}
+
+.icon-btn {
+  width: 27px;
+  height: 27px;
+  min-height: 27px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
+}
+
+.icon-btn .icon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+
+.icon-btn.gear {
+  background: #fcf9ff;
+  border-color: #eadcf7;
+  color: var(--brand);
+}
+
+.icon-btn.cancel {
+  background: #fffafa;
+  border-color: #f1d7d7;
+  color: #9f3d3b;
+}
+
+.icon-btn.ok {
+  background: #f7fcfa;
+  border-color: #caead9;
+  color: var(--ok);
+}
+
+.icon-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(35, 35, 35, 0.08);
+}
+
+.icon-btn.gear:hover {
+  background: #f3e5f9;
+  border-color: #d7c1eb;
+}
+
+.icon-btn.cancel:hover {
+  background: var(--errorbg);
+  border-color: #efb9b9;
+}
+
+.icon-btn.ok:hover {
+  background: var(--okbg);
+  border-color: #b7e5cb;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.status-pendente {
+  background: #fff6e7;
+  color: #9a6a00;
+}
+
+.status-execucao {
+  background: #edf4ff;
+  color: #2057a7;
+}
+
+.status-concluido {
+  background: #ecf9f4;
+  color: #14855f;
+}
+
+.pagination {
+  padding: 10px 12px;
+}
+
+.domain-tab {
+  min-height: 34px;
+  padding: 7px 11px;
+  border-radius: 999px;
+}
+
+.macro-area {
+  padding: 10px 14px 14px;
+}
+
+.macro summary {
+  padding: 9px 11px;
+}
+
+.caret {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+}
+
+.field-list {
+  grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  gap: 8px;
+}
+
+.field-chip {
+  min-height: 78px;
+  padding: 9px 10px;
+  border-radius: 6px;
+}
+
+.field-name {
+  font-size: 12.5px;
+  margin-bottom: 7px;
+}
+
+.field-value {
+  min-height: 32px;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+/* Compact macro field editor: removes unnecessary nested-card whitespace. */
+.macro-area {
+  padding: 8px 12px 12px;
+}
+
+.group {
+  padding: 8px 10px 10px;
+}
+
+.group-h {
+  margin-bottom: 7px;
+}
+
+.group-h strong {
+  font-size: 12.5px;
+}
+
+.group-h .pill {
+  min-height: 20px;
+  padding: 2px 7px;
+}
+
+.field-list {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 6px 8px;
+}
+
+.field-chip {
+  min-height: 0;
+  padding: 7px 8px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.field-name {
+  font-size: 12px;
+  line-height: 1.15;
+  margin-bottom: 5px;
+}
+
+.field-value {
+  min-height: 28px;
+  padding: 3px 8px;
+  background: #fbfcfe;
+}
+
+.field-value input {
+  min-height: 22px;
+  height: 22px;
+  font-size: 12.5px;
+  line-height: 1.2;
+}
+
+/* Remove noisy counters and keep macro fields at readable widths. */
+#fieldCount,
+.macro-stats,
+.group-h .pill {
+  display: none;
+}
+
+.macro summary {
+  justify-content: flex-start;
+}
+
+.group-h {
+  justify-content: flex-start;
+}
+
+.macro-title span {
+  display: none;
+}
+
+.macro-groups {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 14px;
+  padding: 8px 10px 10px;
+  border-top: 1px solid var(--line2);
+}
+
+.group,
+.group + .group {
+  flex: 0 1 auto;
+  width: max-content;
+  max-width: 100%;
+  border-top: 0;
+  padding: 0;
+}
+
+.group-h {
+  margin-bottom: 6px;
+}
+
+.field-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: start;
+  max-width: 100%;
+  gap: 6px;
+}
+
+.field-chip {
+  flex: 0 0 var(--field-width, 160px);
+  width: var(--field-width, 160px);
+  max-width: 100%;
+  padding: 6px 7px;
+}
+
+.field-value {
+  padding: 2px 7px;
+}
+
+.field-value input {
+  min-height: 20px;
+  height: 20px;
+}
+
+@media (max-width: 1260px) {
+  .search-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 920px) {
+  .search-grid,
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .field-chip {
+    flex-basis: min(var(--field-width, 160px), calc(50% - 4px));
+    width: min(var(--field-width, 160px), calc(50% - 4px));
+  }
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: 14px;
+  }
+
+  .header {
+    padding: 18px 14px 14px;
+  }
+
+  .search-grid,
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .field:has(.field-inline),
+  .search-actions {
+    grid-column: auto;
+  }
+
+  .search-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .card-h {
+    align-items: flex-start;
+  }
+
+  .actions-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .macro-area {
+    padding: 10px;
+  }
+
+  .field-chip {
+    flex-basis: 100%;
+    width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+<svg class="icon-sprite" aria-hidden="true">
+  <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></symbol>
+  <symbol id="icon-eraser" viewBox="0 0 24 24"><path d="m7 21-4-4 10-10 6 6-8 8Z"></path><path d="m16 5 3-3 3 3-3 3"></path><path d="M7 21h15"></path></symbol>
+  <symbol id="icon-filter" viewBox="0 0 24 24"><path d="M3 5h18"></path><path d="M7 12h10"></path><path d="M10 19h4"></path></symbol>
+  <symbol id="icon-table" viewBox="0 0 24 24"><path d="M3 5h18v16H3z"></path><path d="M3 11h18"></path><path d="M9 5v16"></path></symbol>
+  <symbol id="icon-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5Z"></path><path d="m3 14 9 5 9-5"></path></symbol>
+  <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15.5 6.2"></path><path d="M3 12A9 9 0 0 1 18.5 5.8"></path><path d="M18 2v5h5"></path><path d="M6 22v-5H1"></path></symbol>
+  <symbol id="icon-x" viewBox="0 0 24 24"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></symbol>
+  <symbol id="icon-check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"></path></symbol>
+  <symbol id="icon-chevron-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></symbol>
+  <symbol id="icon-chevron-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></symbol>
+  <symbol id="icon-expand" viewBox="0 0 24 24"><path d="m15 3 6 6"></path><path d="M21 3v6h-6"></path><path d="m9 21-6-6"></path><path d="M3 21v-6h6"></path></symbol>
+  <symbol id="icon-collapse" viewBox="0 0 24 24"><path d="m4 14 6 6"></path><path d="M10 14v6H4"></path><path d="m20 10-6-6"></path><path d="M14 10V4h6"></path></symbol>
+  <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></symbol>
+  <symbol id="icon-hash" viewBox="0 0 24 24"><path d="M4 9h16"></path><path d="M4 15h16"></path><path d="M10 3 8 21"></path><path d="m16 3-2 18"></path></symbol>
+  <symbol id="icon-banknote" viewBox="0 0 24 24"><path d="M3 6h18v12H3z"></path><circle cx="12" cy="12" r="3"></circle><path d="M6 9v.01"></path><path d="M18 15v.01"></path></symbol>
+  <symbol id="icon-wallet" viewBox="0 0 24 24"><path d="M20 8V7a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h16v10H5a2 2 0 0 1-2-2V7"></path><path d="M16 13h.01"></path></symbol>
+</svg>
+<header class="header">
+  <div class="header-shell">
+    <div>
+      <div class="header-title-row">
+        <span class="header-mark"><svg class="icon"><use href="#icon-wallet"></use></svg></span>
+        <h1>Faturamento On Demand</h1>
+      </div>
+      <p>Cockpit operacional para pesquisar faturas, revisar campos por domínio e conduzir ações de trial billing.</p>
+    </div>
+    <div class="header-badges">
+      <span class="header-badge"><svg class="icon"><use href="#icon-filter"></use></svg>Filtros ativos</span>
+      <span class="header-badge"><svg class="icon"><use href="#icon-table"></use></svg>Visão analítica</span>
+    </div>
+  </div>
+</header>
+<main class="page">
+<section class="card"><div class="card-h"><h2 class="card-title"><svg class="icon"><use href="#icon-search"></use></svg>Pesquisa</h2></div><div class="card-b"><div class="search-grid">
+<div class="field"><label>Cliente</label><input id="fCliente" placeholder="Ex.: Grupo Exemplo Telecom" oninput="applySearch()"></div>
+<div class="field"><label>CNPJ cliente</label><input id="fCnpj" placeholder="00.000.000/0000-00" oninput="applySearch()"></div>
+<div class="field"><label>Período de Referência</label><div class="field-inline"><input id="fPeriodoInicio" type="date" value="2026-05-01" onchange="applySearch()"><input id="fPeriodoFim" type="date" value="2026-05-31" onchange="applySearch()"></div></div>
+<div class="field"><label>Fatura</label><input id="fFatura" placeholder="Ex.: FAT-2026-0001" oninput="applySearch()"></div>
+<div class="field"><label>NFCom</label><input id="fNfcon" placeholder="Número / referência da NFCom" oninput="applySearch()"></div>
+<div class="field"><label>Produto</label><input id="fProduto" placeholder="Ex.: Link Dedicado 500 Mbps" oninput="applySearch()"></div>
+<div class="field"><label>Família</label><select id="fFamilia" onchange="applySearch()"><option value="">Todas</option><option>Conectividade Empresarial</option><option>Data Center</option><option>VPN e Segurança</option><option>Internet Empresarial</option></select></div>
+<div class="field"><label>Mês/Ano de Referência</label><input id="fMesAno" type="month" value="2026-05" onchange="applySearch()"></div>
+<div class="field"><label>Conta Billing</label><input id="fContaBilling" placeholder="Ex.: 2201487635" oninput="applySearch()"></div>
+<div class="field"><label>Nome do solicitante</label><input id="fSolicitante" placeholder="Ex.: Mariana Alves Costa" oninput="applySearch()"></div>
+<div class="field"><label>E-mail solicitante</label><input id="fEmailSolicitante" placeholder="Ex.: mariana.costa@empresa.com.br" oninput="applySearch()"></div>
+<div class="search-actions"><button class="primary" onclick="applySearch()"><svg class="icon"><use href="#icon-search"></use></svg>Pesquisar</button><button class="secondary" onclick="clearSearch()"><svg class="icon"><use href="#icon-eraser"></use></svg>Limpar</button></div>
+</div></div></section>
+<section class="kpi-grid"><div class="kpi"><div class="kpi-copy"><small>Registros no Período</small><strong id="kpiRegistros">0</strong><span>Registros retornados do relatório Billnow no recorte aplicado.</span></div></div><div class="kpi"><div class="kpi-copy"><small>Valor Bruto do Billnow</small><strong id="kpiBruto">R$ 0,00</strong><span>Somatório real do valor bruto dos registros filtrados.</span></div></div><div class="kpi"><div class="kpi-copy"><small>Valor Líquido do Billnow</small><strong id="kpiLiquido">R$ 0,00</strong><span>Valor líquido estimado após abatimento de impostos e retenções.</span></div></div></section>
+<section class="card"><div class="card-h"><h2 class="card-title"><svg class="icon"><use href="#icon-table"></use></svg>Resultados</h2><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="totalizador" id="totalizadorRegistros">0 registro(s) encontrado(s)</span></div></div><div class="table-wrap"><table id="resultsTable"><thead><tr>
+<th>Ações</th>
+<th class="sortable" data-col="status" data-type="select"><div class="headcell">Status <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="cliente" data-type="text"><div class="headcell">Cliente <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="cnpj" data-type="text"><div class="headcell">CNPJ cliente <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="periodoInicio" data-type="date"><div class="headcell">Início ref. <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="periodoFim" data-type="date"><div class="headcell">Fim ref. <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="fatura" data-type="text"><div class="headcell">Fatura <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="nfcon" data-type="text"><div class="headcell">NFCom <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="produto" data-type="text"><div class="headcell">Produto <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="familia" data-type="select"><div class="headcell">Família <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="mesAno" data-type="month"><div class="headcell">Mês/Ano ref. <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="contaBilling" data-type="text"><div class="headcell">Conta Billing <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="solicitante" data-type="text"><div class="headcell">Solicitante <span class="sort-indicator">↕</span></div></th>
+<th class="sortable" data-col="emailSolicitante" data-type="text"><div class="headcell">E-mail solicitante <span class="sort-indicator">↕</span></div></th>
+<th class="sortable align-right" data-col="valorBruto" data-type="money"><div class="headcell">Valor Bruto <span class="sort-indicator">↕</span></div></th>
+<th class="sortable align-right" data-col="valorLiquido" data-type="money"><div class="headcell">Valor Líquido <span class="sort-indicator">↕</span></div></th>
+</tr></thead><tbody id="resultsBody"></tbody></table></div><div class="pagination"><div class="pagination-info" id="paginationInfo">Exibindo 0 de 0</div><div class="pagination-actions"><button class="secondary" onclick="previousPage()"><svg class="icon"><use href="#icon-chevron-left"></use></svg>Anterior</button><span class="pill info" id="pageInfo">Página 1 de 1</span><button class="secondary" onclick="nextPage()">Próxima<svg class="icon"><use href="#icon-chevron-right"></use></svg></button></div></div></section>
+<section class="card"><div class="card-h actions-row"><div><h2 class="card-title"><svg class="icon"><use href="#icon-layers"></use></svg>Campos por grupo</h2><div class="field-toolbar"><div class="lov-field" id="domainLov"><label>Domínio</label><button type="button" class="lov-trigger" onclick="toggleLov('domain')"><span id="domainLovSummary">Todos</span><svg class="icon"><use href="#icon-chevron-right"></use></svg></button><div class="lov-menu" id="domainLovMenu"></div></div><div class="lov-field" id="macroLov"><label>Macro grupo</label><button type="button" class="lov-trigger" onclick="toggleLov('macro')"><span id="macroLovSummary">Todos</span><svg class="icon"><use href="#icon-chevron-right"></use></svg></button><div class="lov-menu" id="macroLovMenu"></div></div><div class="lov-field" id="groupLov"><label>Grupo</label><button type="button" class="lov-trigger" onclick="toggleLov('group')"><span id="groupLovSummary">Todos</span><svg class="icon"><use href="#icon-chevron-right"></use></svg></button><div class="lov-menu" id="groupLovMenu"></div></div></div></div><div class="actions"><button id="toggleAllButton" class="secondary" onclick="toggleAllFields()"><svg class="icon"><use href="#icon-expand"></use></svg>Expandir todos</button></div></div><div class="macro-area" id="macroList"></div></section>
+</main><div id="filterPanel" class="filter-panel"></div>
+<script>
+const rows = [
+  {
+    "dominio": "Tributário",
+    "macro": "Estadual",
+    "grupo": "Impostos Estaduais",
+    "campo": "Base de cálculo ICMS",
+    "exemplo": "R$ 4.890,00",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_st_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Estadual",
+    "grupo": "Impostos Estaduais",
+    "campo": "Percentual ICMS",
+    "exemplo": "18,00%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_st_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Estadual",
+    "grupo": "Impostos Estaduais",
+    "campo": "Valor ICMS",
+    "exemplo": "R$ 880,20",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_st_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Estadual",
+    "grupo": "Ref. Tribut. - IBS Estadual",
+    "campo": "Base IBS Estadual",
+    "exemplo": "R$ 4.890,00",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_ibs_st_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Estadual",
+    "grupo": "Ref. Tribut. - IBS Estadual",
+    "campo": "Percentual do IBS Estadual",
+    "exemplo": "9,70%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_ibs_st_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Estadual",
+    "grupo": "Ref. Tribut. - IBS Estadual",
+    "campo": "Valor do IBS Estadual",
+    "exemplo": "R$ 474,33",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_ibs_st_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Estadual",
+    "grupo": "Fundos e Contr. Set.",
+    "campo": "Base FCP",
+    "exemplo": "R$ 4.890,00",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_sector_fund_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Estadual",
+    "grupo": "Fundos e Contr. Set.",
+    "campo": "Percentual FCP",
+    "exemplo": "2,00%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_sector_fund_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Estadual",
+    "grupo": "Fundos e Contr. Set.",
+    "campo": "Valor FCP",
+    "exemplo": "R$ 97,80",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_sector_fund_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Impostos Federais",
+    "campo": "Base de cálculo PIS",
+    "exemplo": "R$ 4.009,80",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Impostos Federais",
+    "campo": "Percentual PIS",
+    "exemplo": "1,65%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Impostos Federais",
+    "campo": "Valor PIS",
+    "exemplo": "R$ 66,16",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Impostos Federais",
+    "campo": "Base de cálculo COFINS",
+    "exemplo": "R$ 4.009,80",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Impostos Federais",
+    "campo": "Valor COFINS",
+    "exemplo": "R$ 304,74",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Ref. Tribut. - Federal",
+    "campo": "Base do CBS",
+    "exemplo": "A informar",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_cbs_ref_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Ref. Tribut. - Federal",
+    "campo": "Percentual do CBS",
+    "exemplo": "8,80%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_cbs_ref_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Ref. Tribut. - Federal",
+    "campo": "Valor do CBS",
+    "exemplo": "R$ 430,32",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_cbs_ref_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Base IRRF",
+    "exemplo": "R$ 1.250,00",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Percentual IRRF",
+    "exemplo": "1,50%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Valor IRRF",
+    "exemplo": "R$ 18,75",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Base CSLL",
+    "exemplo": "A informar",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Percentual CSLL",
+    "exemplo": "1,00%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Valor CSLL",
+    "exemplo": "R$ 12,50",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Base PIS",
+    "exemplo": "R$ 1.250,00",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Percentual PIS",
+    "exemplo": "0,65%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Valor PIS",
+    "exemplo": "R$ 8,13",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Base COFINS",
+    "exemplo": "R$ 1.250,00",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Percentual COFINS",
+    "exemplo": "3,00%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Retenções Federais",
+    "campo": "Retenção Valor COFINS",
+    "exemplo": "R$ 37,50",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_fed_wht_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Fundos e Contr. Set.",
+    "campo": "Base FUST",
+    "exemplo": "A informar",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_sector_fund_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Fundos e Contr. Set.",
+    "campo": "Percentual FUST",
+    "exemplo": "1,00%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_sector_fund_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Fundos e Contr. Set.",
+    "campo": "Valor FUST",
+    "exemplo": "R$ 48,90",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_sector_fund_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Fundos e Contr. Set.",
+    "campo": "Base FUNTTEL",
+    "exemplo": "A informar",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_sector_fund_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Fundos e Contr. Set.",
+    "campo": "Percentual FUNTTEL",
+    "exemplo": "0,50%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_sector_fund_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Federal",
+    "grupo": "Fundos e Contr. Set.",
+    "campo": "Valor FUNTTEL",
+    "exemplo": "R$ 24,45",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_sector_fund_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Classificações fiscais",
+    "grupo": "Class. Fiscal / Oper.",
+    "campo": "CFOP",
+    "exemplo": "4838384",
+    "classe": "/product; /purchased_product",
+    "core": "PRODUCT_T; PURCHASED_PRODUCT_T",
+    "tabela": "c_pur_prod_fiscal_oper_t",
+    "observacao": "Classificação fiscal/operação tende a ser atributo de produto/oferta ou extensão fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Municipal",
+    "grupo": "Impostos Municipais",
+    "campo": "Base de cálculo ISS",
+    "exemplo": "R$ 1.250,00",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_mun_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Municipal",
+    "grupo": "Impostos Municipais",
+    "campo": "Percentual ISS",
+    "exemplo": "2,00%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_mun_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Municipal",
+    "grupo": "Impostos Municipais",
+    "campo": "Valor ISS",
+    "exemplo": "R$ 25,00",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_mun_tax_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Municipal",
+    "grupo": "Impostos Municipais",
+    "campo": "Código LC 116",
+    "exemplo": "1.07",
+    "classe": "/product; /purchased_product",
+    "core": "PRODUCT_T; PURCHASED_PRODUCT_T",
+    "tabela": "c_pur_prod_fiscal_oper_t",
+    "observacao": "Classificação fiscal/operação tende a ser atributo de produto/oferta ou extensão fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Municipal",
+    "grupo": "Ref. Tribut. - IBS Municipal",
+    "campo": "Base do IBS Municipal",
+    "exemplo": "R$ 1.250,00",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_ibs_mun_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Municipal",
+    "grupo": "Ref. Tribut. - IBS Municipal",
+    "campo": "Percentual do IBS Municipal",
+    "exemplo": "8,10%",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_ibs_mun_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Tributário",
+    "macro": "Municipal",
+    "grupo": "Ref. Tribut. - IBS Municipal",
+    "campo": "Valor do IBS Municipal",
+    "exemplo": "R$ 101,25",
+    "classe": "/item; /event/billing/tax",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_ibs_mun_t",
+    "observacao": "Base, alíquota e valor tributário são referência fiscal do item/evento; normalmente demandam extensão/integração fiscal."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Partes envolvidas",
+    "grupo": "Cliente",
+    "campo": "Email",
+    "exemplo": "faturamento@grupoexemplo.com.br",
+    "classe": "/account",
+    "core": "ACCOUNT_T; ACCOUNT_NAMEINFO_T",
+    "tabela": "c_account_billing_contact_t",
+    "observacao": "Dados cadastrais e de contato associados à conta."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Partes envolvidas",
+    "grupo": "Cliente",
+    "campo": "Telefone/celular",
+    "exemplo": "1132547600",
+    "classe": "/account",
+    "core": "ACCOUNT_T; ACCOUNT_PHONES_T",
+    "tabela": "c_account_billing_contact_t",
+    "observacao": "Contato de conta; telefone normalmente fica em estrutura/array de telefones da conta."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Partes envolvidas",
+    "grupo": "Cliente",
+    "campo": "Endereço de cobrança",
+    "exemplo": "Avenida das Nações, 1000 - São Paulo/SP",
+    "classe": "/account",
+    "core": "ACCOUNT_T; ACCOUNT_NAMEINFO_T",
+    "tabela": "c_account_billing_contact_t",
+    "observacao": "Dados cadastrais/endereço de cobrança da conta."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Partes envolvidas",
+    "grupo": "Emitente",
+    "campo": "MENSAGEM IMPORTANTE PARA VOCÊ",
+    "exemplo": "Cliente B2B com faturamento trial para conferência.",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_issuer_msg_t",
+    "observacao": "Metadados/comunicação de documento; solicitante tende a exigir extensão/customização sobre invoice."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Partes envolvidas",
+    "grupo": "Emitente",
+    "campo": "Nome Solicitante",
+    "exemplo": "Mariana Alves Costa",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_requester_t",
+    "observacao": "Metadados/comunicação de documento; solicitante tende a exigir extensão/customização sobre invoice."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Partes envolvidas",
+    "grupo": "Emitente",
+    "campo": "E-mail Solicitante",
+    "exemplo": "mariana.costa@grupoexemplo.com.br",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_requester_t",
+    "observacao": "Metadados/comunicação de documento; solicitante tende a exigir extensão/customização sobre invoice."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Partes envolvidas",
+    "grupo": "Emitente",
+    "campo": "Telefone Solicitante",
+    "exemplo": "1132547812",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_requester_t",
+    "observacao": "Metadados/comunicação de documento; solicitante tende a exigir extensão/customização sobre invoice."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Dados da fatura",
+    "grupo": "Identificação da fatura",
+    "campo": "Número da conta",
+    "exemplo": "2201487635",
+    "classe": "/account",
+    "core": "ACCOUNT_T",
+    "tabela": "c_account_ref_t",
+    "observacao": "Identificador de conta BRM."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Dados da fatura",
+    "grupo": "Identificação da fatura",
+    "campo": "Número da invoice",
+    "exemplo": "TRIAL-362046000000000000",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_ident_t",
+    "observacao": "Identificador/documento de invoice."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Dados da fatura",
+    "grupo": "Identificação da fatura",
+    "campo": "Número do contrato principal",
+    "exemplo": "1776934210",
+    "classe": "/billinfo; /purchased_product",
+    "core": "BILLINFO_T; PURCHASED_PRODUCT_T",
+    "tabela": "c_billinfo_contract_t",
+    "observacao": "Contrato principal pode depender do modelo comercial: bill unit ou produto contratado."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Dados da fatura",
+    "grupo": "Identificação da fatura",
+    "campo": "Mês/ano de referência",
+    "exemplo": "05/2026",
+    "classe": "/bill; /invoice",
+    "core": "BILL_T; INVOICE_T",
+    "tabela": "c_invoice_ident_t",
+    "observacao": "Competência/período do ciclo de faturamento e documento."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Dados da fatura",
+    "grupo": "Identificação da fatura",
+    "campo": "Período de apuração",
+    "exemplo": "2026-05-01 a 2026-05-31",
+    "classe": "/bill; /invoice",
+    "core": "BILL_T; INVOICE_T",
+    "tabela": "c_bill_period_t",
+    "observacao": "Competência/período do ciclo de faturamento e documento."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Pagamento",
+    "campo": "Data de vencimento",
+    "exemplo": "19/06/2026",
+    "classe": "/bill",
+    "core": "BILL_T",
+    "tabela": "c_bill_payment_view_t",
+    "observacao": "Valores e vencimento relacionados ao bill/cobrança."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Pagamento",
+    "campo": "Código de barras",
+    "exemplo": "84700000056129500000000000000000000000000000",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_payment_code_t",
+    "observacao": "Representação documental do pagamento; pode exigir extensão conforme banco/arrecadação."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Pagamento",
+    "campo": "Total a pagar",
+    "exemplo": "R$ 5.612,95",
+    "classe": "/bill",
+    "core": "BILL_T",
+    "tabela": "c_bill_payment_view_t",
+    "observacao": "Valores e vencimento relacionados ao bill/cobrança."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Item detalhado",
+    "campo": "Código do item",
+    "exemplo": "BRMIPCONNECT500",
+    "classe": "/item; /event",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_detail_t",
+    "observacao": "Valores e quantidades de item derivam de item/eventos e impactos de saldo."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Item detalhado",
+    "campo": "Descrição comercial",
+    "exemplo": "Link Dedicado 500 Mbps",
+    "classe": "/product; /purchased_product",
+    "core": "PRODUCT_T; PURCHASED_PRODUCT_T",
+    "tabela": "c_item_detail_t",
+    "observacao": "Descrição e família normalmente derivam do catálogo/oferta/produto adquirido."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Item detalhado",
+    "campo": "Conceito faturável",
+    "exemplo": "CONNECT EMPRESARIAL",
+    "classe": "/product; /purchased_product",
+    "core": "PRODUCT_T; PURCHASED_PRODUCT_T",
+    "tabela": "c_item_detail_t",
+    "observacao": "Descrição e família normalmente derivam do catálogo/oferta/produto adquirido."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Item detalhado",
+    "campo": "Família de produtos",
+    "exemplo": "Conectividade Empresarial",
+    "classe": "/product; /purchased_product",
+    "core": "PRODUCT_T; PURCHASED_PRODUCT_T",
+    "tabela": "c_pur_prod_family_t",
+    "observacao": "Descrição e família normalmente derivam do catálogo/oferta/produto adquirido."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Item detalhado",
+    "campo": "Número do contrato do item",
+    "exemplo": "1776934218",
+    "classe": "/purchased_product",
+    "core": "PURCHASED_PRODUCT_T",
+    "tabela": "c_item_contract_t",
+    "observacao": "Referência do produto/contrato do item adquirido."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Item detalhado",
+    "campo": "Quantidade faturada",
+    "exemplo": "1",
+    "classe": "/item; /event",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_detail_t",
+    "observacao": "Valores e quantidades de item derivam de item/eventos e impactos de saldo."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Item detalhado",
+    "campo": "Preço unitário",
+    "exemplo": "R$ 4.890,00",
+    "classe": "/item; /event",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_detail_t",
+    "observacao": "Valores e quantidades de item derivam de item/eventos e impactos de saldo."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Composição da cobrança",
+    "grupo": "Item detalhado",
+    "campo": "Valor total do item",
+    "exemplo": "R$ 4.890,00",
+    "classe": "/item; /event",
+    "core": "ITEM_T; EVENT_T; EVENT_BAL_IMPACTS_T",
+    "tabela": "c_item_detail_t",
+    "observacao": "Valores e quantidades de item derivam de item/eventos e impactos de saldo."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Validação e comunicação",
+    "grupo": "Comunicação",
+    "campo": "Mensagem importante para você",
+    "exemplo": "Cliente B2B com faturamento trial para conferência.",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_comm_t",
+    "observacao": "Metadados/comunicação de documento; solicitante tende a exigir extensão/customização sobre invoice."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Validação e comunicação",
+    "grupo": "Contato do solicitante",
+    "campo": "Nome Solicitante",
+    "exemplo": "Mariana Alves Costa",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_requester_t",
+    "observacao": "Metadados/comunicação de documento; solicitante tende a exigir extensão/customização sobre invoice."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Validação e comunicação",
+    "grupo": "Contato do solicitante",
+    "campo": "E-mail Solicitante",
+    "exemplo": "mariana.costa@grupoexemplo.com.br",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_requester_t",
+    "observacao": "Metadados/comunicação de documento; solicitante tende a exigir extensão/customização sobre invoice."
+  },
+  {
+    "dominio": "Não tributária",
+    "macro": "Validação e comunicação",
+    "grupo": "Contato do solicitante",
+    "campo": "Telefone Solicitante",
+    "exemplo": "1132547812",
+    "classe": "/invoice",
+    "core": "INVOICE_T",
+    "tabela": "c_invoice_requester_t",
+    "observacao": "Metadados/comunicação de documento; solicitante tende a exigir extensão/customização sobre invoice."
+  }
+].map((r,i)=>({...r,id:i+1,valor:r.exemplo||""}));
+const pageSize=5;let currentPage=1;let fieldSelections={domain:[],macro:[],group:[]};let openLovKey=null;let allFieldsOpen=false;let sortState={col:null,dir:"asc"};let columnFilters={};
+function iconSvg(name){return `<svg class="icon" aria-hidden="true"><use href="#icon-${name}"></use></svg>`}
+function fieldWidthStyle(r){const label=String(r.campo||"");const value=String(r.valor||"");const longest=Math.max(label.length,value.length);const ch=Math.min(30,Math.max(8,longest+2));return `style="--field-width: calc(${ch}ch + 28px)"`}
+const dataset=[
+{cliente:"Grupo Exemplo Telecom",cnpj:"12.345.678/0001-90",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0001",nfcon:"NFCom Trial 000362046",produto:"Link Dedicado 500 Mbps",familia:"Conectividade Empresarial",mesAno:"2026-05",contaBilling:"2201487635",solicitante:"Mariana Alves Costa",emailSolicitante:"mariana.costa@grupoexemplo.com.br",valorBruto:5612.95,valorLiquido:5486.07,status:"Pendente de execução"},
+{cliente:"Grupo Exemplo Telecom",cnpj:"12.345.678/0001-90",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0002",nfcon:"NFCom Trial 000362047",produto:"IP Connect 1 Gbps",familia:"Conectividade Empresarial",mesAno:"2026-05",contaBilling:"2201487636",solicitante:"Rafael Santos Lima",emailSolicitante:"rafael.lima@grupoexemplo.com.br",valorBruto:8940.20,valorLiquido:8741.12,status:"Em execução"},
+{cliente:"Alfa Data Center S.A.",cnpj:"22.111.333/0001-44",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0003",nfcon:"NFCom Trial 000362048",produto:"Link Dedicado 200 Mbps",familia:"Data Center",mesAno:"2026-05",contaBilling:"2201487637",solicitante:"Patrícia Nunes",emailSolicitante:"patricia.nunes@alfadc.com.br",valorBruto:3280.10,valorLiquido:3192.88,status:"Concluído"},
+{cliente:"Beta Serviços Digitais Ltda.",cnpj:"31.222.444/0001-55",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0004",nfcon:"NFCom Trial 000362049",produto:"VPN MPLS Corporativa",familia:"VPN e Segurança",mesAno:"2026-05",contaBilling:"2201487638",solicitante:"João Pedro Martins",emailSolicitante:"joao.martins@betadigital.com.br",valorBruto:12450.00,valorLiquido:12103.50,status:"Em execução"},
+{cliente:"Conecta Brasil Telecom",cnpj:"45.678.901/0001-66",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0005",nfcon:"NFCom Trial 000362050",produto:"Internet Empresarial 500 Mbps",familia:"Internet Empresarial",mesAno:"2026-05",contaBilling:"2201487639",solicitante:"Camila Rocha",emailSolicitante:"camila.rocha@conectabrasil.com.br",valorBruto:4990.00,valorLiquido:4861.84,status:"Pendente de execução"},
+{cliente:"Delta Cloud Solutions",cnpj:"51.987.654/0001-77",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0006",nfcon:"NFCom Trial 000362051",produto:"Link Redundante 300 Mbps",familia:"Conectividade Empresarial",mesAno:"2026-05",contaBilling:"2201487640",solicitante:"Eduardo Ferreira",emailSolicitante:"eduardo.ferreira@deltacloud.com.br",valorBruto:6780.40,valorLiquido:6613.25,status:"Em execução"},
+{cliente:"Omega Indústria e Comércio",cnpj:"78.123.456/0001-88",periodoInicio:"2026-05-01",periodoFim:"2026-05-31",fatura:"FAT-2026-0007",nfcon:"NFCom Trial 000362052",produto:"Link Dedicado 500 Mbps",familia:"Conectividade Empresarial",mesAno:"2026-05",contaBilling:"2201487641",solicitante:"Fernanda Moraes",emailSolicitante:"fernanda.moraes@omega.com.br",valorBruto:5612.95,valorLiquido:5486.07,status:"Concluído"}
+];
+function money(v){return new Intl.NumberFormat("pt-BR",{style:"currency",currency:"BRL"}).format(Number(v||0))}function textOf(v){return String(v??"").toLowerCase()}function isFilled(r){return String(r.valor||"").trim().length>0&&r.valor!=="A informar"}
+function statusClass(status){if(status==="Concluído")return"status-concluido";if(status==="Em execução")return"status-execucao";return"status-pendente"}
+function getSearchFilters(){return{cliente:document.getElementById("fCliente").value.trim().toLowerCase(),cnpj:document.getElementById("fCnpj").value.trim().toLowerCase(),periodoInicio:document.getElementById("fPeriodoInicio").value,periodoFim:document.getElementById("fPeriodoFim").value,fatura:document.getElementById("fFatura").value.trim().toLowerCase(),nfcon:document.getElementById("fNfcon").value.trim().toLowerCase(),produto:document.getElementById("fProduto").value.trim().toLowerCase(),familia:document.getElementById("fFamilia").value,mesAno:document.getElementById("fMesAno").value,contaBilling:document.getElementById("fContaBilling").value.trim().toLowerCase(),solicitante:document.getElementById("fSolicitante").value.trim().toLowerCase(),emailSolicitante:document.getElementById("fEmailSolicitante").value.trim().toLowerCase()}}
+function rowMatchesSearch(r){const f=getSearchFilters();const periodOk=(!f.periodoInicio||r.periodoInicio>=f.periodoInicio)&&(!f.periodoFim||r.periodoFim<=f.periodoFim);return(!f.cliente||textOf(r.cliente).includes(f.cliente))&&(!f.cnpj||textOf(r.cnpj).includes(f.cnpj))&&periodOk&&(!f.fatura||textOf(r.fatura).includes(f.fatura))&&(!f.nfcon||textOf(r.nfcon).includes(f.nfcon))&&(!f.produto||textOf(r.produto).includes(f.produto))&&(!f.familia||r.familia===f.familia)&&(!f.mesAno||r.mesAno===f.mesAno)&&(!f.contaBilling||textOf(r.contaBilling).includes(f.contaBilling))&&(!f.solicitante||textOf(r.solicitante).includes(f.solicitante))&&(!f.emailSolicitante||textOf(r.emailSolicitante).includes(f.emailSolicitante))}
+function rowMatchesColumnFilters(r){return Object.entries(columnFilters).every(([col,val])=>{if(!val)return true;if(col==="periodoInicio"||col==="periodoFim"||col==="mesAno")return r[col]===val;if(col==="familia"||col==="status")return r[col]===val;if(col==="valorBruto"||col==="valorLiquido")return Number(r[col])>=Number(val);return textOf(r[col]).includes(String(val).toLowerCase())})}
+function filteredDataset(){let data=dataset.filter(rowMatchesSearch).filter(rowMatchesColumnFilters);if(sortState.col){data.sort((a,b)=>{let av=a[sortState.col],bv=b[sortState.col];if(sortState.col==="valorBruto"||sortState.col==="valorLiquido"){av=Number(av);bv=Number(bv)}else{av=String(av??"").toLowerCase();bv=String(bv??"").toLowerCase()}if(av<bv)return sortState.dir==="asc"?-1:1;if(av>bv)return sortState.dir==="asc"?1:-1;return 0})}return data}
+function renderKPIs(data){document.getElementById("kpiRegistros").textContent=data.length;document.getElementById("kpiBruto").textContent=money(data.reduce((a,r)=>a+Number(r.valorBruto||0),0));document.getElementById("kpiLiquido").textContent=money(data.reduce((a,r)=>a+Number(r.valorLiquido||0),0))}
+function renderResults(){const data=filteredDataset();renderKPIs(data);const totalPages=Math.max(1,Math.ceil(data.length/pageSize));if(currentPage>totalPages)currentPage=totalPages;const start=(currentPage-1)*pageSize;const pageRows=data.slice(start,start+pageSize);document.getElementById("totalizadorRegistros").textContent=`${data.length} registro(s) encontrado(s)`;document.getElementById("pageInfo").textContent=`Página ${currentPage} de ${totalPages}`;document.getElementById("paginationInfo").textContent=data.length?`Exibindo ${start+1}-${start+pageRows.length} de ${data.length}`:"Exibindo 0 de 0";document.getElementById("resultsBody").innerHTML=pageRows.length?pageRows.map(r=>`<tr><td><div class="action-cell"><button class="icon-btn gear" title="Reprocessar Trial" aria-label="Reprocessar Trial" onclick="rowAction('Reprocessar Trial','${r.fatura}')">${iconSvg("refresh")}</button><button class="icon-btn cancel" title="Cancelar Trial" aria-label="Cancelar Trial" onclick="rowAction('Cancelar Trial','${r.fatura}')">${iconSvg("x")}</button><button class="icon-btn ok" title="Faturar Billnow" aria-label="Faturar Billnow" onclick="rowAction('Faturar Billnow','${r.fatura}')">${iconSvg("check")}</button></div></td><td><span class="status-pill ${statusClass(r.status)}">${r.status}</span></td><td>${r.cliente}</td><td>${r.cnpj}</td><td>${r.periodoInicio}</td><td>${r.periodoFim}</td><td>${r.fatura}</td><td>${r.nfcon}</td><td>${r.produto}</td><td>${r.familia}</td><td>${r.mesAno}</td><td>${r.contaBilling}</td><td>${r.solicitante}</td><td>${r.emailSolicitante}</td><td class="align-right">${money(r.valorBruto)}</td><td class="align-right">${money(r.valorLiquido)}</td></tr>`).join(""):`<tr><td colspan="16" class="empty">Nenhum resultado encontrado.</td></tr>`;updateSortIndicators()}
+function updateSortIndicators(){document.querySelectorAll("th.sortable").forEach(th=>{const indicator=th.querySelector(".sort-indicator");if(!indicator)return;indicator.textContent=sortState.col===th.dataset.col?(sortState.dir==="asc"?"▲":"▼"):"↕"})}function applySearch(){currentPage=1;renderResults()}function clearSearch(){["fCliente","fCnpj","fFatura","fNfcon","fProduto","fContaBilling","fSolicitante","fEmailSolicitante"].forEach(id=>document.getElementById(id).value="");document.getElementById("fPeriodoInicio").value="";document.getElementById("fPeriodoFim").value="";document.getElementById("fFamilia").value="";document.getElementById("fMesAno").value="";columnFilters={};currentPage=1;renderResults()}function nextPage(){const totalPages=Math.max(1,Math.ceil(filteredDataset().length/pageSize));if(currentPage<totalPages){currentPage++;renderResults()}}function previousPage(){if(currentPage>1){currentPage--;renderResults()}}function rowAction(action,fatura){alert(`${action}: ${fatura}`)}
+function openColumnFilter(th){const panel=document.getElementById("filterPanel");const col=th.dataset.col,type=th.dataset.type,label=th.innerText.replace("↕","").replace("▲","").replace("▼","").trim();const current=columnFilters[col]||"";let control="";if(type==="date")control=`<input id="columnFilterValue" type="date" value="${current}">`;else if(type==="month")control=`<input id="columnFilterValue" type="month" value="${current}">`;else if(type==="select"){const values=[...new Set(dataset.map(r=>r[col]).filter(Boolean))].sort();control=`<select id="columnFilterValue"><option value="">Todos</option>${values.map(v=>`<option ${v===current?"selected":""}>${v}</option>`).join("")}</select>`}else if(type==="money")control=`<input id="columnFilterValue" type="number" min="0" step="0.01" placeholder="Valor mínimo" value="${current}">`;else control=`<input id="columnFilterValue" placeholder="Filtrar ${label}" value="${current}">`;panel.innerHTML=`<label>${label}</label>${control}<div class="filter-actions"><button class="secondary" onclick="clearColumnFilter('${col}')">${iconSvg("eraser")}Limpar</button><button class="primary" onclick="applyColumnFilter('${col}')">${iconSvg("filter")}Aplicar</button></div>`;const rect=th.getBoundingClientRect();panel.style.left=Math.min(rect.left,window.innerWidth-250)+"px";panel.style.top=(rect.bottom+window.scrollY+4)+"px";panel.classList.add("open")}
+function applyColumnFilter(col){columnFilters[col]=document.getElementById("columnFilterValue").value;document.getElementById("filterPanel").classList.remove("open");currentPage=1;renderResults()}function clearColumnFilter(col){delete columnFilters[col];document.getElementById("filterPanel").classList.remove("open");currentPage=1;renderResults()}
+document.addEventListener("click",event=>{const panel=document.getElementById("filterPanel");const th=event.target.closest("th.sortable");if(th){const col=th.dataset.col;if(sortState.col===col){sortState.dir=sortState.dir==="asc"?"desc":"asc"}else{sortState={col,dir:"asc"}}openColumnFilter(th);renderResults();event.stopPropagation();return}if(!event.target.closest("#filterPanel")){panel.classList.remove("open")}});
+function escapeHtml(value){return String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;")}
+function uniqueOrdered(values){const list=[];values.forEach(value=>{if(value&&!list.includes(value))list.push(value)});return list}
+const lovConfig={domain:{field:"dominio",root:"domainLov",menu:"domainLovMenu",summary:"domainLovSummary"},macro:{field:"macro",root:"macroLov",menu:"macroLovMenu",summary:"macroLovSummary"},group:{field:"grupo",root:"groupLov",menu:"groupLovMenu",summary:"groupLovSummary"}};
+function displayLovValue(key,value){if(key==="domain"&&value==="Tributário")return"Campos tributáveis";if(key==="domain"&&value==="Não tributária")return"Não tributáveis";return value}
+function selectedLovSet(key){return new Set(fieldSelections[key]||[])}
+function availableLovRows(key){if(key==="domain")return rows;if(key==="macro")return rows.filter(r=>selectedLovSet("domain").has(r.dominio));return rows.filter(r=>selectedLovSet("domain").has(r.dominio)&&selectedLovSet("macro").has(r.macro))}
+function availableLovValues(key){return uniqueOrdered(availableLovRows(key).map(r=>r[lovConfig[key].field]))}
+function syncLovSelection(key,reset=false){const values=availableLovValues(key);fieldSelections[key]=reset?values:fieldSelections[key].filter(value=>values.includes(value))}
+function refreshDependentLovs(key){if(key==="domain"){syncLovSelection("macro",true);syncLovSelection("group",true)}if(key==="macro"){syncLovSelection("group",true)}}
+function updateLovOpenState(){Object.keys(lovConfig).forEach(key=>{const root=document.getElementById(lovConfig[key].root);if(root)root.classList.toggle("open",openLovKey===key)})}
+function lovSummary(key){const values=availableLovValues(key),selected=fieldSelections[key]||[];if(!values.length)return"Nenhum";if(selected.length===values.length)return"Todos";if(!selected.length)return"Nenhum selecionado";if(selected.length===1)return displayLovValue(key,selected[0]);return`${selected.length} selecionados`}
+function renderLov(key){const config=lovConfig[key],menu=document.getElementById(config.menu),summary=document.getElementById(config.summary);if(summary)summary.textContent=lovSummary(key);if(!menu)return;const searchId=`${key}LovSearch`;const currentSearch=document.getElementById(searchId)?.value||"";menu.innerHTML=`<input id="${searchId}" class="lov-search" placeholder="Pesquisar" value="${escapeHtml(currentSearch)}" oninput="renderLovOptions('${key}')"><label class="lov-option lov-all"><input id="${key}LovAll" type="checkbox" onchange="setAllLov('${key}', this.checked)"><span>Selecionar tudo</span></label><div class="lov-options" id="${key}LovOptions"></div><div class="lov-menu-actions"><button class="secondary" onclick="clearLov('${key}')">Limpar</button><button class="primary" onclick="closeLov()">OK</button></div>`;renderLovOptions(key)}
+function renderLovOptions(key){const searchText=(document.getElementById(`${key}LovSearch`)?.value||"").toLowerCase();const values=availableLovValues(key);const selected=selectedLovSet(key);const visibleValues=values.filter(value=>displayLovValue(key,value).toLowerCase().includes(searchText));const options=document.getElementById(`${key}LovOptions`);if(options)options.innerHTML=visibleValues.length?visibleValues.map(value=>`<label class="lov-option"><input type="checkbox" data-lov="${key}" data-value="${escapeHtml(value)}" ${selected.has(value)?"checked":""} onchange="toggleLovCheckbox(this)"><span>${escapeHtml(displayLovValue(key,value))}</span></label>`).join(""):`<div class="lov-empty">Nenhum valor encontrado.</div>`;const allBox=document.getElementById(`${key}LovAll`);if(allBox){allBox.checked=values.length>0&&selected.size===values.length;allBox.indeterminate=selected.size>0&&selected.size<values.length}}
+function renderAllLovs(){Object.keys(lovConfig).forEach(renderLov);updateLovOpenState()}
+function toggleLov(key){openLovKey=openLovKey===key?null:key;renderAllLovs()}
+function closeLov(){openLovKey=null;updateLovOpenState()}
+function setAllLov(key,checked){fieldSelections[key]=checked?availableLovValues(key):[];refreshDependentLovs(key);allFieldsOpen=false;renderAllLovs();renderMacros()}
+function clearLov(key){setAllLov(key,false)}
+function toggleLovCheckbox(input){const key=input.dataset.lov,value=input.dataset.value;const selected=selectedLovSet(key);input.checked?selected.add(value):selected.delete(value);fieldSelections[key]=availableLovValues(key).filter(item=>selected.has(item));refreshDependentLovs(key);allFieldsOpen=false;renderAllLovs();renderMacros()}
+function currentFieldRows(){return rows.filter(r=>selectedLovSet("domain").has(r.dominio)&&selectedLovSet("macro").has(r.macro)&&selectedLovSet("group").has(r.grupo))}
+function initializeFieldFilters(){syncLovSelection("domain",true);syncLovSelection("macro",true);syncLovSelection("group",true);renderAllLovs()}
+function updateToggleAllButton(){const button=document.getElementById("toggleAllButton");if(!button)return;button.innerHTML=allFieldsOpen?`${iconSvg("collapse")}Recolher todos`:`${iconSvg("expand")}Expandir todos`}
+function toggleAllFields(){allFieldsOpen=!allFieldsOpen;document.querySelectorAll(".macro").forEach(item=>item.open=allFieldsOpen);updateToggleAllButton()}
+function renderMacros(){const domainRows=currentFieldRows();const byGroup={};domainRows.forEach(r=>{const group=r.grupo||"Sem grupo";if(!byGroup[group])byGroup[group]=[];byGroup[group].push(r)});const groupNames=Object.keys(byGroup);document.getElementById("macroList").innerHTML=groupNames.length?groupNames.map(group=>{const items=byGroup[group];const openAttr=allFieldsOpen?" open":"";return`<details class="macro"${openAttr}><summary><div class="macro-left"><div class="caret">${iconSvg("chevron-right")}</div><div class="macro-title"><b>${escapeHtml(group)}</b><span>${items.length} campo(s)</span></div></div></summary><div class="macro-groups"><div class="group"><div class="field-list">${items.map(r=>`<div class="field-chip" ${fieldWidthStyle(r)}><div class="field-name">${escapeHtml(r.campo)}</div><div class="field-value"><input value="${escapeHtml(r.valor)}" onchange="updateValue(${r.id}, this.value)"></div></div>`).join("")}</div></div></div></details>`}).join(""):`<div class="empty">Nenhum campo encontrado.</div>`;updateToggleAllButton()}
+function updateValue(id,value){const row=rows.find(r=>r.id===id);if(row)row.valor=value}
+document.addEventListener("click",event=>{if(!event.target.closest(".lov-field"))closeLov()});
+renderResults();initializeFieldFilters();renderMacros();
+</script>
+</body>
+</html>
